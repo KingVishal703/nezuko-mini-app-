@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecting...</title>
 
-  <!-- 👉 YAHAN Monetag ka SDK script paste karo (panel se "copy this tag") -->
-  <!-- Example (sirf example hai, apna original SDK tag use karna):
-  <script src="https://example.monetag.com/sdk.js"></script>
+  <!-- 👉 Yahan Monetag / Ads script paste kar sakte ho (optional)
+  <script src="YAHAN_APNA_AD_SDK.JS"></script>
   -->
 
   <style>
@@ -61,7 +60,6 @@
       line-height: 1.45;
     }
 
-    /* Ad box common style */
     .ad-box {
       border-radius: 14px;
       border: 1px dashed rgba(148, 163, 184, 0.5);
@@ -95,7 +93,6 @@
       line-height: 1.5;
     }
 
-    /* Timer circle */
     .circle {
       width: 82px;
       height: 82px;
@@ -205,17 +202,17 @@
     <div class="step-text" id="step-info">STEP 1 OF 2</div>
     <h1 id="title-main">Secure redirect in progress</h1>
     <p class="sub" id="sub-text">
-      कृपया <b>timer खत्म होने</b> तक इस page को बंद न करें।
+      Kripya <b>timer khatm hone</b> tak is page ko band na karein.
     </p>
 
-    <!-- Ad Slot 1 -->
+    <!-- Ad Slot 1 (top banner) -->
     <div class="ad-box">
       <div class="ad-label-row">
         <span>SPONSORED</span>
         <span class="ad-pill">AD SLOT 1</span>
       </div>
       <div class="ad-placeholder">
-        Yahan apna 300x250 / responsive ad code paste karein.
+        <!-- Yahan apna 300x250 / responsive banner ad code paste karein -->
       </div>
     </div>
 
@@ -225,11 +222,11 @@
     </div>
 
     <div class="label" id="label-text">
-      Timer पूरा होने पर नीचे वाला बटन unlock होगा।
+      Timer complete hone par niche ka button unlock hoga.
     </div>
 
     <div class="hint" id="hint-text">
-      10 second ka simple wait hai. Uske baad <b>Next</b> dabakar aage badhein.
+      Ye Step 1 hai. 10 second ka simple wait hai, phir <b>Next</b> dabakar agle step par jayein.
     </div>
 
     <div class="progress">
@@ -238,14 +235,14 @@
 
     <button class="btn-main" id="action-btn" disabled>WAIT...</button>
 
-    <!-- Ad Slot 2 -->
+    <!-- Ad Slot 2 (bottom banner) -->
     <div class="ad-box" style="margin-top: 16px;">
       <div class="ad-label-row">
         <span>SPONSORED</span>
         <span class="ad-pill">AD SLOT 2</span>
       </div>
       <div class="ad-placeholder">
-        Yahan extra ad / sponsored links ka code laga sakte hain.
+        <!-- Yahan extra ad / sponsored links ka code laga sakte hain -->
       </div>
     </div>
 
@@ -257,25 +254,20 @@
   <script>
     // ========== CONFIG (sirf yahan change karna) ==========
     const CONFIG = {
-      waitSeconds: 10,                  // kitne second wait
-      stepNumber: 1,                    // ye page ka step (1,2,...)
-      totalSteps: 2,                    // total steps kitne hain
-      isLastPage: false,                // ye last page hai? (true/false)
-      nextPageUrl: "https://yourblog.blogspot.com/2025/11/link2-step2.html",  // next step ka URL
-      botUsername: "YourBotUsername",   // bot username (without @)
-      botStartPrefix: "blg2",           // bot ko start=blg2<id> milega
+      waitSeconds: 10,           // kitne second wait
+      stepNumber: 1,             // ye page ka step
+      totalSteps: 2,             // total steps
+      isLastPage: false,         // ye last page? -> false
+      nextPagePath: "step2.html",// next step file ka path
 
-      // --- AD OPTIONS ---
+      botUsername: "YourBotUsername", // <-- apna bot username (without @)
+      botStartPrefix: "blg2",         // bot ko start=blg2<id> milega
 
-      // 1) Rewarded popup (show_10222194('pop')) – agar true hoga to sabse pehle ye chalega
-      rewardPopupEnabled: false,
-
-      // 2) Rewarded interstitial (show_9730466()) – agar popup off ho tab use hoga
-      rewardInterstitialEnabled: true,
-
-      // 3) Direct ad link (button click pe naya tab open) – optional
-      directAdEnabled: false,
-      directAdUrl: "https://example.com/your-offer"
+      // --- AD OPTIONS (Monetag / Ads network ke liye) ---
+      rewardPopupEnabled: false,       // show_10222194('pop')
+      rewardInterstitialEnabled: false,// show_9730466()
+      directAdEnabled: false,          // direct external link (new tab)
+      directAdUrl: ""                  // e.g. "https://example.com/offer"
     };
     // ========== CONFIG END ==========
 
@@ -289,33 +281,20 @@
     const btn = document.getElementById("action-btn");
     const noteText = document.getElementById("note-text");
 
-    // Step info text
     if (CONFIG.totalSteps > 1) {
       stepInfo.textContent = `STEP ${CONFIG.stepNumber} OF ${CONFIG.totalSteps}`;
     } else {
       stepInfo.textContent = "REDIRECT";
     }
 
-    // Texts according to last / not-last
-    if (CONFIG.isLastPage) {
-      titleMain.textContent = "Final step – get your file";
-      subText.innerHTML = "Ye aakhiri step hai. Timer khatm hote hi file unlock ho jayegi.";
-      labelText.textContent = "Timer complete hone par neeche ka button \"Get File\" ban jayega.";
-      hintText.innerHTML = "Button dabate hi aap bot me redirect ho kar apna file le sakte hain.";
-      btn.textContent = "WAIT...";
-      noteText.textContent = "Agar redirect nahi hota, to button se manually bot pe jayein.";
-    } else {
-      titleMain.textContent = "Secure redirect in progress";
-      subText.innerHTML = "Kripya timer khatm hone tak page band na karein.";
-      labelText.textContent = "Timer complete hone par niche ka button unlock hoga.";
-      hintText.innerHTML = `Ye Step ${CONFIG.stepNumber} hai. Next dabakar agle step par jayein.`;
-      btn.textContent = "WAIT...";
-      noteText.textContent = "Har step par sirf kuch second ka wait hoga, fir aage badh sakte hain.";
-    }
-
     // URL se payload (id) lena
     const urlParams = new URLSearchParams(window.location.search);
     const payload = urlParams.get("id") || "";
+
+    if (!payload) {
+      // agar id missing hai to simple error message
+      noteText.textContent = "Invalid link. Kripya bot se naya link lein.";
+    }
 
     let left = CONFIG.waitSeconds;
     const total = CONFIG.waitSeconds;
@@ -337,98 +316,65 @@
         secondsEl.textContent = "0";
         updateProgress();
         btn.disabled = false;
-        btn.textContent = CONFIG.isLastPage ? "GET FILE" : "NEXT";
+        btn.textContent = "NEXT";
         return;
       }
       secondsEl.textContent = left.toString();
       updateProgress();
     }, 1000);
 
-    // ---------------- Button click + Ad logic ----------------
     btn.addEventListener("click", async () => {
       if (btn.disabled) return;
       btn.disabled = true;
 
-      // Helper: final redirect function
       const redirectNow = () => {
         if (!payload) {
           alert("Invalid ya expired link. Kripya bot se naya link lein.");
           return;
         }
 
-        if (CONFIG.isLastPage) {
-          // Last page: alert + bot redirect
-          alert("✅ Aapki file Telegram bot me bhej di gayi hai.\nAb bot open ho raha hai.");
-          const finalUrl =
-            "https://t.me/" +
-            CONFIG.botUsername +
-            "?start=" +
-            encodeURIComponent(CONFIG.botStartPrefix + payload);
-          window.location.href = finalUrl;
-        } else {
-          // Next step redirect
-          if (!CONFIG.nextPageUrl) {
-            alert("Next page URL set nahi hai.");
-            return;
-          }
-          const next =
-            CONFIG.nextPageUrl +
-            (CONFIG.nextPageUrl.includes("?") ? "&" : "?") +
-            "id=" +
-            encodeURIComponent(payload);
-          window.location.href = next;
+        if (!CONFIG.nextPagePath) {
+          alert("Next page path set nahi hai.");
+          return;
         }
+        const nextUrl = CONFIG.nextPagePath + "?id=" + encodeURIComponent(payload);
+        window.location.href = nextUrl;
       };
 
-      // 1️⃣ Rewarded Popup (agar enabled hai to sabse pehle ye try karega)
+      // 1️⃣ Rewarded popup (agar tum baad me enable karna chaho)
       if (CONFIG.rewardPopupEnabled) {
         try {
           if (typeof show_10222194 === "function") {
             show_10222194("pop")
-              .then(() => {
-                // Ad complete / close hone ke baad
-                redirectNow();
-              })
-              .catch((e) => {
-                console.log("Reward popup error:", e);
-                redirectNow();
-              });
+              .then(() => redirectNow())
+              .catch(() => redirectNow());
           } else {
-            console.log("show_10222194 function nahi mila.");
             redirectNow();
           }
         } catch (e) {
-          console.log("Reward popup exception:", e);
           redirectNow();
         }
-        return; // yahan se aage code nahi chalega
+        return;
       }
 
-      // 2️⃣ Rewarded Interstitial (agar enabled hai)
-      if (CONFIG.rewardInterstitialEnabled) {
+      // 2️⃣ Rewarded interstitial (agar enabled hai)
+      if (CONFIG.rewardInterstitialEnabled && typeof show_9730466 === "function") {
         try {
-          if (typeof show_9730466 === "function") {
-            await show_9730466(); // user ad dekhega
-          } else {
-            console.log("show_9730466 function nahi mila.");
-          }
+          await show_9730466();
         } catch (e) {
           console.log("Reward interstitial error:", e);
         }
       }
 
-      // 3️⃣ Direct Ad link (new tab) – optional
-      if ( CONFIG.directAdEnabled &&
-           typeof CONFIG.directAdUrl === "string" &&
-           CONFIG.directAdUrl.trim() !== "" ) {
+      // 3️⃣ Direct ad link (new tab)
+      if (CONFIG.directAdEnabled && CONFIG.directAdUrl.trim() !== "") {
         try {
           window.open(CONFIG.directAdUrl, "_blank");
         } catch (e) {
-          console.log("Direct ad window open error:", e);
+          console.log("Direct ad open error:", e);
         }
       }
 
-      // Sab ads handle ho gaye, ab final redirect
       redirectNow();
     });
   </script>

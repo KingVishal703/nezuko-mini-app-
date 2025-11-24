@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecting...</title>
 
-  <!-- 1) Yahan apna Ads network ka SDK script lagana hai (Monetag / Adsgram etc.)
-       Example (sirf example, apna actual script panel se copy karke paste karo):
-
-       <script src="https://example.com/ads-sdk.js"></script>
+  <!-- 👉 YAHAN Monetag ka SDK script paste karo (panel se "copy this tag") -->
+  <!-- Example (sirf example hai, apna original SDK tag use karna):
+  <script src="https://example.monetag.com/sdk.js"></script>
   -->
 
   <style>
@@ -62,7 +61,7 @@
       line-height: 1.45;
     }
 
-    /* Ad box */
+    /* Ad box common style */
     .ad-box {
       border-radius: 14px;
       border: 1px dashed rgba(148, 163, 184, 0.5);
@@ -203,7 +202,7 @@
 </head>
 <body>
   <div class="card">
-    <div class="step-text" id="step-info">STEP 1 OF 1</div>
+    <div class="step-text" id="step-info">STEP 1 OF 2</div>
     <h1 id="title-main">Secure redirect in progress</h1>
     <p class="sub" id="sub-text">
       कृपया <b>timer खत्म होने</b> तक इस page को बंद न करें।
@@ -220,7 +219,7 @@
       </div>
     </div>
 
-    <!-- Timer + button -->
+    <!-- Timer + button area -->
     <div class="circle">
       <span id="seconds">10</span>
     </div>
@@ -258,26 +257,25 @@
   <script>
     // ========== CONFIG (sirf yahan change karna) ==========
     const CONFIG = {
-      // Telegram bot settings
-      botUsername: "YourBotUsername",  // <-- yahan apna bot username (without @)
-      botStartPrefix: "blg2",          // bot ko start=blg2<payload> milega
+      waitSeconds: 10,                  // kitne second wait
+      stepNumber: 1,                    // ye page ka step (1,2,...)
+      totalSteps: 2,                    // total steps kitne hain
+      isLastPage: false,                // ye last page hai? (true/false)
+      nextPageUrl: "https://yourblog.blogspot.com/2025/11/link2-step2.html",  // next step ka URL
+      botUsername: "YourBotUsername",   // bot username (without @)
+      botStartPrefix: "blg2",           // bot ko start=blg2<id> milega
 
-      // Flow settings
-      waitSeconds: 10,     // timer kitne second ka
-      stepNumber: 1,       // current step (1,2,...)
-      totalSteps: 1,       // total steps
-      isLastPage: true,    // agar sirf 1 page hai to true
+      // --- AD OPTIONS ---
 
-      // Next page (agar multi-step flow banana ho)
-      nextPageUrl: "",     // e.g. "https://nezukominiapp.vercel.app/step2"
+      // 1) Rewarded popup (show_10222194('pop')) – agar true hoga to sabse pehle ye chalega
+      rewardPopupEnabled: false,
 
-      // 1) Rewarded ad options (button click par ad)
-      rewardAdEnabled: false,          // true = ON, false = OFF
-      rewardFunctionName: "show_9730466", // Monetag ka function name (ya Adsgram ka)
+      // 2) Rewarded interstitial (show_9730466()) – agar popup off ho tab use hoga
+      rewardInterstitialEnabled: true,
 
-      // 2) Direct ad link (naya tab) – optional
-      directAdEnabled: false,          // true = ON, false = OFF
-      directAdUrl: ""                  // e.g. "https://direct-link-from-network.com/..."
+      // 3) Direct ad link (button click pe naya tab open) – optional
+      directAdEnabled: false,
+      directAdUrl: "https://example.com/your-offer"
     };
     // ========== CONFIG END ==========
 
@@ -291,14 +289,14 @@
     const btn = document.getElementById("action-btn");
     const noteText = document.getElementById("note-text");
 
-    // Step text
+    // Step info text
     if (CONFIG.totalSteps > 1) {
       stepInfo.textContent = `STEP ${CONFIG.stepNumber} OF ${CONFIG.totalSteps}`;
     } else {
       stepInfo.textContent = "REDIRECT";
     }
 
-    // Texts according to last step
+    // Texts according to last / not-last
     if (CONFIG.isLastPage) {
       titleMain.textContent = "Final step – get your file";
       subText.innerHTML = "Ye aakhiri step hai. Timer khatm hote hi file unlock ho jayegi.";
@@ -346,75 +344,91 @@
       updateProgress();
     }, 1000);
 
-    // 🧱 Helper: final redirect (bot ya next step)
-    function redirectNow() {
-      if (!payload) {
-        alert("Invalid ya expired link. Kripya bot se naya link lein.");
-        return;
-      }
-
-      if (CONFIG.isLastPage) {
-        const finalUrl =
-          `https://t.me/${CONFIG.botUsername}?start=` +
-          encodeURIComponent(CONFIG.botStartPrefix + payload);
-        // Telegram app ke andar open hoga
-        window.location.href = finalUrl;
-      } else {
-        if (!CONFIG.nextPageUrl) {
-          alert("Next page URL set nahi hai.");
-          return;
-        }
-        const next =
-          CONFIG.nextPageUrl +
-          (CONFIG.nextPageUrl.includes("?") ? "&" : "?") +
-          "id=" +
-          encodeURIComponent(payload);
-        window.location.href = next;
-      }
-    }
-
-    // 🧱 Helper: rewarded ad dikhana (Monetag / Adsgram)
-    async function showRewardAdIfEnabled() {
-      if (!CONFIG.rewardAdEnabled || !CONFIG.rewardFunctionName) {
-        return;
-      }
-      try {
-        const fn = window[CONFIG.rewardFunctionName];
-        if (typeof fn === "function") {
-          // Agar tumhare network ko extra params chahiye (jaise 'pop'),
-          // to yahan add karo: await fn('pop');
-          await fn();
-          console.log("Reward ad completed.");
-        } else {
-          console.log("Reward function not found, skipping ad.");
-        }
-      } catch (e) {
-        console.log("Reward ad error:", e);
-      }
-    }
-
-    // 🧱 Helper: direct ad window (optional)
-    function openDirectAdIfEnabled() {
-      if (!CONFIG.directAdEnabled || !CONFIG.directAdUrl.trim()) return;
-      try {
-        window.open(CONFIG.directAdUrl, "_blank");
-      } catch (e) {
-        console.log("Direct ad window open error:", e);
-      }
-    }
-
-    // Button click + ad + redirect
+    // ---------------- Button click + Ad logic ----------------
     btn.addEventListener("click", async () => {
       if (btn.disabled) return;
       btn.disabled = true;
 
-      // 1) Rewarded ad (agar ON hai)
-      await showRewardAdIfEnabled();
+      // Helper: final redirect function
+      const redirectNow = () => {
+        if (!payload) {
+          alert("Invalid ya expired link. Kripya bot se naya link lein.");
+          return;
+        }
 
-      // 2) Direct ad link (naye tab me) – optional
-      openDirectAdIfEnabled();
+        if (CONFIG.isLastPage) {
+          // Last page: alert + bot redirect
+          alert("✅ Aapki file Telegram bot me bhej di gayi hai.\nAb bot open ho raha hai.");
+          const finalUrl =
+            "https://t.me/" +
+            CONFIG.botUsername +
+            "?start=" +
+            encodeURIComponent(CONFIG.botStartPrefix + payload);
+          window.location.href = finalUrl;
+        } else {
+          // Next step redirect
+          if (!CONFIG.nextPageUrl) {
+            alert("Next page URL set nahi hai.");
+            return;
+          }
+          const next =
+            CONFIG.nextPageUrl +
+            (CONFIG.nextPageUrl.includes("?") ? "&" : "?") +
+            "id=" +
+            encodeURIComponent(payload);
+          window.location.href = next;
+        }
+      };
 
-      // 3) Finally redirect to bot / next step
+      // 1️⃣ Rewarded Popup (agar enabled hai to sabse pehle ye try karega)
+      if (CONFIG.rewardPopupEnabled) {
+        try {
+          if (typeof show_10222194 === "function") {
+            show_10222194("pop")
+              .then(() => {
+                // Ad complete / close hone ke baad
+                redirectNow();
+              })
+              .catch((e) => {
+                console.log("Reward popup error:", e);
+                redirectNow();
+              });
+          } else {
+            console.log("show_10222194 function nahi mila.");
+            redirectNow();
+          }
+        } catch (e) {
+          console.log("Reward popup exception:", e);
+          redirectNow();
+        }
+        return; // yahan se aage code nahi chalega
+      }
+
+      // 2️⃣ Rewarded Interstitial (agar enabled hai)
+      if (CONFIG.rewardInterstitialEnabled) {
+        try {
+          if (typeof show_9730466 === "function") {
+            await show_9730466(); // user ad dekhega
+          } else {
+            console.log("show_9730466 function nahi mila.");
+          }
+        } catch (e) {
+          console.log("Reward interstitial error:", e);
+        }
+      }
+
+      // 3️⃣ Direct Ad link (new tab) – optional
+      if ( CONFIG.directAdEnabled &&
+           typeof CONFIG.directAdUrl === "string" &&
+           CONFIG.directAdUrl.trim() !== "" ) {
+        try {
+          window.open(CONFIG.directAdUrl, "_blank");
+        } catch (e) {
+          console.log("Direct ad window open error:", e);
+        }
+      }
+
+      // Sab ads handle ho gaye, ab final redirect
       redirectNow();
     });
   </script>

@@ -536,30 +536,3 @@ style="padding:12px 20px;
   Play Reward Ad
 </button>
 
-
-<!-- Adsgram Official SDK -->
-<script src="https://adsgram.ai/js/adsgram.min.js"></script>
-
-<button id="playAdBtn"
-style="padding:12px 20px;background:#4f46e5;border:none;color:white;font-size:16px;border-radius:8px;cursor:pointer;margin-top:15px;">
-  Play Reward Ad
-</button>
-
-<script>
-document.getElementById("playAdBtn").addEventListener("click", async () => {
-  try {
-    console.log("Loading ad...");
-    const result = await AdController.show("int-18062"); // Your Block ID
-
-    if (result === AdController.AD_COMPLETED) {
-      alert("🎉 Ad Completed Successfully!");
-    } else {
-      alert("⚠ Ad closed without reward");
-    }
-
-  } catch (err) {
-    alert("⚠ Ad Error: " + err);
-    console.log(err);
-  }
-});
-</script>

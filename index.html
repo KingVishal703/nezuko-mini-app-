@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Adsgram SDK (ye sab users ke liye same hota hai) -->
+  <!-- AdsGram SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <script src='//libtl.com/sdk.js' data-zone='10222194' data-sdk='show_10222194'></script>
 
-
-  <script>try {
-    // code to show banner
-  await window.Adsgram.init({ blockId: "int-18122" }).show();
-} catch (error) {
-    // user get error during playing ad or no banner to show
-    // do nothing or whatever you want
-}</script>
-  <!-- Agar Monetag ka SDK use karna hai to yahan apna script lagao
-  <script src="YAHAN_MONETAG_SDK_URL.js"></script>
-  -->
+  <!-- Monetag (show_10222194 ke liye) -->
+  <script src="//libtl.com/sdk.js" data-zone="10222194" data-sdk="show_10222194"></script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -224,7 +214,7 @@
         <span class="ad-pill">AD SLOT 1</span>
       </div>
       <div class="ad-placeholder">
-        <!-- Yahan apna 300x250 / responsive banner ad code paste karein (Monetag, Propeller, etc.) -->
+        <!-- Yahan banner ad ka code paste kar sakte ho (Monetag, etc.) -->
       </div>
     </div>
 
@@ -254,7 +244,7 @@
         <span class="ad-pill">AD SLOT 2</span>
       </div>
       <div class="ad-placeholder">
-        <!-- Yahan extra ad / sponsored links ka code laga sakte hain -->
+        <!-- Yahan extra banner / sponsored links ka code -->
       </div>
     </div>
 
@@ -264,42 +254,48 @@
   </div>
 
   <script>
-    // ========== CONFIG (sirf yahan se saara control) ==========
+    // ========== CONFIG (sirf yahan se sab control karoge) ==========
     const CONFIG = {
       // Timer / steps
       waitSeconds: 10,
       stepNumber: 1,
       totalSteps: 2,
       isLastPage: false,
-      nextPagePath: "step2.html", // next step file ka path (same domain)
+      nextPagePath: "step2.html", // next step (same domain)
 
-      // Bot details (last page ke liye use hoga)
+      // Bot details (sirf last page ke liye)
       botUsername: "YourBotUsername", // without @
-      botStartPrefix: "blg2",         // start payload prefix (blg2 + id)
+      botStartPrefix: "blg2",
 
-      // --------------- Adsgram settings ---------------
+      // ------------ AdsGram settings ------------
       adsgram: {
-        blockId: "int-int-18122",  // ✅ Yahan apna Adsgram Block ID daalo
-        enabledOnLoad: true,  // page load होते ही ad dikhani ho to true
-        enabledOnClick: true   // NEXT button click pe ad dikhani ho to true
+        // Interstitial: site load hote hi
+        interstitial: {
+          blockId: "int-18126",
+          onLoad: true,   // page load pe chalana ho to true
+          onClick: false  // NEXT pe bhi chalana ho to true
+        },
+        // Reward: NEXT button click pe
+        reward: {
+          blockId: "int-18127",
+          onLoad: false,  // load pe chalana ho to true
+          onClick: true   // NEXT pe chalana ho to true (tumhara use-case)
+        }
       },
 
-      // --------------- Monetag settings ---------------
-      // NOTE: Ye tabhi kaam karega jab tum Monetag ka SDK + functions
-      // (show_10222194, show_9730466) head me add karoge.
+      // ------------ Monetag settings ------------
       monetag: {
-        popupOnLoad:   true, // page load pe rewarded popup
-        popupOnClick:  false, // button click pe rewarded popup
-        interOnLoad:   false, // page load pe interstitial
-        interOnClick:  false  // button click pe interstitial
+        popupOnLoad:   false,
+        popupOnClick:  false,
+        interOnLoad:   false,
+        interOnClick:  false
       },
 
-      // --------------- Direct external link ---------------
-      // Jaise kisi offer page ko naya tab me kholna ho
+      // ------------ Direct external link ------------
       directAd: {
-        url: "",          // e.g. "https://example.com/offer"
-        onLoad: false,    // page load pe open kare
-        onClick: false    // button click pe open kare
+        url: "",
+        onLoad: false,
+        onClick: false
       }
     };
     // ========== CONFIG END ==========
@@ -314,7 +310,7 @@
     const btn = document.getElementById("action-btn");
     const noteText = document.getElementById("note-text");
 
-    // ---------- Texts init ----------
+    // ---------- Text setup ----------
     if (CONFIG.totalSteps > 1) {
       stepInfo.textContent = `STEP ${CONFIG.stepNumber} OF ${CONFIG.totalSteps}`;
     } else {
@@ -330,7 +326,7 @@
       noteText.textContent = "Agar redirect nahi hota, to button se manually bot pe jayein.";
     }
 
-    // URL se payload (id) lena
+    // URL se payload (id)
     const urlParams = new URLSearchParams(window.location.search);
     const payload = urlParams.get("id") || "";
 
@@ -338,7 +334,7 @@
       noteText.textContent = "Invalid link. Kripya bot se naya link lein.";
     }
 
-    // ---------- Timer logic ----------
+    // ---------- Timer ----------
     let left = CONFIG.waitSeconds;
     const total = CONFIG.waitSeconds;
     secondsEl.textContent = left.toString();
@@ -366,27 +362,59 @@
       updateProgress();
     }, 1000);
 
-    // ---------- Ad helper functions ----------
+    // ---------- AdsGram controllers ----------
+    let adsgramInter = null;
+    let adsgramReward = null;
 
-    // Adsgram interstitial
-    async function showAdsgramAd() {
-      if (!window.AdController || !CONFIG.adsgram.blockId) {
-        console.log("Adsgram not available / blockId missing");
+    function initAdsgram() {
+      if (!window.Adsgram) {
+        console.log("AdsGram SDK not loaded.");
         return;
       }
       try {
-        const result = await AdController.show(CONFIG.adsgram.blockId);
-        if (result === AdController.AD_COMPLETED) {
-          console.log("Adsgram ad completed");
-        } else {
-          console.log("Adsgram ad skipped / closed");
+        if (CONFIG.adsgram.interstitial.blockId) {
+          adsgramInter = window.Adsgram.init({
+            blockId: CONFIG.adsgram.interstitial.blockId
+          });
         }
-      } catch (err) {
-        console.error("Adsgram error:", err);
+        if (CONFIG.adsgram.reward.blockId) {
+          adsgramReward = window.Adsgram.init({
+            blockId: CONFIG.adsgram.reward.blockId
+          });
+        }
+      } catch (e) {
+        console.log("AdsGram init error:", e);
       }
     }
 
-    // Monetag rewarded popup: show_10222194('pop')
+    async function showAdsgramInterstitial() {
+      if (!adsgramInter) {
+        console.log("Interstitial controller not ready");
+        return;
+      }
+      try {
+        const res = await adsgramInter.show();
+        console.log("AdsGram interstitial result:", res);
+      } catch (e) {
+        console.log("AdsGram interstitial error:", e);
+      }
+    }
+
+    async function showAdsgramReward() {
+      if (!adsgramReward) {
+        console.log("Reward controller not ready");
+        return;
+      }
+      try {
+        const res = await adsgramReward.show();
+        console.log("AdsGram reward result:", res);
+        // yahan chahe to res.done check karke extra reward logic laga sakte ho
+      } catch (e) {
+        console.log("AdsGram reward error:", e);
+      }
+    }
+
+    // ---------- Monetag helpers ----------
     function showMonetagPopup() {
       return new Promise((resolve) => {
         if (typeof show_10222194 !== "function") {
@@ -407,7 +435,6 @@
       });
     }
 
-    // Monetag rewarded/interstitial: show_9730466()
     function showMonetagInterstitial() {
       return new Promise((resolve) => {
         if (typeof show_9730466 !== "function") {
@@ -431,7 +458,6 @@
       });
     }
 
-    // Direct external link open
     function openDirectAd() {
       if (!CONFIG.directAd.url || !CONFIG.directAd.url.trim()) return;
       try {
@@ -441,21 +467,29 @@
       }
     }
 
-    // ---------- PAGE LOAD par auto ads ----------
+    // ---------- PAGE LOAD ----------
     window.addEventListener("load", async () => {
-      // Adsgram
-      if (CONFIG.adsgram.enabledOnLoad) {
-        await showAdsgramAd();
+      // pehle AdsGram init karo
+      initAdsgram();
+
+      // AdsGram interstitial on load
+      if (CONFIG.adsgram.interstitial.onLoad) {
+        await showAdsgramInterstitial();
       }
 
-      // Monetag popup / interstitial
+      // AdsGram reward on load (normally tum isko false rakho)
+      if (CONFIG.adsgram.reward.onLoad) {
+        await showAdsgramReward();
+      }
+
+      // Monetag
       if (CONFIG.monetag.popupOnLoad) {
         await showMonetagPopup();
       } else if (CONFIG.monetag.interOnLoad) {
         await showMonetagInterstitial();
       }
 
-      // Direct link (new tab)
+      // Direct external
       if (CONFIG.directAd.onLoad) {
         openDirectAd();
       }
@@ -473,7 +507,6 @@
         }
 
         if (CONFIG.isLastPage) {
-          // final file
           alert("✅ Aapki file Telegram bot me bhej di gayi hai.\nAb bot open ho raha hai.");
           const finalUrl =
             "https://t.me/" +
@@ -491,30 +524,29 @@
         }
       };
 
-      // 👉 Order of ads on click:
-      // 1) Adsgram (agar enabled)
-      // 2) Monetag Popup (agar enabled) else Monetag Interstitial
-      // 3) Direct external link (new tab)
-      // 4) Phir redirect
-
-      // 1) Adsgram
-      if (CONFIG.adsgram.enabledOnClick) {
-        await showAdsgramAd();
+      // 1) AdsGram interstitial on click (agar chahiye to)
+      if (CONFIG.adsgram.interstitial.onClick) {
+        await showAdsgramInterstitial();
       }
 
-      // 2) Monetag
+      // 2) AdsGram reward on click (tumhara main use-case)
+      if (CONFIG.adsgram.reward.onClick) {
+        await showAdsgramReward();
+      }
+
+      // 3) Monetag
       if (CONFIG.monetag.popupOnClick) {
         await showMonetagPopup();
       } else if (CONFIG.monetag.interOnClick) {
         await showMonetagInterstitial();
       }
 
-      // 3) Direct ad
+      // 4) Direct external
       if (CONFIG.directAd.onClick) {
         openDirectAd();
       }
 
-      // 4) Final redirect
+      // 5) Redirect
       redirectNow();
     });
   </script>

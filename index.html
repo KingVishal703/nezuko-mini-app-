@@ -521,18 +521,24 @@
 </body>
 </html>
 
-<!-- Adsgram SDK -->
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-<button id="playAdBtn" 
-style="padding:12px 20px;
-       background:#4f46e5;
-       border:none;
-       color:white;
-       font-size:16px;
-       border-radius:8px;
-       cursor:pointer;
-       margin-top:15px;">
-  Play Reward Ad
+<!-- Monetag Rewarded SDK -->
+<script src="//libtl.com/sdk.js" data-zone="10222194" data-sdk="show_10222194"></script>
+
+<button id="rewardBtn"
+style="padding:12px 20px;background:#22c55e;border:none;color:white;font-size:16px;border-radius:10px;cursor:pointer;margin-top:20px;">
+  Show Rewarded Ad
 </button>
 
+<script>
+document.getElementById("rewardBtn").addEventListener("click", async () => {
+  try {
+    console.log("Loading ad...");
+    await show_10222194('pop');
+    alert("🎉 Ad Completed Successfully!");
+  } catch (e) {
+    alert("⚠ Ad Error or Closed");
+    console.log(e);
+  }
+});
+</script>

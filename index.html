@@ -5,6 +5,7 @@
   <script src="https://adsgram.ru/static/main.js"></script>
   <script src='//libtl.com/sdk.js' data-zone='10222194' data-sdk='show_10222194'></script>
 
+
   <!-- Agar Monetag ka SDK use karna hai to yahan apna script lagao
   <script src="YAHAN_MONETAG_SDK_URL.js"></script>
   -->
@@ -509,6 +510,14 @@
       // 4) Final redirect
       redirectNow();
     });
+
+    <script>try {
+    // code to show banner
+  await window.Adsgram.init({ blockId: "your-block-id" }).show();
+} catch (error) {
+    // user get error during playing ad or no banner to show
+    // do nothing or whatever you want
+}</script>
   </script>
 </body>
 </html>

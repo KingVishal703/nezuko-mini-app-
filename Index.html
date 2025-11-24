@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecting...</title>
+
+  <!-- 1) Yahan apna Ads network ka SDK script lagana hai (Monetag / Adsgram etc.)
+       Example (sirf example, apna actual script panel se copy karke paste karo):
+
+       <script src="https://example.com/ads-sdk.js"></script>
+  -->
+
   <style>
     * {
       margin: 0;
@@ -55,7 +62,7 @@
       line-height: 1.45;
     }
 
-    /* Ad box common style */
+    /* Ad box */
     .ad-box {
       border-radius: 14px;
       border: 1px dashed rgba(148, 163, 184, 0.5);
@@ -193,11 +200,6 @@
       line-height: 1.5;
     }
   </style>
-
-  <!-- yahan Adsgram ka SDK script paste karna hai (unke panel se copy karke) -->
-  <!-- example (sirf idea): 
-  <script src="https://static.adsgram.ai/sdk/v1.js"></script>
-  -->
 </head>
 <body>
   <div class="card">
@@ -214,11 +216,11 @@
         <span class="ad-pill">AD SLOT 1</span>
       </div>
       <div class="ad-placeholder">
-        Yahan apna 300x250 / responsive banner ad code paste karein.
+        Yahan apna 300x250 / responsive ad code paste karein.
       </div>
     </div>
 
-    <!-- Timer + button area -->
+    <!-- Timer + button -->
     <div class="circle">
       <span id="seconds">10</span>
     </div>
@@ -228,7 +230,7 @@
     </div>
 
     <div class="hint" id="hint-text">
-      बस <b>10 second</b> wait karein. Phir button se aap apni file unlock kar sakte hain.
+      10 second ka simple wait hai. Uske baad <b>Next</b> dabakar aage badhein.
     </div>
 
     <div class="progress">
@@ -244,39 +246,38 @@
         <span class="ad-pill">AD SLOT 2</span>
       </div>
       <div class="ad-placeholder">
-        Yahan extra ad / sponsored links ka code laga sakte hain (ya empty chhod sakte ho).
+        Yahan extra ad / sponsored links ka code laga sakte hain.
       </div>
     </div>
 
     <div class="note" id="note-text">
-      Agar automatic redirect nahi hota, to button dabakar next step pe jayein.
+      Agar automatically redirect nahi hota, to button dabakar next step pe jayein.
     </div>
   </div>
 
   <script>
     // ========== CONFIG (sirf yahan change karna) ==========
     const CONFIG = {
-      // ⏱ kitne second ka wait
-      waitSeconds: 10,
+      // Telegram bot settings
+      botUsername: "YourBotUsername",  // <-- yahan apna bot username (without @)
+      botStartPrefix: "blg2",          // bot ko start=blg2<payload> milega
 
-      // 🧭 steps info (cosmetic, UI text ke liye)
-      stepNumber: 1,      // ye page ka step number
-      totalSteps: 1,      // total steps (1 hi rakh sakte ho)
+      // Flow settings
+      waitSeconds: 10,     // timer kitne second ka
+      stepNumber: 1,       // current step (1,2,...)
+      totalSteps: 1,       // total steps
+      isLastPage: true,    // agar sirf 1 page hai to true
 
-      // 🤖 Bot settings
-      botUsername: "YourBotUsernameHere",  // yahan apna bot username (without @)
-      botStartPrefix: "blg2",              // bot me start=blg2<payload> jayega
+      // Next page (agar multi-step flow banana ho)
+      nextPageUrl: "",     // e.g. "https://nezukominiapp.vercel.app/step2"
 
-      // 💰 Rewarded ad (Adsgram) settings
-      useRewardAd: true,   // agar Adsgram rewarded ad chalani ho to true
-      rewardAdFunctionName: "show_9730466", // Adsgram se milne wali function ka naam (show_XXXX)
+      // 1) Rewarded ad options (button click par ad)
+      rewardAdEnabled: false,          // true = ON, false = OFF
+      rewardFunctionName: "show_9730466", // Monetag ka function name (ya Adsgram ka)
 
-      // 🔗 Direct ad link (agar reward nahi chalana ho to external link open karke fir redirect)
-      useDirectAdLink: false,          // direct ad link chalani ho to true
-      directAdUrl: "https://example.com/your-ad-link", // yahan apna ad / offer link
-
-      // ⏳ direct ad ke baad kitna wait (ms me) phir bot redirect
-      directAdDelayMs: 3000
+      // 2) Direct ad link (naya tab) – optional
+      directAdEnabled: false,          // true = ON, false = OFF
+      directAdUrl: ""                  // e.g. "https://direct-link-from-network.com/..."
     };
     // ========== CONFIG END ==========
 
@@ -290,19 +291,29 @@
     const btn = document.getElementById("action-btn");
     const noteText = document.getElementById("note-text");
 
-    // Step info text
+    // Step text
     if (CONFIG.totalSteps > 1) {
       stepInfo.textContent = `STEP ${CONFIG.stepNumber} OF ${CONFIG.totalSteps}`;
     } else {
       stepInfo.textContent = "REDIRECT";
     }
 
-    // Texts tweak
-    titleMain.textContent = "Secure redirect in progress";
-    subText.innerHTML = "Kripya timer khatm hone tak page band na karein.";
-    labelText.textContent = "Timer complete hone par niche ka button unlock hoga.";
-    hintText.innerHTML = "Timer khatm hote hi <b>Continue</b> dabakar apni file unlock karein.";
-    noteText.textContent = "Button dabane ke baad aapko Telegram bot me file mil jayegi.";
+    // Texts according to last step
+    if (CONFIG.isLastPage) {
+      titleMain.textContent = "Final step – get your file";
+      subText.innerHTML = "Ye aakhiri step hai. Timer khatm hote hi file unlock ho jayegi.";
+      labelText.textContent = "Timer complete hone par neeche ka button \"Get File\" ban jayega.";
+      hintText.innerHTML = "Button dabate hi aap bot me redirect ho kar apna file le sakte hain.";
+      btn.textContent = "WAIT...";
+      noteText.textContent = "Agar redirect nahi hota, to button se manually bot pe jayein.";
+    } else {
+      titleMain.textContent = "Secure redirect in progress";
+      subText.innerHTML = "Kripya timer khatm hone tak page band na karein.";
+      labelText.textContent = "Timer complete hone par niche ka button unlock hoga.";
+      hintText.innerHTML = `Ye Step ${CONFIG.stepNumber} hai. Next dabakar agle step par jayein.`;
+      btn.textContent = "WAIT...";
+      noteText.textContent = "Har step par sirf kuch second ka wait hoga, fir aage badh sakte hain.";
+    }
 
     // URL se payload (id) lena
     const urlParams = new URLSearchParams(window.location.search);
@@ -328,64 +339,84 @@
         secondsEl.textContent = "0";
         updateProgress();
         btn.disabled = false;
-        btn.textContent = "CONTINUE";
+        btn.textContent = CONFIG.isLastPage ? "GET FILE" : "NEXT";
         return;
       }
       secondsEl.textContent = left.toString();
       updateProgress();
     }, 1000);
 
-    function goToBot() {
+    // 🧱 Helper: final redirect (bot ya next step)
+    function redirectNow() {
       if (!payload) {
         alert("Invalid ya expired link. Kripya bot se naya link lein.");
         return;
       }
 
-      // User ko ek popup message
-      alert("✅ Aapki file Telegram bot me bhej di gayi hai. Ab bot khulega, wahan se file le lo.");
-
-      const finalUrl =
-        `https://t.me/${CONFIG.botUsername}?start=` +
-        encodeURIComponent(CONFIG.botStartPrefix + payload);
-      window.location.href = finalUrl;
+      if (CONFIG.isLastPage) {
+        const finalUrl =
+          `https://t.me/${CONFIG.botUsername}?start=` +
+          encodeURIComponent(CONFIG.botStartPrefix + payload);
+        // Telegram app ke andar open hoga
+        window.location.href = finalUrl;
+      } else {
+        if (!CONFIG.nextPageUrl) {
+          alert("Next page URL set nahi hai.");
+          return;
+        }
+        const next =
+          CONFIG.nextPageUrl +
+          (CONFIG.nextPageUrl.includes("?") ? "&" : "?") +
+          "id=" +
+          encodeURIComponent(payload);
+        window.location.href = next;
+      }
     }
 
-    async function handleButtonClick() {
-      if (btn.disabled) return;
-
-      // 1) Rewarded ad (Adsgram) agar enabled hai
-      if (CONFIG.useRewardAd && typeof window[CONFIG.rewardAdFunctionName] === "function") {
-        try {
-          // Adsgram rewarded ad call
-          await window[CONFIG.rewardAdFunctionName]();
-          // Ad khatam → bot pe redirect
-          goToBot();
-          return;
-        } catch (e) {
-          console.error("Reward ad error:", e);
-          // Agar ad fail ho jaye to bhi user ko bot pe jane do
-          goToBot();
-          return;
-        }
-      }
-
-      // 2) Direct ad link agar enabled hai (aur reward use nahi ho raha)
-      if (!CONFIG.useRewardAd && CONFIG.useDirectAdLink && CONFIG.directAdUrl) {
-        try {
-          window.open(CONFIG.directAdUrl, "_blank");
-        } catch (e) {
-          console.error("Direct ad open error:", e);
-        }
-        // Thoda wait karke bot pe redirect
-        setTimeout(goToBot, CONFIG.directAdDelayMs);
+    // 🧱 Helper: rewarded ad dikhana (Monetag / Adsgram)
+    async function showRewardAdIfEnabled() {
+      if (!CONFIG.rewardAdEnabled || !CONFIG.rewardFunctionName) {
         return;
       }
-
-      // 3) Agar koi ad enable nahi hai → seedha bot
-      goToBot();
+      try {
+        const fn = window[CONFIG.rewardFunctionName];
+        if (typeof fn === "function") {
+          // Agar tumhare network ko extra params chahiye (jaise 'pop'),
+          // to yahan add karo: await fn('pop');
+          await fn();
+          console.log("Reward ad completed.");
+        } else {
+          console.log("Reward function not found, skipping ad.");
+        }
+      } catch (e) {
+        console.log("Reward ad error:", e);
+      }
     }
 
-    btn.addEventListener("click", handleButtonClick);
+    // 🧱 Helper: direct ad window (optional)
+    function openDirectAdIfEnabled() {
+      if (!CONFIG.directAdEnabled || !CONFIG.directAdUrl.trim()) return;
+      try {
+        window.open(CONFIG.directAdUrl, "_blank");
+      } catch (e) {
+        console.log("Direct ad window open error:", e);
+      }
+    }
+
+    // Button click + ad + redirect
+    btn.addEventListener("click", async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+
+      // 1) Rewarded ad (agar ON hai)
+      await showRewardAdIfEnabled();
+
+      // 2) Direct ad link (naye tab me) – optional
+      openDirectAdIfEnabled();
+
+      // 3) Finally redirect to bot / next step
+      redirectNow();
+    });
   </script>
 </body>
 </html>

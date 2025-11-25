@@ -217,80 +217,95 @@
         <!-- Yahan banner ad ka code paste kar sakte ho (Monetag, etc.) -->
 
         <!-- SMALL 300x60 TELEGRAM BANNER AD -->
-<style>
-.hv-mini-ad {
-  width: 300px;
-  height: 60px;
-  background: linear-gradient(135deg,#0b1428,#101c3a);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
+        <style>
+.hv-slot-ad {
+  width: 100%;
+  background: linear-gradient(135deg, #0c1428, #121d34);
+  border-radius: 14px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
-  padding: 6px 10px;
-  gap: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  gap: 14px;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+  overflow: hidden;
 }
 
-.hv-mini-ad:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-}
-
-.hv-mini-ad-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: linear-gradient(135deg,#ff4b4b,#ff803e);
-  display: grid;
-  place-items: center;
+.hv-slot-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#ff4b4b,#ff7d3e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
-  font-size: 22px;
+  font-size: 26px;
 }
 
-.hv-mini-ad-text {
-  line-height: 1.1;
+.hv-slot-text {
+  flex: 1;
+  color: white;
+  line-height: 1.2;
 }
 
-.hv-mini-ad-text .t1 {
-  color: #7fe7ff;
-  font-size: 14px;
+.hv-slot-text .title {
+  font-size: 18px;
   font-weight: 700;
+  color: #6fe8ff;
 }
 
-.hv-mini-ad-text .t2 {
+.hv-slot-text .sub {
+  font-size: 13px;
   color: #ffe28a;
-  font-size: 11px;
-  font-weight: 600;
+  margin-top: 2px;
+}
+
+.hv-slot-btn {
+  background: linear-gradient(90deg,#3ef2c9,#4da8ff);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+  color: #032a2b;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.hv-slot-btn:hover {
+  opacity: 0.85;
 }
 </style>
 
-<a href="https://t.me/HVAnime" 
-   onclick="tryOpenTGMini(event,'HVAnime')" 
-   class="hv-mini-ad">
+<a href="https://t.me/HVAnime" onclick="openHV(event)" style="text-decoration:none;">
+  <div class="hv-slot-ad">
+    
+    <div class="hv-slot-icon">▶️</div>
 
-  <div class="hv-mini-ad-icon">▶️</div>
+    <div class="hv-slot-text">
+      <div class="title">HV ANIME</div>
+      <div class="sub">Hindi Dubbed Anime Everyday</div>
+    </div>
 
-  <div class="hv-mini-ad-text">
-    <div class="t1">HV ANIME</div>
-    <div class="t2">Hindi Dubbed Anime</div>
+    <div class="hv-slot-btn">Join Now ↗</div>
+
   </div>
-
 </a>
 
 <script>
-function tryOpenTGMini(e, username){
+function openHV(e){
   e.preventDefault();
-  var tg = "tg://resolve?domain=" + username;
-  var web = "https://t.me/" + username;
-  var start = Date.now();
+  let tg = "tg://resolve?domain=HVAnime";
+  let web = "https://t.me/HVAnime";
+
+  let start = Date.now();
   window.location = tg;
-  setTimeout(function(){
-    if (Date.now()-start < 800){ 
-      window.open(web, "_blank"); 
+
+  setTimeout(() => {
+    if (Date.now() - start < 900) {
+      window.open(web, "_blank");
     }
-  }, 600);
+  }, 700);
 }
 </script>
 

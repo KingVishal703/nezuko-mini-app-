@@ -215,6 +215,139 @@
       </div>
       <div class="ad-placeholder">
         <!-- Yahan banner ad ka code paste kar sakte ho (Monetag, etc.) -->
+
+        <!-- START: Single Clickable Telegram Banner Ad (Replace @HVAnime if needed) -->
+<style>
+/* wrapper */
+.hv-ad-wrap {
+  max-width: 980px;
+  margin: 12px auto;
+  font-family: "Poppins", "Inter", Arial, sans-serif;
+  color: #e6eef8;
+}
+
+/* card */
+.hv-ad {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 26px;
+  border-radius: 18px;
+  background: linear-gradient(135deg,#071028 0%, #0b1530 70%);
+  box-shadow: 0 18px 40px rgba(2,6,15,0.7);
+  border: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+/* hover */
+.hv-ad:hover { transform: translateY(-5px); box-shadow: 0 30px 60px rgba(2,6,15,0.75); }
+
+/* left icon circle */
+.hv-ad .icon {
+  flex: 0 0 120px;
+  height: 120px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 64px;
+  color: #fff;
+  background: radial-gradient(circle at 30% 30%, #ff5a5a, #ff3b3b 50%, #d93a3a 100%);
+  box-shadow: 0 8px 24px rgba(255,80,80,0.14);
+}
+
+/* text block */
+.hv-ad .info { flex: 1; min-width:0; }
+.hv-ad .info .tag { font-size:12px; letter-spacing:2px; opacity:0.72; margin-bottom:8px; }
+.hv-ad .info .title { font-size:44px; font-weight:800; line-height:1; color:#6fe8ff; margin-bottom:8px; }
+.hv-ad .info .subtitle { font-size:34px; font-weight:700; color:#ffe28a; margin-bottom:12px; }
+.hv-ad .info .cta-line { font-size:26px; font-weight:700; color:#ffffff; opacity:0.95; }
+
+/* small right CTA badge */
+.hv-ad .cta {
+  flex: 0 0 160px;
+  text-align: right;
+}
+.hv-ad .cta .btn {
+  display:inline-block;
+  padding:12px 16px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:14px;
+  background: linear-gradient(90deg,#3ef2c9,#4da8ff);
+  color:#022b2b;
+  box-shadow: 0 8px 20px rgba(77,168,255,0.12);
+  text-decoration:none;
+}
+
+/* responsive */
+@media (max-width:720px){
+  .hv-ad { flex-direction: row; gap:14px; padding:16px; border-radius:12px; }
+  .hv-ad .icon { width:86px; height:86px; font-size:40px; border-radius:12px; }
+  .hv-ad .info .title { font-size:26px; }
+  .hv-ad .info .subtitle { font-size:18px; }
+  .hv-ad .info .cta-line { font-size:16px; }
+  .hv-ad .cta { flex:0 0 110px; }
+  .hv-ad .cta .btn { padding:10px 12px; font-size:13px; }
+}
+</style>
+
+<div class="hv-ad-wrap">
+  <a class="hv-ad" href="https://t.me/HVAnime" target="_blank" rel="noopener noreferrer"
+     onclick="tryOpenTG(event,'HVAnime')" aria-label="Open @HVAnime channel">
+    <!-- left icon: replace emoji with <img> if you have a logo -->
+    <div class="icon" aria-hidden="true">▶️</div>
+
+    <!-- text -->
+    <div class="info">
+      <div class="tag">SPONSORED</div>
+      <div class="title">ANIME WORLD</div>
+      <div class="subtitle">Hindi Dubbed Anime Everyday!</div>
+      <div class="cta-line">Join Now → @HVAnime</div>
+    </div>
+
+    <!-- right CTA -->
+    <div class="cta">
+      <span class="btn">Open Channel ↗</span>
+    </div>
+  </a>
+</div>
+
+<script>
+/*
+ tryOpenTG: attempt to open Telegram app using tg://resolve.
+ If app not installed, fallback opens https://t.me/username
+*/
+function tryOpenTG(e, username){
+  e.preventDefault();
+  var tgUrl = 'tg://resolve?domain=' + encodeURIComponent(username);
+  var webUrl = 'https://t.me/' + encodeURIComponent(username);
+
+  // For most modern browsers on mobile, setting location works well.
+  // We'll try to open tg scheme, then fallback after timeout.
+  var now = Date.now();
+  // best-effort: try with window.location (mobile)
+  var opened = false;
+  try {
+    // iOS/Android handling
+    window.location = tgUrl;
+    // fallback after 800ms
+    setTimeout(function(){
+      if ((Date.now() - now) < 1200) {
+        // probably didn't open the app
+        window.open(webUrl, '_blank');
+      }
+    }, 800);
+  } catch (err) {
+    // if direct fail, open web url
+    window.open(webUrl, '_blank');
+  }
+}
+</script>
+<!-- END: Single Clickable Telegram Banner Ad -->
+
+        
       </div>
     </div>
 

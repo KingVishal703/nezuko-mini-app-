@@ -4,7 +4,7 @@
   <!-- AdsGram SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-  <!-- Monetag (show_10222194 ke liye) -->
+  <!-- Monetag SDK -->
   <script src="//libtl.com/sdk.js" data-zone="10222194" data-sdk="show_10222194"></script>
 
   <meta charset="UTF-8" />
@@ -12,7 +12,6 @@
   <title>Redirecting...</title>
 
   <style>
-    /* ==== CSS EXACTLY SAME AS YOUR CODE ==== */
     *{margin:0;padding:0;box-sizing:border-box}
     body{
       min-height:100vh;background:#020617;
@@ -34,41 +33,28 @@
       width:82px;height:82px;border-radius:999px;
       border:2px solid rgba(148,163,184,.7);
       display:flex;align-items:center;justify-content:center;
-      margin:0 auto 10px;position:relative;
+      margin:0 auto 10px;
       background:radial-gradient(circle at 30% 0,#22c55e 0,#020617 55%);
       color:#f9fafb;font-size:26px;font-weight:600
     }
-    .progress{
-      width:100%;height:7px;border-radius:999px;
-      background:#020617;border:1px solid #0f172a;
-      margin-bottom:16px;overflow:hidden
-    }
-    .progress-inner{
-      height:100%;width:0%;
-      background:linear-gradient(90deg,#22c55e,#eab308,#f97316);
-      background-size:200% 100%;
-      animation:shimmer 1.1s linear infinite
-    }
-    @keyframes shimmer{0%{background-position:0% 0}100%{background-position:200% 0}}
+    .progress{width:100%;height:7px;border-radius:999px;background:#020617;border:1px solid #0f172a;margin-bottom:16px;overflow:hidden}
+    .progress-inner{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#eab308,#f97316)}
     .btn-main{
       width:100%;border:none;padding:11px 16px;border-radius:999px;
       font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase
     }
     .btn-main:disabled{background:#020617;color:#6b7280;border:1px solid #111827}
-    .btn-main:not(:disabled){
-      background:linear-gradient(135deg,#4f46e5,#22c55e);
-      color:#fff;box-shadow:0 12px 28px rgba(59,130,246,.55)
-    }
+    .btn-main:not(:disabled){background:linear-gradient(135deg,#4f46e5,#22c55e);color:#fff}
   </style>
 </head>
 
 <body>
 <div class="card">
-  <div class="step-text" id="step-info">STEP 1 OF 2</div>
-  <h1 id="title-main">Secure redirect in progress</h1>
-  <p class="sub" id="sub-text">Kripya <b>timer khatm hone</b> tak is page ko band na karein.</p>
+  <div class="step-text">FINAL STEP</div>
+  <h1>Final step – get your file</h1>
+  <p class="sub">Timer khatm hone ke baad button unlock hoga</p>
 
-  <div class="circle"><span id="seconds">10</span></div>
+  <div class="circle"><span id="seconds">5</span></div>
 
   <div class="progress"><div class="progress-inner" id="progress-inner"></div></div>
 
@@ -76,43 +62,28 @@
 </div>
 
 <script>
-/* ================= CONFIG (EXISTING + ADD) ================= */
+/* ================= CONFIG ================= */
 const CONFIG = {
   waitSeconds: 5,
-  stepNumber: 2,
-  totalSteps: 2,
-  isLastPage: true,
-  nextPagePath: "step2.html",
-
   botUsername: "Xnezukochan_bot",
   botStartPrefix: "blg2",
 
+  /* AdsGram – ORIGINAL */
   adsgram: {
     interstitial:{ blockId:"int-18636", onLoad:false, onClick:false },
     reward:{ blockId:"18127", onLoad:false, onClick:false }
   },
 
+  /* Monetag – SAME PLACE CONTROL */
   monetag: {
-    popupOnLoad:true,
-    popupOnClick:false,
-    interOnLoad:false,
-    interOnClick:false
-  },
-
-  /* ====== MONETAG ADVANCED (NEW – ONLY ADDITION) ====== */
-  monetagAdv:{
-    adId:"10222194",
+    adId: "10222194",
 
     rewardedInterstitial:{ enabled:true, onLoad:true, onClick:false },
-    rewardedPopup:{ enabled:true, onLoad:true, onClick:false },
-
-    inAppInterstitial:{
-      enabled:true,onLoad:false,onClick:true,
-      settings:{ frequency:2,capping:0.1,interval:30,timeout:5,everyPage:false }
-    }
+    rewardedPopup:{ enabled:true, onLoad:false, onClick:true },
+    inApp:{ enabled:true, onLoad:false, onClick:false }
   }
 };
-/* ========================================================= */
+/* ========================================= */
 
 const btn=document.getElementById("action-btn");
 const sec=document.getElementById("seconds");
@@ -132,45 +103,58 @@ const t=setInterval(()=>{
   }
 },1000);
 
-/* ================= MONETAG ADVANCED HELPERS ================= */
-function monetagRI(){
+/* ========== AdsGram ORIGINAL ========== */
+let agInter=null, agReward=null;
+function initAdsgram(){
+  if(!window.Adsgram) return;
+  agInter=Adsgram.init({blockId:CONFIG.adsgram.interstitial.blockId});
+  agReward=Adsgram.init({blockId:CONFIG.adsgram.reward.blockId});
+}
+async function showAGInter(){ try{ if(agInter) await agInter.show(); }catch{} }
+async function showAGReward(){ try{ if(agReward) await agReward.show(); }catch{} }
+
+/* ========== Monetag HELPERS ========== */
+function mtInterstitial(){
   return new Promise(r=>{
-    const fn=window["show_"+CONFIG.monetagAdv.adId];
+    const fn=window["show_"+CONFIG.monetag.adId];
     if(typeof fn!=="function") return r();
     fn().then(()=>r()).catch(()=>r());
   });
 }
-
-function monetagRP(){
+function mtPopup(){
   return new Promise(r=>{
-    const fn=window["show_"+CONFIG.monetagAdv.adId];
+    const fn=window["show_"+CONFIG.monetag.adId];
     if(typeof fn!=="function") return r();
     fn("pop").then(()=>r()).catch(()=>r());
   });
 }
-
-function monetagIA(){
-  return new Promise(r=>{
-    const fn=window["show_"+CONFIG.monetagAdv.adId];
-    if(typeof fn!=="function") return r();
-    fn({type:"inApp",inAppSettings:CONFIG.monetagAdv.inAppInterstitial.settings});
-    r();
-  });
+function mtInApp(){
+  const fn=window["show_"+CONFIG.monetag.adId];
+  if(typeof fn==="function") fn({type:"inApp"});
 }
-/* =========================================================== */
 
-window.addEventListener("load",async()=>{
-  if(CONFIG.monetagAdv.rewardedInterstitial.enabled && CONFIG.monetagAdv.rewardedInterstitial.onLoad) await monetagRI();
-  if(CONFIG.monetagAdv.rewardedPopup.enabled && CONFIG.monetagAdv.rewardedPopup.onLoad) await monetagRP();
-  if(CONFIG.monetagAdv.inAppInterstitial.enabled && CONFIG.monetagAdv.inAppInterstitial.onLoad) await monetagIA();
+/* ========== PAGE LOAD (SAME PLACE) ========== */
+window.addEventListener("load", async ()=>{
+  initAdsgram();
+
+  if(CONFIG.adsgram.interstitial.onLoad) await showAGInter();
+  if(CONFIG.adsgram.reward.onLoad) await showAGReward();
+
+  if(CONFIG.monetag.rewardedInterstitial.onLoad) await mtInterstitial();
+  if(CONFIG.monetag.rewardedPopup.onLoad) await mtPopup();
+  if(CONFIG.monetag.inApp.onLoad) mtInApp();
 });
 
-btn.addEventListener("click",async()=>{
+/* ========== BUTTON CLICK (SAME PLACE) ========== */
+btn.addEventListener("click", async ()=>{
   btn.disabled=true;
 
-  if(CONFIG.monetagAdv.rewardedInterstitial.enabled && CONFIG.monetagAdv.rewardedInterstitial.onClick) await monetagRI();
-  if(CONFIG.monetagAdv.rewardedPopup.enabled && CONFIG.monetagAdv.rewardedPopup.onClick) await monetagRP();
-  if(CONFIG.monetagAdv.inAppInterstitial.enabled && CONFIG.monetagAdv.inAppInterstitial.onClick) await monetagIA();
+  if(CONFIG.adsgram.interstitial.onClick) await showAGInter();
+  if(CONFIG.adsgram.reward.onClick) await showAGReward();
+
+  if(CONFIG.monetag.rewardedInterstitial.onClick) await mtInterstitial();
+  if(CONFIG.monetag.rewardedPopup.onClick) await mtPopup();
+  if(CONFIG.monetag.inApp.onClick) mtInApp();
 
   const id=new URLSearchParams(location.search).get("id")||"";
   location.href="https://t.me/"+CONFIG.botUsername+"?start="+CONFIG.botStartPrefix+id;

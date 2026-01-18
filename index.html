@@ -455,29 +455,39 @@
 </html>
 
 
-<footer class="footer-links">
-  <a href="/privacy-policy">Privacy Policy</a>
-  <span>|</span>
-  <a href="/terms">Terms</a>
-  <span>|</span>
-  <a href="/contact">Contact</a>
-</footer>
-
+<div class="footer-wrap">
+  <footer class="footer-links">
+    <a href="/privacy-policy">Privacy Policy</a>
+    <span>|</span>
+    <a href="/terms">Terms</a>
+    <span>|</span>
+    <a href="/contact">Contact</a>
+  </footer>
+</div>
 <style>
-.footer-links{
+.footer-wrap{
   width: 100%;
-  text-align: center;
-  margin-top: 25px;
+  clear: both;              /* float issue fix */
+  display: block;
+  margin-top: 20px;
+}
+
+.footer-links{
+  width: 100% !important;
+  max-width: 480px;
+  margin: 0 auto;
   padding: 12px 10px;
   border-top: 1px solid rgba(255,255,255,0.15);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   gap: 10px;
   flex-wrap: wrap;
-  position: relative;
-  left: 0;
-  right: 0;
+
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
 }
 
 .footer-links a{
@@ -489,21 +499,15 @@
 
 .footer-links span{
   color: rgba(255,255,255,0.4);
-  font-size: 14px;
 }
 </style>
 <style>
-body{
-  margin: 0;
-  padding: 0;
+html, body{
   width: 100%;
   overflow-x: hidden;
 }
 
-.container{
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 10px;
+*{
+  box-sizing: border-box;
 }
 </style>

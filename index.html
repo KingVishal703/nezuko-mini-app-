@@ -268,12 +268,6 @@
     </div>
   </div>
 
-  <footer style="text-align:center; margin-top:30px; padding:15px; border-top:1px solid #ddd;">
-  <a href="/privacy-policy">Privacy Policy</a> |
-  <a href="/terms">Terms</a> |
-  <a href="/contact">Contact</a>
-  </footer>
-
   <script>
     // ========== CONFIG ==========
     const CONFIG = {
@@ -459,3 +453,42 @@
   </script>
 </body>
 </html>
+
+
+<footer class="footer-links">
+  <a href="/privacy-policy">Privacy Policy</a>
+  <span>|</span>
+  <a href="/terms">Terms</a>
+  <span>|</span>
+  <a href="/contact">Contact</a>
+</footer>
+
+<style>
+.footer-links{
+  width: 100%;
+  text-align: center;
+  margin-top: 25px;
+  padding: 12px 10px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  position: relative;
+  left: 0;
+  right: 0;
+}
+
+.footer-links a{
+  color: #4ea3ff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.footer-links span{
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+}
+</style>

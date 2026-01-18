@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy</title>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:900px;margin:auto;padding:20px;line-height:1.6;}
+    a{color:blue;text-decoration:none;}
+  </style>
+</head>
+<body>
+
+<h1>Privacy Policy</h1>
+
+<p>Welcome to Nezuko Mini App. Your privacy is important to us.</p>
+
+<h2>1. Information We Collect</h2>
+<p>We do not collect personally identifiable information such as your name, phone number, or password directly.</p>
+<p>However, our app may collect basic technical information like device type, browser type, and usage data for analytics and performance improvement.</p>
+
+<h2>2. Cookies</h2>
+<p>Our website may use cookies to improve user experience. You can disable cookies in your browser settings.</p>
+
+<h2>3. Third-Party Ads</h2>
+<p>We may show ads from third-party ad networks. These networks may use cookies or similar technologies to show relevant ads.</p>
+
+<h2>4. Telegram Mini App</h2>
+<p>This service is used inside Telegram as a Mini App (WebApp). Telegram may provide some basic details like user ID for functionality purposes.</p>
+
+<h2>5. Data Security</h2>
+<p>We take reasonable measures to protect your data. However, no method of transmission over the internet is 100% secure.</p>
+
+<h2>6. Changes to This Policy</h2>
+<p>We may update this Privacy Policy anytime. Changes will be posted on this page.</p>
+
+<h2>7. Contact Us</h2>
+<p>If you have any questions, contact us:</p>
+<ul>
+  <li>Email: <a href="mailto:support@nezuko-mini-app.vercel.app">support@nezuko-mini-app.vercel.app</a></li>
+  <li>Telegram: <a href="https://t.me/AnimeWorld" target="_blank">@AnimeWorld</a></li>
+</ul>
+
+<p><b>Last Updated:</b> 2026</p>
+
+</body>
+</html>

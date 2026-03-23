@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+
+	<script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432687"></script>
+
+	<link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-ads@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/videojs-vast-vpaid@2"></script>
 	
 <meta name="monetag" content="bf6c35c5a6b723c8897eb022ffe1dffe">
 	<script>(function(s){s.dataset.zone='10742599',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
@@ -261,59 +270,42 @@
   <div class="ad-label-row">
     <span>SPONSORED</span>
     <span class="ad-pill">AD SLOT 1</span>
+
+	  	<video
+  id="myPlayera"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  muted
+  playsinline
+  width="300"
+  height="200"
+></video>
+
+	<script>
+var player = videojs('myPlayera');
+
+player.ready(function () {
+
+    // 🎬 Main video
+    player.src({
+        src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        type: "application/x-mpegURL"
+    });
+
+    // 💰 Ad (VAST)
+    player.vastClient({
+        adTagUrl: "https://js.mbidadm.com/vast?zoneid=432677", // 👈 apna ad id
+        playAdAlways: true,
+        adCancelTimeout: 5000
+    });
+
+});
+	</script>
+
+	  
   </div>
-  <script type="text/javascript" src="https://docdn.ezmob.com/prebid.js" async></script>
-<script>
-	var pbjs = pbjs || {};
-	pbjs.que = pbjs.que || [];
-	
-	pbjs.que.push(function() {
-		var adUnits = [{
-			code: 'container-1',
-			mediaTypes: {
-				video: {
-					context: 'outstream',
-					playerSize: [300, 250],
-					renderer: {
-						url: 'https://docdn.ezmob.com/outstream_pb.js',
-						render: renderOutstream
-					}
-				}
-			},
-			bids: [{
-				bidder: 'adkernel',
-				params: {
-				  zoneId: 343663,
-				  host: 'cpm.ezmob.com'
-				}
-
-			}]
-		}];
-		pbjs.addAdUnits(adUnits);
-		pbjs.requestBids({
-			bidsBackHandler: function(bidResponses) {
-				process('container-1');
-			}
-		});
-	});
-
-	function process(adUnit) {
-		var bidResponses = pbjs.getHighestCpmBids(adUnit);
-		if (bidResponses.length == 0) {
-			return;
-		}
-		var bid = bidResponses[0];
-		pbjs.renderAd(document, bid.adId);
-	}
-	
-	function renderOutstream(bid) {
-		OutstreamPlayerPB(bid, {
-			displayMode: 'floating',
-			transitions: true,
-			vpaidMode: 2
-		});
-	}
-</script>
+  
 <div id="container-1"></div>
 <div id="container-3de62902b8c1402ee56b6e4c367cf5a4"></div>
 

@@ -341,37 +341,31 @@ player.ready(function () {
 
         <script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432691"></script>
 	
-	<video
-  id="myPlayerad"
-  class="video-js vjs-default-skin"
-  controls
-  autoplay
-  muted
-  playsinline
-  width="300"
-  height="200"
-></video>
+	<video id="myPlayerd" width="300" height="200" autoplay muted playsinline controls>
+  <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
+</video>
 
-	<script>
-var player = videojs('myPlayerd');
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-player.ready(function () {
+<script>
+window.addEventListener("load", () => {
+    const video = document.getElementById("myPlayerd");
 
-    // 🎬 Main video
-    player.src({
-        src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-        type: "application/x-mpegURL"
-    });
-
-    // 💰 Ad (VAST)
-    player.vastClient({
-        adTagUrl: "https://js.mbidadm.com/vast?zoneid=432677", // 👈 apna ad id
-        playAdAlways: true,
-        adCancelTimeout: 5000
-    });
-
+    if(video){
+        // HLS fix for mobile/Chrome
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(video.querySelector("source").src);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                video.play().catch(()=>{});
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.play().catch(()=>{});
+        }
+    }
 });
-	</script>
+</script>
     </div>
 
     <div class="note" id="note-text">

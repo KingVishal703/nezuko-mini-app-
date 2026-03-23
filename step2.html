@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 
+    <script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432690"></script>
+	<script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432689"></script>
+
 	<link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
 
@@ -229,12 +232,39 @@
     <span class="ad-pill">AD SLOT 1</span>
   </div>
 
-<!-- BEGIN EZMOB TAG -->
-<SCRIPT TYPE="text/javascript">
-var __jscp=function(){for(var b=0,a=window;a!=a.parent;)++b,a=a.parent;if(a=window.parent==window?document.URL:document.referrer){var c=a.indexOf("://");0<=c&&(a=a.substring(c+3));c=a.indexOf("/");0<=c&&(a=a.substring(0,c))}var b={pu:a,"if":b,rn:new Number(Math.floor(99999999*Math.random())+1)},a=[],d;for(d in b)a.push(d+"="+encodeURIComponent(b[d]));return encodeURIComponent(a.join("&"))};
-document.write('<S' + 'CRIPT TYPE="text/javascript" SRC="//cpm.ezmob.com/tag?zone_id=343080&size=300x250&subid=&j=' + __jscp() + '"></S' + 'CRIPT>');
-</SCRIPT>
-<!-- END EZMOB TAG -->
+	<script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432687"></script>
+	
+	<video
+  id="myPlayer1"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  muted
+  playsinline
+  width="300"
+  height="200"
+></video>
+
+	<script>
+var player = videojs('myPlayer1');
+
+player.ready(function () {
+
+    // 🎬 Main video
+    player.src({
+        src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        type: "application/x-mpegURL"
+    });
+
+    // 💰 Ad (VAST)
+    player.vastClient({
+        adTagUrl: "https://js.mbidadm.com/vast?zoneid=432677", // 👈 apna ad id
+        playAdAlways: true,
+        adCancelTimeout: 5000
+    });
+
+});
+	</script>
           
 <div id="container-3de62902b8c1402ee56b6e4c367cf5a4"></div>
 
@@ -265,20 +295,41 @@ document.write('<S' + 'CRIPT TYPE="text/javascript" SRC="//cpm.ezmob.com/tag?zon
         <span>SPONSORED</span>
         <span class="ad-pill">AD SLOT 2</span>
       </div>
-      <div class="ad-placeholder">
-        <!-- yahan dusra banner ya script daal sakte ho -->
-      <script>
-  atOptions = {
-    'key' : '9347346f6ec8f8fd1316bac5c04ae6d5',
-    'format' : 'iframe',
-    'height' : 300,
-    'width' : 160,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/9347346f6ec8f8fd1316bac5c04ae6d5/invoke.js"></script>
-        
-      </div>
+
+		<script async src="https://js.mbidadm.com/static/scripts.js" data-admpid="432687"></script>
+	
+	<video
+  id="myPlayer2"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  muted
+  playsinline
+  width="300"
+  height="200"
+></video>
+
+	<script>
+var player = videojs('myPlayer2');
+
+player.ready(function () {
+
+    // 🎬 Main video
+    player.src({
+        src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        type: "application/x-mpegURL"
+    });
+
+    // 💰 Ad (VAST)
+    player.vastClient({
+        adTagUrl: "https://js.mbidadm.com/vast?zoneid=432677", // 👈 apna ad id
+        playAdAlways: true,
+        adCancelTimeout: 5000
+    });
+
+});
+	</script>
+      
     </div>
 
     <div class="note" id="note-text">

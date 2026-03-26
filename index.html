@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 
+	<script src='//libtl.com/sdk.js' data-zone='10222194' data-sdk='show_10222194'></script>
+
 	<link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
 
@@ -449,9 +451,9 @@ window.addEventListener("load", () => {
 
     function showMonetagInterstitial() {
       return new Promise((resolve) => {
-        if (typeof show_9730466 !== "function") return resolve();
+        if (typeof show_10222194 !== "function") return resolve();
         try {
-          const p = show_9730466();
+          const p = show_10222194();
           if (p && typeof p.then === "function") p.then(resolve).catch(() => resolve());
           else resolve();
         } catch { resolve(); }

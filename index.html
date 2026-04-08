@@ -247,6 +247,33 @@
         <span>SPONSORED</span>
         <span class="ad-pill">AD SLOT 2</span>
       </div>
+
+		<div id="miniAdPopup" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 250px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  display: none;
+">
+  <button onclick="document.getElementById('miniAdPopup').style.display='none'"
+    style="position:absolute;top:5px;right:5px;">✖</button>
+
+  <!-- Ad Code -->
+  <script>
+    show_10849043();
+  </script>
+</div>
+
+<script>
+setTimeout(() => {
+  document.getElementById('miniAdPopup').style.display = 'block';
+}, 5000);
+</script>
+		
     </div>
 
     <div class="note" id="note-text">

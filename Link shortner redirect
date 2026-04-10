@@ -1,0 +1,50 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8"></meta>
+  <title>Redirecting...</title>
+  <meta content="noindex,nofollow" name="robots"></meta>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+  <style>
+    body {
+      background: #000;
+      color: #0f0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 20%;
+    }
+    .loader {
+      border: 6px solid #222;
+      border-top: 6px solid #0f0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 20px auto;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h2>🔁 Redirecting... Please wait</h2>
+  <div class="loader"></div>
+  
+  <script>
+    const encoded = new URLSearchParams(window.location.search).get("id");
+    if (encoded) {
+      try {
+        const decoded = atob(encoded); // Decode Base64 to get real shortlink
+        setTimeout(() => {
+          window.location.href = decoded; // Redirect after 2 seconds
+        }, 2000);
+      } catch (err) {
+        document.body.innerHTML = "<h3>⚠️ Invalid redirect link!</h3>";
+      }
+    } else {
+      document.body.innerHTML = "<h3>❌ Missing redirect ID!</h3>";
+    }
+  </script>
+</body>
+</html>

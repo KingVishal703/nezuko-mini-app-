@@ -6,10 +6,8 @@
 	<script>(function(s){s.dataset.zone='10742599',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 	<script src="https://5gvci.com/act/files/tag.min.js?z=10742595" data-cfasync="false" async></script>
 	<script>(function(s){s.dataset.zone='10742600',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-  <!-- AdsGram SDK -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-  <!-- Monetag SDK -->
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   <script src="//libtl.com/sdk.js" data-zone="10222194" data-sdk="show_10222194"></script>
 
   <meta charset="UTF-8" />
@@ -60,35 +58,29 @@
   <p class="sub">Timer khatm hone ke baad button unlock hoga</p>
 
   <div class="circle"><span id="seconds">5</span></div>
-
   <div class="progress"><div class="progress-inner" id="progress-inner"></div></div>
 
   <button class="btn-main" id="action-btn" disabled>WAIT...</button>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const CONFIG = {
   waitSeconds: 5,
   botUsername: "Xnezukochan_bot",
   botStartPrefix: "blg2",
 
-  /* AdsGram – ORIGINAL */
   adsgram: {
     interstitial:{ blockId:"int-18636", onLoad: false, onClick:false },
     reward:{ blockId:"18127", onLoad:false, onClick:false }
   },
 
-  /* Monetag – SAME PLACE CONTROL */
   monetag: {
     adId: "10222194",
-
     rewardedInterstitial:{ enabled:false, onLoad:false, onClick:false },
     rewardedPopup:{ enabled:false, onLoad:false, onClick:false },
     inApp:{ enabled:false, onLoad:false, onClick:false }
   }
 };
-/* ========================================= */
 
 const btn=document.getElementById("action-btn");
 const sec=document.getElementById("seconds");
@@ -108,7 +100,6 @@ const t=setInterval(()=>{
   }
 },1000);
 
-/* ========== AdsGram ORIGINAL ========== */
 let agInter=null, agReward=null;
 function initAdsgram(){
   if(!window.Adsgram) return;
@@ -118,7 +109,6 @@ function initAdsgram(){
 async function showAGInter(){ try{ if(agInter) await agInter.show(); }catch{} }
 async function showAGReward(){ try{ if(agReward) await agReward.show(); }catch{} }
 
-/* ========== Monetag HELPERS ========== */
 function mtInterstitial(){
   return new Promise(r=>{
     const fn=window["show_"+CONFIG.monetag.adId];
@@ -138,19 +128,10 @@ function mtInApp(){
   if(typeof fn==="function") fn({type:"inApp"});
 }
 
-/* ========== PAGE LOAD (SAME PLACE) ========== */
 window.addEventListener("load", async ()=>{
   initAdsgram();
-
-  if(CONFIG.adsgram.interstitial.onLoad) await showAGInter();
-  if(CONFIG.adsgram.reward.onLoad) await showAGReward();
-
-  if(CONFIG.monetag.rewardedInterstitial.onLoad) await mtInterstitial();
-  if(CONFIG.monetag.rewardedPopup.onLoad) await mtPopup();
-  if(CONFIG.monetag.inApp.onLoad) mtInApp();
 });
 
-/* ========== BUTTON CLICK (SAME PLACE) ========== */
 btn.addEventListener("click", async ()=>{
   btn.disabled=true;
 
@@ -160,6 +141,9 @@ btn.addEventListener("click", async ()=>{
   if(CONFIG.monetag.rewardedInterstitial.onClick) await mtInterstitial();
   if(CONFIG.monetag.rewardedPopup.onClick) await mtPopup();
   if(CONFIG.monetag.inApp.onClick) mtInApp();
+
+  // ✅ POPUP MESSAGE
+  alert("Tumhari file Telegram bot par send kar di gayi hai.\nPlease Telegram bot par wapas jao.");
 
   const id=new URLSearchParams(location.search).get("id")||"";
   location.href="https://t.me/"+CONFIG.botUsername+"?start="+CONFIG.botStartPrefix+id;

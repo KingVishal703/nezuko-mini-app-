@@ -274,16 +274,16 @@
       },
 
       monetag: {
-        popupOnLoad: false,
+        popupOnLoad: true,
         popupOnClick: false,
         interOnLoad: false,
-        interOnClick: false
+        interOnClick: true
       },
 
       directAd: {
-        url: "",
+        url: "https://omg10.com/4/10850839",
         onLoad: false,
-        onClick: false
+        onClick: true
       }
     };
     // ========== CONFIG END ==========
@@ -369,18 +369,18 @@
     // Monetag helpers
     function showMonetagPopup() {
       return new Promise((resolve) => {
-        if (typeof show_10222194 !== "function") return resolve();
+        if (typeof show_10849043 !== "function") return resolve();
         try {
-          show_10222194("pop").then(resolve).catch(() => resolve());
+          show_10849043("pop").then(resolve).catch(() => resolve());
         } catch { resolve(); }
       });
     }
 
     function showMonetagInterstitial() {
       return new Promise((resolve) => {
-        if (typeof show_10222194 !== "function") return resolve();
+        if (typeof show_10849043 !== "function") return resolve();
         try {
-          const p = show_10222194();
+          const p = show_10849043();
           if (p && typeof p.then === "function") p.then(resolve).catch(() => resolve());
           else resolve();
         } catch { resolve(); }

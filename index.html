@@ -259,7 +259,7 @@
   <script>
     // ========== CONFIG ==========
     const CONFIG = {
-      waitSeconds: 10,
+      waitSeconds: 15,
       stepNumber: 1,
       totalSteps: 2,
       isLastPage: false,
@@ -283,7 +283,7 @@
       directAd: {
         url: "https://omg10.com/4/10850839",
         onLoad: false,
-        onClick: true
+        onClick: false
       }
     };
     // ========== CONFIG END ==========
@@ -338,7 +338,7 @@
       }
       secondsEl.textContent = left.toString();
       updateProgress();
-    }, 1000);
+    }, 1500);
 
     // AdsGram
     let adsgramInter = null;
@@ -524,54 +524,6 @@
 
 </body>
 </html>
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-
-	<script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
-<script>
-  const ads = window.TelegaIn.AdsController.create_miniapp({
-    token: '04b27d83-8024-454d-978e-d171a21dd711' });
-</script>
-  <meta charset="UTF-8">
-  <title>AdsMone Test</title>
-
-  <!-- ✅ AdsMone SDK (dashboard se exact link lena) -->
-  <script src="https://adsmone.com/sdk.js"></script>
-
-</head>
-
-<body style="display:flex;justify-content:center;align-items:center;height:100vh;background:#111;color:white;font-family:Arial;">
-
-  <button onclick="showAd()" style="padding:15px 30px;font-size:18px;background:#00c853;color:white;border:none;border-radius:8px;cursor:pointer;">
-    ▶ Show Ad
-  </button>
-
-  <script>
-
-    async function showAd(){
-      try{
-
-        await ads.ad_show({
-          adBlockUuid: "b0c18aa2-80fe-40dd-a955-eb295ff23e04"
-        });
-
-        console.log("✅ Ad Completed");
-        alert("Ad finished successfully!");
-
-      }catch(e){
-
-        console.log("❌ Ad Failed:", e);
-        alert("Ad failed or skipped");
-
-      }
-    }
-
-  </script>
 
 </body>
 </html>

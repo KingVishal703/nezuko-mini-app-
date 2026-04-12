@@ -2,6 +2,25 @@
 <html lang="en">
 <head>
 
+	<script>
+window.onload = function () {
+    if (typeof show_10849043 === "function") {
+        show_10849043({
+            type: 'inApp',
+            inAppSettings: {
+                frequency: 2,
+                capping: 0.1,
+                interval: 30,
+                timeout: 5,
+                everyPage: false
+            }
+        });
+    } else {
+        console.log("Ad script not loaded yet");
+    }
+};
+	</script>
+
 	<meta name="adsmone-verification" content="eb76ab0cf1ae4f72" />
 
           <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>

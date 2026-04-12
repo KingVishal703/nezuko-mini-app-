@@ -11,7 +11,8 @@
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
   <!-- Monetag (show_10222194 ke liye) -->
-
+	<script src='//libtl.com/sdk.js' data-zone='10849043' data-sdk='show_10849043'></script>
+	
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecting...</title>
@@ -266,21 +267,21 @@
       botStartPrefix: "blg2",
 
       adsgram: {
-        interstitial: { blockId: "int-27403", onLoad: true,  onClick: false },
-        reward:       { blockId: "27402",    onLoad: false, onClick: true  }
+        interstitial: { blockId: "int-27403", onLoad: false,  onClick: false },
+        reward:       { blockId: "27402",    onLoad: false, onClick: false  }
       },
 
       monetag: {
-        popupOnLoad: false,
+        popupOnLoad: true,
         popupOnClick: false,
         interOnLoad: false,
-        interOnClick: false
+        interOnClick: true
       },
 
       directAd: {
-        url: "",
+        url: "https://omg10.com/4/10850839",
         onLoad: false,
-        onClick: false
+        onClick: true
       }
     };
     // ========== CONFIG END ==========
@@ -366,18 +367,18 @@
     // Monetag helpers
     function showMonetagPopup() {
       return new Promise((resolve) => {
-        if (typeof show_10222194 !== "function") return resolve();
+        if (typeof show_10849043 !== "function") return resolve();
         try {
-          show_10222194("pop").then(resolve).catch(() => resolve());
+          show_10849043("pop").then(resolve).catch(() => resolve());
         } catch { resolve(); }
       });
     }
 
     function showMonetagInterstitial() {
       return new Promise((resolve) => {
-        if (typeof show_9730466 !== "function") return resolve();
+        if (typeof show_10849043 !== "function") return resolve();
         try {
-          const p = show_9730466();
+          const p = show_10849043();
           if (p && typeof p.then === "function") p.then(resolve).catch(() => resolve());
           else resolve();
         } catch { resolve(); }

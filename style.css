@@ -1,44 +1,56 @@
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#0f172a;
-  color:white;
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #0f172a;
+  color: white;
 }
 
-.top{
-  text-align:center;
-  padding:20px;
-  background:#020617;
+.app {
+  max-width: 500px;
+  margin: auto;
 }
 
-.nav{
-  display:flex;
-  justify-content:space-around;
-  background:#020617;
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background: #1e293b;
 }
 
-.nav button{
-  background:none;
-  border:none;
-  color:white;
-  padding:10px;
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  background: #020617;
 }
 
-.section{ display:none; padding:10px; }
-.active{ display:block; }
-
-.card{
-  background:#1e293b;
-  padding:15px;
-  margin:10px;
-  border-radius:12px;
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: white;
 }
 
-button{
-  width:100%;
-  padding:10px;
-  border:none;
-  background:#22c55e;
-  color:white;
-  border-radius:10px;
+.tab {
+  display: none;
+  padding: 10px;
+}
+
+.tab.active {
+  display: block;
+}
+
+.card {
+  background: #1e293b;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+}
+
+button {
+  padding: 10px;
+  background: #22c55e;
+  border: none;
+  border-radius: 5px;
+  color: white;
 }

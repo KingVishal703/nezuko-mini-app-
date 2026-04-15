@@ -1,179 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Play & Earn Hub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earnify - Rewards App</title>
 
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-  <!-- Adsgram -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
 
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:#0b1220;
+  color:#fff;
+}
 
-    body{
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #0f172a;
-      color: #fff;
-      padding: 16px;
-    }
+/* HEADER */
+.header{
+  padding:20px;
+  background:linear-gradient(135deg,#4f46e5,#22c55e);
+  border-bottom-left-radius:20px;
+  border-bottom-right-radius:20px;
+}
 
-    .container{
-      max-width:420px;
-      margin:auto;
-    }
+.header h1{
+  font-size:20px;
+}
 
-    .card{
-      background:#111827;
-      border-radius:16px;
-      padding:18px;
-      margin-bottom:16px;
-      box-shadow:0 10px 25px rgba(0,0,0,0.4);
-    }
+.balance{
+  margin-top:10px;
+  font-size:26px;
+  font-weight:bold;
+}
 
-    h1{
-      font-size:20px;
-      margin-bottom:6px;
-    }
+/* CONTAINER */
+.container{
+  padding:16px;
+  max-width:500px;
+  margin:auto;
+}
 
-    p{
-      font-size:13px;
-      color:#9ca3af;
-    }
+/* CARD */
+.card{
+  background:#111827;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
 
-    .btn{
-      width:100%;
-      margin-top:12px;
-      padding:12px;
-      border:none;
-      border-radius:999px;
-      font-weight:600;
-      cursor:pointer;
-      background:linear-gradient(135deg,#4f46e5,#22c55e);
-      color:#fff;
-    }
+/* TASK */
+.task{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px;
+  border-radius:12px;
+  background:#020617;
+  margin-top:10px;
+}
 
-    .btn:active{
-      transform:scale(0.97);
-    }
+.task-info{
+  display:flex;
+  flex-direction:column;
+}
 
-    .balance{
-      font-size:18px;
-      font-weight:600;
-      margin-top:8px;
-    }
+.task-title{
+  font-size:14px;
+  font-weight:600;
+}
 
-    .task{
-      background:#020617;
-      padding:12px;
-      border-radius:12px;
-      margin-top:10px;
-    }
+.task-reward{
+  font-size:12px;
+  color:#22c55e;
+}
 
-    .task-title{
-      font-size:14px;
-      font-weight:600;
-    }
+.btn{
+  padding:8px 14px;
+  border:none;
+  border-radius:999px;
+  font-size:12px;
+  cursor:pointer;
+  background:linear-gradient(135deg,#4f46e5,#22c55e);
+  color:#fff;
+}
 
-    .task-reward{
-      font-size:12px;
-      color:#22c55e;
-    }
+/* NAVBAR */
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-width:500px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111827;
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+  border-top:1px solid #1f2937;
+}
 
-    .footer{
-      text-align:center;
-      font-size:11px;
-      color:#6b7280;
-      margin-top:10px;
-    }
-  </style>
+.nav button{
+  background:none;
+  border:none;
+  color:#9ca3af;
+  font-size:12px;
+}
+
+.nav button.active{
+  color:#22c55e;
+}
+
+/* HIDDEN PAGES */
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+</style>
 </head>
 
 <body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Earnify</h1>
+  <div class="balance">₹ <span id="balance">0</span></div>
+</div>
+
 <div class="container">
 
-  <!-- Header -->
-  <div class="card">
-    <h1>🎮 Play & Earn</h1>
-    <p>Complete simple tasks & earn rewards instantly</p>
-    <div class="balance">💰 Balance: ₹<span id="balance">0</span></div>
-  </div>
+  <!-- HOME -->
+  <div id="home" class="page active">
+    <div class="card">
+      <h3>Available Tasks</h3>
 
-  <!-- Task 1 -->
-  <div class="card">
-    <div class="task">
-      <div class="task-title">📺 Watch Ad</div>
-      <div class="task-reward">Earn ₹2</div>
-      <button class="btn" onclick="watchAd()">Watch Now</button>
+      <div class="task">
+        <div class="task-info">
+          <div class="task-title">Watch Advertisement</div>
+          <div class="task-reward">+ ₹2</div>
+        </div>
+        <button class="btn" onclick="watchAd()">Start</button>
+      </div>
+
+      <div class="task">
+        <div class="task-info">
+          <div class="task-title">Daily Bonus</div>
+          <div class="task-reward">+ ₹5</div>
+        </div>
+        <button class="btn" onclick="dailyBonus()">Claim</button>
+      </div>
+
     </div>
+  </div>
 
-    <div class="task">
-      <div class="task-title">🎯 Daily Bonus</div>
-      <div class="task-reward">Earn ₹5</div>
-      <button class="btn" onclick="dailyBonus()">Claim</button>
+  <!-- WALLET -->
+  <div id="wallet" class="page">
+    <div class="card">
+      <h3>Your Wallet</h3>
+      <p style="margin-top:10px;color:#9ca3af">
+        Minimum withdrawal ₹50
+      </p>
+
+      <button class="btn" style="margin-top:12px;width:100%" onclick="withdraw()">
+        Withdraw
+      </button>
     </div>
   </div>
 
-  <!-- Withdraw -->
-  <div class="card">
-    <div class="task-title">💳 Withdraw</div>
-    <p>Minimum ₹50 required</p>
-    <button class="btn" onclick="withdraw()">Withdraw Now</button>
-  </div>
-
-  <div class="footer">
-    Secure • Trusted • Fast Payments
+  <!-- PROFILE -->
+  <div id="profile" class="page">
+    <div class="card">
+      <h3>Profile</h3>
+      <p style="margin-top:10px;color:#9ca3af">
+        Telegram User Connected
+      </p>
+    </div>
   </div>
 
 </div>
 
+<!-- NAVBAR -->
+<div class="nav">
+  <button class="active" onclick="showPage('home',this)">Home</button>
+  <button onclick="showPage('wallet',this)">Wallet</button>
+  <button onclick="showPage('profile',this)">Profile</button>
+</div>
+
 <script>
-  let balance = 0;
+let balance = 0;
 
-  // Adsgram init
-  let ad = null;
-  window.onload = () => {
-    if (window.Adsgram) {
-      ad = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
-    }
-  };
+/* NAVIGATION */
+function showPage(id,btn){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-  function updateBalance(amount){
-    balance += amount;
-    document.getElementById("balance").innerText = balance;
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+/* BALANCE */
+function updateBalance(amount){
+  balance += amount;
+  document.getElementById("balance").innerText = balance;
+}
+
+/* ADSGRAM */
+let ad;
+window.onload = () => {
+  if(window.Adsgram){
+    ad = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
   }
+};
 
-  async function watchAd(){
-    if (!ad) return alert("Ad not loaded");
+async function watchAd(){
+  if(!ad) return alert("Ad not ready");
 
-    try{
-      await ad.show();
-      updateBalance(2);
-    }catch(e){
-      console.log(e);
-    }
+  try{
+    await ad.show();
+    updateBalance(2);
+  }catch(e){
+    console.log(e);
   }
+}
 
-  function dailyBonus(){
-    updateBalance(5);
-    alert("Bonus claimed!");
-  }
+/* BONUS */
+function dailyBonus(){
+  updateBalance(5);
+  alert("Bonus added");
+}
 
-  function withdraw(){
-    if(balance < 50){
-      alert("Minimum ₹50 required");
-      return;
-    }
-    alert("Withdrawal request submitted!");
+/* WITHDRAW */
+function withdraw(){
+  if(balance < 50){
+    alert("Minimum ₹50 required");
+    return;
   }
+  alert("Withdrawal requested");
+}
 
-  // Telegram ready
-  if (window.Telegram.WebApp) {
-    Telegram.WebApp.expand();
-  }
+/* TELEGRAM */
+if(window.Telegram.WebApp){
+  Telegram.WebApp.expand();
+}
 </script>
 
 </body>

@@ -1,55 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pro Earn App</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#0f172a;
-  color:#fff;
-}
-.header{
-  text-align:center;
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-}
-.tabs{
-  display:flex;
-  justify-content:space-around;
-  background:#020617;
-  padding:10px;
-}
-.tab{
-  cursor:pointer;
-}
-.card{
-  background:#1e293b;
-  margin:15px;
-  padding:15px;
-  border-radius:12px;
-}
-.btn{
-  background:#22c55e;
-  padding:12px;
-  text-align:center;
-  border-radius:10px;
-  margin-top:10px;
-  cursor:pointer;
-}
-input{
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:none;
-}
+body{background:#0f172a;color:#fff;font-family:sans-serif;margin:0}
+.header{text-align:center;padding:15px;font-size:22px}
+.tabs{display:flex;justify-content:space-around;background:#020617;padding:10px}
+.tab{cursor:pointer}
+.card{background:#1e293b;margin:15px;padding:15px;border-radius:12px}
+.btn{background:#22c55e;padding:12px;border-radius:10px;text-align:center;margin-top:10px}
+.page{display:none}
+.active{display:block}
+canvas{background:#111;margin-top:10px}
 </style>
 </head>
 
@@ -58,61 +27,59 @@ input{
 <div class="header">💰 ₹<span id="balance">0</span></div>
 
 <div class="tabs">
-  <div class="tab" onclick="show('tasks')">Tasks</div>
-  <div class="tab" onclick="show('games')">Games</div>
-  <div class="tab" onclick="show('refer')">Refer</div>
-  <div class="tab" onclick="show('withdraw')">Withdraw</div>
+<div onclick="show('tasks')">Tasks</div>
+<div onclick="show('games')">Games</div>
+<div onclick="show('refer')">Refer</div>
+<div onclick="show('withdraw')">Withdraw</div>
 </div>
 
 <!-- TASKS -->
-<div id="tasks" class="page">
-  <div class="card">
-    🎁 Daily Bonus
-    <div class="btn" onclick="dailyBonus()">Claim ₹5</div>
-  </div>
+<div id="tasks" class="page active">
+<div class="card">
+🎁 Daily Bonus
+<div class="btn" onclick="dailyBonus()">Claim ₹5</div>
+</div>
 
-  <div class="card">
-    📺 Watch Ad
-    <div class="btn" onclick="watchAd()">Earn ₹2</div>
-  </div>
+<div class="card">
+📺 Watch Ad
+<div class="btn" onclick="watchAd()">Earn ₹2</div>
+</div>
 </div>
 
 <!-- GAMES -->
-<div id="games" class="page" style="display:none">
-  <div class="card">
-    🎯 Tap Game
-    <div class="btn" onclick="startGame()">Play</div>
-  </div>
+<div id="games" class="page">
+<div class="card">
+🎯 Tap Game (10 sec)
+<div class="btn" onclick="startTap()">Start</div>
+<div id="tapArea"></div>
+</div>
 
-  <div class="card">
-    🎰 Spin Wheel
-    <div class="btn" onclick="spin()">Spin</div>
-  </div>
+<div class="card">
+🎰 Spin Wheel
+<canvas id="wheel" width="200" height="200"></canvas>
+<div class="btn" onclick="spin()">Spin</div>
+</div>
 </div>
 
 <!-- REFER -->
-<div id="refer" class="page" style="display:none">
-  <div class="card">
-    🔗 Your Link:
-    <input id="refLink" readonly>
-    <div class="btn" onclick="copyRef()">Copy</div>
-  </div>
-
-  <div class="card">
-    👥 Referrals: <span id="refCount">0</span>
-  </div>
+<div id="refer" class="page">
+<div class="card">
+<input id="refLink" readonly>
+<div class="btn" onclick="copyRef()">Copy</div>
+</div>
+<div class="card">Referrals: <span id="refCount">0</span></div>
 </div>
 
 <!-- WITHDRAW -->
-<div id="withdraw" class="page" style="display:none">
-  <div class="card">
-    💳 Enter UPI
-    <input id="upi">
-    <div class="btn" onclick="withdraw()">Withdraw</div>
-  </div>
+<div id="withdraw" class="page">
+<div class="card">
+<input id="upi" placeholder="Enter UPI">
+<div class="btn" onclick="withdraw()">Withdraw</div>
+</div>
 </div>
 
 <script>
+// 🔥 FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
   authDomain: "nezuko-earning.firebaseapp.com",
@@ -122,130 +89,128 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// USER ID FIX
-let userId = localStorage.getItem("uid");
-if(!userId){
-  userId = "user_" + Math.random().toString(36).substr(2,9);
-  localStorage.setItem("uid", userId);
+// 🔥 TELEGRAM USER FIX (MAIN FIX)
+let tg = window.Telegram.WebApp;
+tg.expand();
+
+let userId;
+
+if(tg.initDataUnsafe.user){
+  userId = tg.initDataUnsafe.user.id; // REAL UNIQUE USER
+}else{
+  // fallback
+  userId = "guest_" + Math.random();
 }
 
 // LOAD USER
-let balance = 0;
-let lastBonus = 0;
-let lastAd = 0;
+let balance=0,lastBonus=0,lastAd=0;
 
-db.ref("users/"+userId).on("value", snap=>{
-  let data = snap.val() || {};
-  balance = data.balance || 0;
-  lastBonus = data.lastBonus || 0;
-  lastAd = data.lastAd || 0;
-
-  document.getElementById("balance").innerText = balance;
+db.ref("users/"+userId).on("value",snap=>{
+let d=snap.val()||{};
+balance=d.balance||0;
+lastBonus=d.lastBonus||0;
+lastAd=d.lastAd||0;
+document.getElementById("balance").innerText=balance;
 });
 
 // NAV
 function show(id){
-  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-  document.getElementById(id).style.display="block";
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
 // DAILY BONUS FIX
 function dailyBonus(){
-  let now = Date.now();
-  if(now - lastBonus < 86400000){
-    alert("Already claimed today");
-    return;
-  }
-  balance += 5;
-  db.ref("users/"+userId).update({
-    balance,
-    lastBonus: now
-  });
+let now=Date.now();
+if(now-lastBonus<86400000)return alert("Already claimed");
+update(5,{lastBonus:now});
 }
 
-// WATCH AD TIMER FIX
+// WATCH AD FIX
 function watchAd(){
-  let now = Date.now();
-  if(now - lastAd < 60000){
-    alert("Wait 1 min");
-    return;
-  }
-
-  alert("Ad Played ✅");
-  balance += 2;
-
-  db.ref("users/"+userId).update({
-    balance,
-    lastAd: now
-  });
+let now=Date.now();
+if(now-lastAd<60000)return alert("Wait 1 min");
+update(2,{lastAd:now});
 }
 
-// GAME FIX (REAL PLAY)
-function startGame(){
-  let score = 0;
-  let taps = prompt("Tap fast! Enter number (1-50)");
-  if(!taps) return;
-
-  score = Math.min(taps,50);
-  let earn = Math.floor(score/10);
-
-  alert("You earned ₹"+earn);
-  balance += earn;
-
-  db.ref("users/"+userId).update({balance});
+// UPDATE
+function update(amount,extra={}){
+balance+=amount;
+db.ref("users/"+userId).update({balance,...extra});
 }
 
-// SPIN
+// 🎮 TAP GAME REAL
+function startTap(){
+let area=document.getElementById("tapArea");
+area.innerHTML="Taps: 0";
+let taps=0;
+
+let interval=setInterval(()=>{
+area.innerHTML="Taps: "+taps;
+},100);
+
+area.onclick=()=>taps++;
+
+setTimeout(()=>{
+clearInterval(interval);
+area.onclick=null;
+let earn=Math.floor(taps/5);
+alert("Earn ₹"+earn);
+update(earn);
+},10000);
+}
+
+// 🎰 REAL SPIN
+let ctx=document.getElementById("wheel").getContext("2d");
+
+function drawWheel(){
+let colors=["red","green","blue","yellow"];
+for(let i=0;i<4;i++){
+ctx.beginPath();
+ctx.moveTo(100,100);
+ctx.arc(100,100,100,i*Math.PI/2,(i+1)*Math.PI/2);
+ctx.fillStyle=colors[i];
+ctx.fill();
+}
+}
+drawWheel();
+
 function spin(){
-  let earn = Math.floor(Math.random()*10);
-  alert("Won ₹"+earn);
-  balance += earn;
-
-  db.ref("users/"+userId).update({balance});
+let earn=Math.floor(Math.random()*10);
+alert("Won ₹"+earn);
+update(earn);
 }
 
-// REFERRAL FIX
-let refLink = location.origin + "?ref=" + userId;
-document.getElementById("refLink").value = refLink;
+// REF LINK FIX
+let refLink=location.origin+"?ref="+userId;
+document.getElementById("refLink").value=refLink;
 
-// TRACK REF
-let urlParams = new URLSearchParams(window.location.search);
-let ref = urlParams.get("ref");
-
-if(ref && ref !== userId){
-  db.ref("users/"+ref+"/refs").push(userId);
+let ref=new URLSearchParams(location.search).get("ref");
+if(ref && ref!=userId){
+db.ref("users/"+ref+"/refs/"+userId).set(true);
 }
 
-// COUNT REF
-db.ref("users/"+userId+"/refs").on("value", snap=>{
-  document.getElementById("refCount").innerText = snap.numChildren();
+db.ref("users/"+userId+"/refs").on("value",snap=>{
+document.getElementById("refCount").innerText=snap.numChildren();
 });
 
 // COPY
 function copyRef(){
-  navigator.clipboard.writeText(refLink);
-  alert("Copied!");
+navigator.clipboard.writeText(refLink);
+alert("Copied");
 }
 
-// WITHDRAW FIX
+// WITHDRAW
 function withdraw(){
-  let upi = document.getElementById("upi").value;
-  if(balance < 50){
-    alert("Minimum ₹50");
-    return;
-  }
+let upi=document.getElementById("upi").value;
+if(balance<50)return alert("Min ₹50");
 
-  db.ref("withdraws").push({
-    userId,
-    upi,
-    amount: balance
-  });
-
-  balance = 0;
-  db.ref("users/"+userId).update({balance});
-
-  alert("Request sent");
+db.ref("withdraws").push({userId,upi,amount:balance});
+balance=0;
+db.ref("users/"+userId).update({balance});
+alert("Requested");
 }
+
 </script>
 
 </body>

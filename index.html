@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Earnify - Rewards App</title>
+<title>RewardHub</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -12,82 +12,54 @@
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui;
   background:#0b1220;
   color:#fff;
 }
 
-/* HEADER */
 .header{
   padding:20px;
-  background:linear-gradient(135deg,#4f46e5,#22c55e);
-  border-bottom-left-radius:20px;
-  border-bottom-right-radius:20px;
-}
-
-.header h1{
-  font-size:20px;
+  background:linear-gradient(135deg,#6366f1,#22c55e);
+  border-radius:0 0 20px 20px;
 }
 
 .balance{
-  margin-top:10px;
-  font-size:26px;
-  font-weight:bold;
+  font-size:24px;
+  margin-top:8px;
+  font-weight:600;
 }
 
-/* CONTAINER */
 .container{
   padding:16px;
   max-width:500px;
   margin:auto;
 }
 
-/* CARD */
 .card{
   background:#111827;
   border-radius:16px;
   padding:16px;
   margin-bottom:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
-/* TASK */
 .task{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  margin-top:10px;
+  background:#020617;
   padding:12px;
   border-radius:12px;
-  background:#020617;
-  margin-top:10px;
-}
-
-.task-info{
-  display:flex;
-  flex-direction:column;
-}
-
-.task-title{
-  font-size:14px;
-  font-weight:600;
-}
-
-.task-reward{
-  font-size:12px;
-  color:#22c55e;
 }
 
 .btn{
-  padding:8px 14px;
   border:none;
+  padding:8px 14px;
   border-radius:999px;
-  font-size:12px;
-  cursor:pointer;
-  background:linear-gradient(135deg,#4f46e5,#22c55e);
+  background:#22c55e;
   color:#fff;
+  cursor:pointer;
 }
 
-/* NAVBAR */
 .nav{
   position:fixed;
   bottom:0;
@@ -95,107 +67,90 @@ body{
   max-width:500px;
   left:50%;
   transform:translateX(-50%);
-  background:#111827;
   display:flex;
   justify-content:space-around;
+  background:#111827;
   padding:10px;
-  border-top:1px solid #1f2937;
 }
 
 .nav button{
   background:none;
   border:none;
-  color:#9ca3af;
-  font-size:12px;
+  color:#aaa;
 }
 
 .nav button.active{
   color:#22c55e;
 }
 
-/* HIDDEN PAGES */
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
+.page{display:none}
+.page.active{display:block}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <h1>Earnify</h1>
-  <div class="balance">₹ <span id="balance">0</span></div>
+  <h2>RewardHub</h2>
+  <div class="balance">Points: <span id="points">0</span></div>
 </div>
 
 <div class="container">
 
-  <!-- HOME -->
-  <div id="home" class="page active">
-    <div class="card">
-      <h3>Available Tasks</h3>
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="card">
+    <h3>Tasks</h3>
 
-      <div class="task">
-        <div class="task-info">
-          <div class="task-title">Watch Advertisement</div>
-          <div class="task-reward">+ ₹2</div>
-        </div>
-        <button class="btn" onclick="watchAd()">Start</button>
+    <div class="task">
+      <div>
+        <b>Watch Sponsored Ad</b><br>
+        <small>Earn 10 points</small>
       </div>
+      <button class="btn" onclick="watchAd()">Start</button>
+    </div>
 
-      <div class="task">
-        <div class="task-info">
-          <div class="task-title">Daily Bonus</div>
-          <div class="task-reward">+ ₹5</div>
-        </div>
-        <button class="btn" onclick="dailyBonus()">Claim</button>
+    <div class="task">
+      <div>
+        <b>Daily Check-in</b><br>
+        <small>Earn 20 points</small>
       </div>
-
+      <button class="btn" onclick="daily()">Claim</button>
     </div>
-  </div>
 
-  <!-- WALLET -->
-  <div id="wallet" class="page">
-    <div class="card">
-      <h3>Your Wallet</h3>
-      <p style="margin-top:10px;color:#9ca3af">
-        Minimum withdrawal ₹50
-      </p>
-
-      <button class="btn" style="margin-top:12px;width:100%" onclick="withdraw()">
-        Withdraw
-      </button>
-    </div>
   </div>
+</div>
 
-  <!-- PROFILE -->
-  <div id="profile" class="page">
-    <div class="card">
-      <h3>Profile</h3>
-      <p style="margin-top:10px;color:#9ca3af">
-        Telegram User Connected
-      </p>
-    </div>
+<!-- WALLET -->
+<div id="wallet" class="page">
+  <div class="card">
+    <h3>Redeem</h3>
+    <p>Minimum 500 points</p>
+    <button class="btn" onclick="redeem()">Redeem Now</button>
   </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="page">
+  <div class="card">
+    <h3>User Info</h3>
+    <p id="user">Loading...</p>
+  </div>
+</div>
 
 </div>
 
-<!-- NAVBAR -->
 <div class="nav">
-  <button class="active" onclick="showPage('home',this)">Home</button>
-  <button onclick="showPage('wallet',this)">Wallet</button>
-  <button onclick="showPage('profile',this)">Profile</button>
+  <button class="active" onclick="nav('home',this)">Home</button>
+  <button onclick="nav('wallet',this)">Wallet</button>
+  <button onclick="nav('profile',this)">Profile</button>
 </div>
 
 <script>
-let balance = 0;
+let points = 0;
 
-/* NAVIGATION */
-function showPage(id,btn){
+/* NAV */
+function nav(id,btn){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 
@@ -203,10 +158,10 @@ function showPage(id,btn){
   btn.classList.add("active");
 }
 
-/* BALANCE */
-function updateBalance(amount){
-  balance += amount;
-  document.getElementById("balance").innerText = balance;
+/* UPDATE */
+function addPoints(p){
+  points += p;
+  document.getElementById("points").innerText = points;
 }
 
 /* ADSGRAM */
@@ -215,6 +170,14 @@ window.onload = () => {
   if(window.Adsgram){
     ad = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
   }
+
+  if(window.Telegram.WebApp){
+    const user = Telegram.WebApp.initDataUnsafe?.user;
+    if(user){
+      document.getElementById("user").innerText =
+        user.first_name + " (" + user.id + ")";
+    }
+  }
 };
 
 async function watchAd(){
@@ -222,30 +185,25 @@ async function watchAd(){
 
   try{
     await ad.show();
-    updateBalance(2);
+    addPoints(10);
   }catch(e){
     console.log(e);
   }
 }
 
-/* BONUS */
-function dailyBonus(){
-  updateBalance(5);
-  alert("Bonus added");
+/* DAILY */
+function daily(){
+  addPoints(20);
+  alert("Daily reward added");
 }
 
-/* WITHDRAW */
-function withdraw(){
-  if(balance < 50){
-    alert("Minimum ₹50 required");
+/* REDEEM */
+function redeem(){
+  if(points < 500){
+    alert("Not enough points");
     return;
   }
-  alert("Withdrawal requested");
-}
-
-/* TELEGRAM */
-if(window.Telegram.WebApp){
-  Telegram.WebApp.expand();
+  alert("Redeem request sent");
 }
 </script>
 

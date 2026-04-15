@@ -1,0 +1,44 @@
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#0f172a;
+  color:white;
+}
+
+.top{
+  text-align:center;
+  padding:20px;
+  background:#020617;
+}
+
+.nav{
+  display:flex;
+  justify-content:space-around;
+  background:#020617;
+}
+
+.nav button{
+  background:none;
+  border:none;
+  color:white;
+  padding:10px;
+}
+
+.section{ display:none; padding:10px; }
+.active{ display:block; }
+
+.card{
+  background:#1e293b;
+  padding:15px;
+  margin:10px;
+  border-radius:12px;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  background:#22c55e;
+  color:white;
+  border-radius:10px;
+}

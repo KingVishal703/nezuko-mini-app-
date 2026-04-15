@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verification</title>
+
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<script src="ads.js"></script>
+
+<style>
+body{
+margin:0;
+background:#070707;
+color:white;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:#111;
+width:92%;
+max-width:420px;
+border-radius:16px;
+padding:25px;
+text-align:center;
+box-shadow:0 0 20px rgba(255,0,80,0.2);
+animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:scale(0.9)}
+to{opacity:1;transform:scale(1)}
+}
+
+h2{color:#ff0044;margin-top:0}
+
+.desc{color:#aaa;margin-bottom:20px;font-size:14px}
+
+.timer{
+font-size:42px;
+margin:10px 0;
+font-weight:bold;
+color:#ff0044;
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+0%{opacity:1}
+50%{opacity:0.5}
+100%{opacity:1}
+}
+
+.button{
+background:#ff0044;
+padding:15px;
+border-radius:12px;
+margin:10px 0;
+cursor:pointer;
+font-weight:bold;
+transition:0.2s;
+}
+
+.button:active{transform:scale(0.95)}
+
+.secondary{background:#222;color:#aaa}
+
+.back{background:#333;color:#aaa}
+
+.tip{font-size:13px;color:#777;margin-top:10px}
+
+.loader{
+width:30px;
+height:30px;
+border:3px solid #333;
+border-top:3px solid #ff0044;
+border-radius:50%;
+margin:15px auto;
+animation:spin 1s linear infinite;
+display:none;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>🔐 Verification Required</h2>
+
+<div class="desc">
+Watch a short ad to unlock your file.<br>
+This helps support the platform ❤️
+</div>
+
+<div class="timer" id="t">30</div>
+
+<!-- Reward button ALWAYS visible -->
+<div id="rewardBtn" class="button" onclick="watchReward()">
+🎥 Watch Ad To Unlock
+</div>
+
+<!-- Get file button hidden initially -->
+<div id="freeBtn" class="button secondary" style="display:none" onclick="go()">
+⚡ Get File
+</div>
+
+<!-- Back button -->
+<div class="button back" onclick="goHome()">
+⬅ Back to Home
+</div>
+
+<div class="loader" id="loader"></div>
+
+<div class="tip">
+Ad will open in fullscreen.<br>
+Do not close early for unlock.
+</div>
+
+</div>
+
+<script>
+
+Telegram.WebApp.ready();
+
+/* auto verify ad */
+setTimeout(()=>{
+runVerifyAd();
+},800);
+
+let link=new URLSearchParams(location.search).get("link");
+let time=30;
+
+const timerText = document.getElementById("t");
+const freeBtn = document.getElementById("freeBtn");
+
+/* countdown */
+let x=setInterval(()=>{
+time--;
+timerText.innerText=time;
+
+if(time<=0){
+clearInterval(x);
+
+/* ONLY show Get File
+   DO NOT touch reward button */
+freeBtn.style.display="block";
+}
+},1000);
+
+function watchReward(){
+document.getElementById("loader").style.display="block";
+
+runReward(()=>{
+document.getElementById("loader").style.display="none";
+go();
+});
+}
+
+function go(){
+window.location=decodeURIComponent(link);
+}
+
+function goHome(){
+window.location="index.html";
+}
+
+</script>
+
+</body>
+</html>
+
+

@@ -1,211 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RewardHub</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play & Earn Hub</title>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
+  <!-- Adsgram SDK -->
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-body{
-  font-family: system-ui;
-  background:#0b1220;
-  color:#fff;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
 
-.header{
-  padding:20px;
-  background:linear-gradient(135deg,#6366f1,#22c55e);
-  border-radius:0 0 20px 20px;
-}
+    body {
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.balance{
-  font-size:24px;
-  margin-top:8px;
-  font-weight:600;
-}
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 16px;
+    }
 
-.container{
-  padding:16px;
-  max-width:500px;
-  margin:auto;
-}
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
 
-.card{
-  background:#111827;
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:16px;
-}
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
 
-.task{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-  background:#020617;
-  padding:12px;
-  border-radius:12px;
-}
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
 
-.btn{
-  border:none;
-  padding:8px 14px;
-  border-radius:999px;
-  background:#22c55e;
-  color:#fff;
-  cursor:pointer;
-}
+    .balance {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
 
-.nav{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  max-width:500px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  justify-content:space-around;
-  background:#111827;
-  padding:10px;
-}
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 14px;
+    }
 
-.nav button{
-  background:none;
-  border:none;
-  color:#aaa;
-}
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #22c55e);
+      color: white;
+    }
 
-.nav button.active{
-  color:#22c55e;
-}
+    .btn-secondary {
+      background: #111827;
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
 
-.page{display:none}
-.page.active{display:block}
-</style>
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding: 10px;
+      background: #020617;
+      border-radius: 10px;
+    }
+
+    .task span {
+      font-size: 13px;
+    }
+
+    .small-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #22c55e;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 20px;
+    }
+
+  </style>
 </head>
-
 <body>
 
-<div class="header">
-  <h2>RewardHub</h2>
-  <div class="balance">Points: <span id="points">0</span></div>
-</div>
+  <div class="container">
 
-<div class="container">
-
-<!-- HOME -->
-<div id="home" class="page active">
-  <div class="card">
-    <h3>Tasks</h3>
-
-    <div class="task">
-      <div>
-        <b>Watch Sponsored Ad</b><br>
-        <small>Earn 10 points</small>
-      </div>
-      <button class="btn" onclick="watchAd()">Start</button>
+    <!-- Header -->
+    <div class="card">
+      <div class="title">🎮 Play & Earn Hub</div>
+      <div class="subtitle">Watch ads & complete tasks to earn reward points</div>
     </div>
 
-    <div class="task">
-      <div>
-        <b>Daily Check-in</b><br>
-        <small>Earn 20 points</small>
+    <!-- Wallet -->
+    <div class="card">
+      <div class="balance">₹ <span id="balance">0</span></div>
+      <div class="subtitle">Your Reward Balance</div>
+
+      <button class="btn btn-primary" onclick="showAd()">🎬 Watch Ad & Earn</button>
+      <button class="btn btn-secondary">💳 Withdraw (Coming Soon)</button>
+    </div>
+
+    <!-- Tasks -->
+    <div class="card">
+      <div class="title">🔥 Daily Tasks</div>
+
+      <div class="task">
+        <span>Watch 1 Ad</span>
+        <button class="small-btn" onclick="showAd()">+₹5</button>
       </div>
-      <button class="btn" onclick="daily()">Claim</button>
+
+      <div class="task">
+        <span>Complete Offer</span>
+        <button class="small-btn">+₹10</button>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      © 2026 Play & Earn Hub • All rights reserved
     </div>
 
   </div>
-</div>
 
-<!-- WALLET -->
-<div id="wallet" class="page">
-  <div class="card">
-    <h3>Redeem</h3>
-    <p>Minimum 500 points</p>
-    <button class="btn" onclick="redeem()">Redeem Now</button>
-  </div>
-</div>
+  <script>
+    let balance = 0;
 
-<!-- PROFILE -->
-<div id="profile" class="page">
-  <div class="card">
-    <h3>User Info</h3>
-    <p id="user">Loading...</p>
-  </div>
-</div>
+    // Adsgram init
+    let AdController = null;
 
-</div>
+    window.onload = () => {
+      if (window.Adsgram) {
+        AdController = window.Adsgram.init({
+          blockId: "YOUR_BLOCK_ID"
+        });
+      }
+    };
 
-<div class="nav">
-  <button class="active" onclick="nav('home',this)">Home</button>
-  <button onclick="nav('wallet',this)">Wallet</button>
-  <button onclick="nav('profile',this)">Profile</button>
-</div>
+    function showAd() {
+      if (!AdController) {
+        alert("Ad not ready");
+        return;
+      }
 
-<script>
-let points = 0;
-
-/* NAV */
-function nav(id,btn){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-
-  document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-}
-
-/* UPDATE */
-function addPoints(p){
-  points += p;
-  document.getElementById("points").innerText = points;
-}
-
-/* ADSGRAM */
-let ad;
-window.onload = () => {
-  if(window.Adsgram){
-    ad = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
-  }
-
-  if(window.Telegram.WebApp){
-    const user = Telegram.WebApp.initDataUnsafe?.user;
-    if(user){
-      document.getElementById("user").innerText =
-        user.first_name + " (" + user.id + ")";
+      AdController.show()
+        .then(() => {
+          balance += 5;
+          document.getElementById("balance").innerText = balance;
+          alert("✅ You earned ₹5");
+        })
+        .catch(() => {
+          alert("❌ Ad not available");
+        });
     }
-  }
-};
-
-async function watchAd(){
-  if(!ad) return alert("Ad not ready");
-
-  try{
-    await ad.show();
-    addPoints(10);
-  }catch(e){
-    console.log(e);
-  }
-}
-
-/* DAILY */
-function daily(){
-  addPoints(20);
-  alert("Daily reward added");
-}
-
-/* REDEEM */
-function redeem(){
-  if(points < 500){
-    alert("Not enough points");
-    return;
-  }
-  alert("Redeem request sent");
-}
-</script>
+  </script>
 
 </body>
 </html>

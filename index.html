@@ -3,149 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Play & Earn</title>
+  <title>Play & Earn Hub</title>
 
-  <!-- AdsGram SDK -->
+  <!-- Telegram WebApp -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Adsgram -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family: system-ui, -apple-system, sans-serif;
       background: #0f172a;
-      font-family: Arial, sans-serif;
       color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 16px;
     }
 
-    .app {
-      width: 100%;
-      max-width: 400px;
-      padding: 20px;
-      text-align: center;
-      background: #020617;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    .container{
+      max-width:420px;
+      margin:auto;
     }
 
-    h1 {
-      font-size: 22px;
-      margin-bottom: 10px;
+    .card{
+      background:#111827;
+      border-radius:16px;
+      padding:18px;
+      margin-bottom:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.4);
     }
 
-    .coins {
-      font-size: 18px;
-      margin: 15px 0;
-      color: #22c55e;
+    h1{
+      font-size:20px;
+      margin-bottom:6px;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      margin-top: 10px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
+    p{
+      font-size:13px;
+      color:#9ca3af;
     }
 
-    .play {
-      background: #4f46e5;
-      color: white;
+    .btn{
+      width:100%;
+      margin-top:12px;
+      padding:12px;
+      border:none;
+      border-radius:999px;
+      font-weight:600;
+      cursor:pointer;
+      background:linear-gradient(135deg,#4f46e5,#22c55e);
+      color:#fff;
     }
 
-    .watch {
-      background: #22c55e;
-      color: white;
+    .btn:active{
+      transform:scale(0.97);
     }
 
-    .disabled {
-      opacity: 0.5;
-      pointer-events: none;
+    .balance{
+      font-size:18px;
+      font-weight:600;
+      margin-top:8px;
     }
 
-    .msg {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #94a3b8;
+    .task{
+      background:#020617;
+      padding:12px;
+      border-radius:12px;
+      margin-top:10px;
+    }
+
+    .task-title{
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .task-reward{
+      font-size:12px;
+      color:#22c55e;
+    }
+
+    .footer{
+      text-align:center;
+      font-size:11px;
+      color:#6b7280;
+      margin-top:10px;
     }
   </style>
 </head>
 
 <body>
+<div class="container">
 
-<div class="app">
-  <h1>🎮 Play & Earn</h1>
-  <p>Simple game khelo aur coins kamao</p>
+  <!-- Header -->
+  <div class="card">
+    <h1>🎮 Play & Earn</h1>
+    <p>Complete simple tasks & earn rewards instantly</p>
+    <div class="balance">💰 Balance: ₹<span id="balance">0</span></div>
+  </div>
 
-  <div class="coins">Coins: <span id="coins">0</span></div>
+  <!-- Task 1 -->
+  <div class="card">
+    <div class="task">
+      <div class="task-title">📺 Watch Ad</div>
+      <div class="task-reward">Earn ₹2</div>
+      <button class="btn" onclick="watchAd()">Watch Now</button>
+    </div>
 
-  <button class="play" onclick="playGame()">Play Game</button>
+    <div class="task">
+      <div class="task-title">🎯 Daily Bonus</div>
+      <div class="task-reward">Earn ₹5</div>
+      <button class="btn" onclick="dailyBonus()">Claim</button>
+    </div>
+  </div>
 
-  <button class="watch" id="adBtn" onclick="watchAd()">Watch Ad + Earn</button>
+  <!-- Withdraw -->
+  <div class="card">
+    <div class="task-title">💳 Withdraw</div>
+    <p>Minimum ₹50 required</p>
+    <button class="btn" onclick="withdraw()">Withdraw Now</button>
+  </div>
 
-  <div class="msg" id="msg">Game khelo ya ad dekho aur reward pao</div>
+  <div class="footer">
+    Secure • Trusted • Fast Payments
+  </div>
+
 </div>
 
 <script>
-let coins = 0;
+  let balance = 0;
 
-// AdsGram init
-let rewardAd = null;
+  // Adsgram init
+  let ad = null;
+  window.onload = () => {
+    if (window.Adsgram) {
+      ad = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" });
+    }
+  };
 
-function initAds() {
-  if (!window.Adsgram) return;
-  try {
-    rewardAd = window.Adsgram.init({
-      blockId: "27402" // 👈 apna block id dalna
-    });
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-window.onload = initAds;
-
-// Game logic
-function playGame() {
-  let win = Math.random() > 0.5;
-
-  if (win) {
-    coins += 5;
-    updateCoins();
-    showMsg("🎉 You won 5 coins!");
-  } else {
-    showMsg("😢 You lost, try again!");
-  }
-}
-
-// Reward Ad
-async function watchAd() {
-  if (!rewardAd) {
-    showMsg("Ad not ready, try again");
-    return;
+  function updateBalance(amount){
+    balance += amount;
+    document.getElementById("balance").innerText = balance;
   }
 
-  try {
-    await rewardAd.show();
-    coins += 10;
-    updateCoins();
-    showMsg("💰 You earned 10 coins from ad!");
-  } catch (e) {
-    showMsg("Ad skipped or failed");
+  async function watchAd(){
+    if (!ad) return alert("Ad not loaded");
+
+    try{
+      await ad.show();
+      updateBalance(2);
+    }catch(e){
+      console.log(e);
+    }
   }
-}
 
-function updateCoins() {
-  document.getElementById("coins").innerText = coins;
-}
+  function dailyBonus(){
+    updateBalance(5);
+    alert("Bonus claimed!");
+  }
 
-function showMsg(text) {
-  document.getElementById("msg").innerText = text;
-}
+  function withdraw(){
+    if(balance < 50){
+      alert("Minimum ₹50 required");
+      return;
+    }
+    alert("Withdrawal request submitted!");
+  }
+
+  // Telegram ready
+  if (window.Telegram.WebApp) {
+    Telegram.WebApp.expand();
+  }
 </script>
 
 </body>

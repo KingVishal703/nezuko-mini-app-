@@ -1,279 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nezuko Earn Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pro Earn App</title>
+
+<script src="config.js"></script>
+<script src="games.js"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<!-- Firebase v8 (STABLE) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<!-- AdsGram -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
 <style>
-body {margin:0;font-family:Arial;background:#0f172a;color:white;}
-.header {padding:15px;text-align:center;background:#1e293b;font-size:18px;}
+body{margin:0;background:#0f172a;color:white;font-family:sans-serif;}
+.nav{display:flex;justify-content:space-around;background:#020617;padding:10px;}
+.nav button{background:none;color:white;border:none;}
 
-.nav {
-display:flex;
-justify-content:space-around;
-background:#020617;
-padding:10px;
-}
-.nav button {
-background:none;
-border:none;
-color:white;
-font-weight:bold;
-}
+.section{display:none;padding:10px;}
+.active{display:block;}
 
-.section {display:none;padding:10px;}
-.active {display:block;}
+.card{background:#1e293b;padding:15px;margin:10px;border-radius:10px;}
 
-.card {
-background:#1e293b;
-margin:10px 0;
-padding:15px;
-border-radius:10px;
-}
-
-.btn {
-width:100%;
-padding:12px;
-background:#22c55e;
-border:none;
-border-radius:8px;
-margin-top:10px;
-color:white;
-font-weight:bold;
-}
+.btn{width:100%;padding:12px;background:#22c55e;border:none;border-radius:8px;margin-top:10px;color:white;}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-👤 <span id="username">Loading...</span> | 💰 ₹<span id="balance">0</span>
-</div>
-
 <div class="nav">
-<button onclick="show('tasks')">📋 Tasks</button>
-<button onclick="show('games')">🎮 Games</button>
-<button onclick="show('refer')">👥 Refer</button>
-<button onclick="show('withdraw')">💳 Withdraw</button>
+<button onclick="show('tasks')">Tasks</button>
+<button onclick="show('games')">Games</button>
+<button onclick="show('withdraw')">Withdraw</button>
 </div>
 
-<!-- TASKS -->
 <div id="tasks" class="section active">
 <div class="card">
-🎁 Daily Bonus
-<button class="btn" onclick="dailyBonus()">Claim ₹5</button>
-</div>
-
-<div class="card">
-📺 Watch Ad
-<button class="btn" onclick="watchAd()">Earn ₹2</button>
+<button class="btn" onclick="dailyBonus()">Daily ₹${CONFIG.earnings.dailyBonus}</button>
+<button class="btn" onclick="watchAd()">Watch Ad</button>
 </div>
 </div>
 
-<!-- GAMES -->
 <div id="games" class="section">
 <div class="card">
-🎮 Play Tap Game
-<button class="btn" onclick="playGame()">Tap & Earn ₹1</button>
+<button class="btn" onclick="startSnakeGame()">🐍 Snake Game</button>
+<button class="btn" onclick="startMemoryGame()">🧠 Memory Game</button>
 </div>
 
-<div class="card">
-🎰 Spin Wheel
-<button class="btn" onclick="spin()">Spin</button>
+<div id="gameArea"></div>
 </div>
 
-<div class="card">
-💳 Scratch Card
-<button class="btn" onclick="scratch()">Scratch</button>
-</div>
-</div>
-
-<!-- REFER -->
-<div id="refer" class="section">
-<div class="card">
-📎 Your Link:
-<input id="refLink" style="width:100%">
-</div>
-
-<div class="card">
-👥 Your Referrals:
-<div id="refList">Loading...</div>
-</div>
-</div>
-
-<!-- WITHDRAW -->
 <div id="withdraw" class="section">
 <div class="card">
-💳 Withdraw (Manual)
-<input id="upi" placeholder="Enter UPI ID" style="width:100%;padding:10px;">
-<button class="btn" onclick="withdraw()">Request Withdraw</button>
+<input id="upi" placeholder="UPI ID">
+<button class="btn" onclick="withdraw()">Withdraw</button>
 </div>
 </div>
 
 <script>
-// 🔥 Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
-  authDomain: "nezuko-earning.firebaseapp.com",
-  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
-  projectId: "nezuko-earning",
-};
+// Firebase
+firebase.initializeApp({
+ databaseURL:"https://nezuko-earning-default-rtdb.firebaseio.com"
+});
+const db=firebase.database();
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// Telegram
+let tg=window.Telegram.WebApp;
+let user=tg.initDataUnsafe?.user || {id:"test",first_name:"Test"};
 
-// ✅ Telegram User Fix
-const tg = window.Telegram.WebApp;
-tg.expand();
+let userId=user.id;
 
-let user = tg.initDataUnsafe?.user;
+// Balance
+let balance=0;
 
-// fallback (important)
-if (!user) {
-    user = { id: "test_" + Math.random(), first_name: "TestUser" };
+function loadUser(){
+db.ref("users/"+userId).once("value",snap=>{
+ if(snap.exists()){
+   balance=snap.val().balance||0;
+ }else{
+   db.ref("users/"+userId).set({balance:0});
+ }
+});
 }
 
-const userId = user.id.toString();
-const username = user.first_name;
-
-document.getElementById("username").innerText = username;
-
-let balance = 0;
-
-// 🔥 Load User
-function loadUser() {
-    db.ref("users/" + userId).once("value", snap => {
-        if (snap.exists()) {
-            balance = snap.val().balance || 0;
-        } else {
-            db.ref("users/" + userId).set({
-                name: username,
-                balance: 0,
-                refBy: getRef()
-            });
-
-            // referral reward
-            if (getRef()) {
-                db.ref("users/" + getRef()).once("value", s => {
-                    if (s.exists()) {
-                        let refBal = s.val().balance || 0;
-                        db.ref("users/" + getRef()).update({
-                            balance: refBal + 5
-                        });
-                    }
-                });
-            }
-        }
-        updateUI();
-        loadRefs();
-    });
+function addMoney(x){
+ balance+=x;
+ db.ref("users/"+userId).update({balance});
 }
 
-// 💰 Update UI
-function updateUI() {
-    document.getElementById("balance").innerText = balance;
+// Tasks
+function dailyBonus(){
+ addMoney(CONFIG.earnings.dailyBonus);
 }
 
-// 💰 Add Money
-function addMoney(amount) {
-    balance += amount;
-    db.ref("users/" + userId).update({ balance });
-    updateUI();
+async function watchAd(){
+ if(CONFIG.ads.adsgram.enable){
+   let ad=Adsgram.init({blockId:CONFIG.ads.adsgram.blockId});
+   await ad.show();
+ }
+ addMoney(CONFIG.earnings.adReward);
 }
 
-// 🎁 Daily
-function dailyBonus() {
-    addMoney(5);
+// Withdraw
+function withdraw(){
+ if(balance < CONFIG.withdraw.min){
+   return alert("Min withdraw ₹"+CONFIG.withdraw.min);
+ }
+ alert("Request sent");
 }
 
-// 📺 AdsGram
-let ad;
-function initAd() {
-    if (window.Adsgram) {
-        ad = Adsgram.init({ blockId: "27402" });
-    }
+// Nav
+function show(id){
+ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
 }
 
-async function watchAd() {
-    try {
-        if (ad) await ad.show();
-        addMoney(2);
-    } catch {}
-}
-
-// 🎮 Games
-function playGame() {
-    addMoney(1);
-}
-
-function spin() {
-    let win = Math.floor(Math.random()*10);
-    alert("Win ₹" + win);
-    addMoney(win);
-}
-
-function scratch() {
-    let win = Math.floor(Math.random()*5);
-    alert("Scratch ₹" + win);
-    addMoney(win);
-}
-
-// 👥 Referral
-function getRef() {
-    const url = new URL(window.location.href);
-    return url.searchParams.get("ref");
-}
-
-// link
-document.getElementById("refLink").value =
-location.origin + "?ref=" + userId;
-
-// show referrals
-function loadRefs() {
-    db.ref("users").on("value", snap => {
-        let html = "";
-        snap.forEach(u => {
-            if (u.val().refBy == userId) {
-                html += `<div>${u.val().name} - ₹${u.val().balance}</div>`;
-            }
-        });
-        document.getElementById("refList").innerHTML = html || "No referrals yet";
-    });
-}
-
-// 💳 Withdraw
-function withdraw() {
-    let upi = document.getElementById("upi").value;
-    if (!upi) return alert("Enter UPI");
-
-    db.ref("withdraws").push({
-        userId,
-        upi,
-        amount: balance
-    });
-
-    alert("Request Sent");
-}
-
-// 📂 Navigation
-function show(id) {
-    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
-// INIT
+// Init
 loadUser();
-initAd();
 
 </script>
 

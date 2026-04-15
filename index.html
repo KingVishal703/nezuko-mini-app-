@@ -1,107 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Earn App Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EarnPro X</title>
 
-  <link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-  <!-- Telegram -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Adsgram Placeholder -->
-  <script>
-    function showAd(callback){
-      // 👉 Adsgram integration here
-      console.log("Ad showing...");
-      setTimeout(() => {
-        console.log("Ad finished");
-        callback && callback();
-      }, 2500);
-    }
-  </script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 </head>
-<body>
 
-<div class="app">
+<body class="bg-slate-900 text-white">
 
-  <div class="header">
-    <h2>⚡ Earn Pro</h2>
-    <div id="balance">₹0</div>
-  </div>
+<div class="max-w-md mx-auto">
 
-  <div class="tabs">
-    <button onclick="showTab('tasks')">📋</button>
-    <button onclick="showTab('games')">🎮</button>
-    <button onclick="showTab('refer')">👥</button>
-    <button onclick="showTab('wallet')">💳</button>
-  </div>
+<!-- HEADER -->
+<div class="p-4 flex justify-between bg-slate-800">
+<h2 class="font-bold">⚡ EarnPro</h2>
+<div id="balance">₹0</div>
+</div>
 
-  <!-- TASKS -->
-  <div id="tasks" class="tab active">
+<!-- NAV -->
+<div class="grid grid-cols-4 text-center bg-black">
+<button onclick="tab('tasks')">📋</button>
+<button onclick="tab('games')">🎮</button>
+<button onclick="tab('refer')">👥</button>
+<button onclick="tab('wallet')">💳</button>
+</div>
 
-    <div class="card">
-      <h3>🎁 Daily Bonus</h3>
-      <button onclick="claimDaily()">Claim + Watch Ad</button>
-      <p id="dailyStatus"></p>
-    </div>
+<!-- TASKS -->
+<div id="tasks" class="p-3">
+<div class="bg-slate-800 p-3 rounded mb-3">
+<h3>Daily Bonus</h3>
+<button onclick="daily()" class="bg-green-500 p-2 mt-2 w-full">Claim + Ad</button>
+</div>
 
-    <div class="card">
-      <h3>📺 Watch Ad</h3>
-      <button onclick="watchAd()">Watch & Earn</button>
-      <p id="adTimer"></p>
-    </div>
+<div class="bg-slate-800 p-3 rounded">
+<h3>Watch Ad</h3>
+<button onclick="watchAd()" class="bg-blue-500 p-2 mt-2 w-full">Watch</button>
+</div>
+</div>
 
-  </div>
+<!-- GAMES -->
+<div id="games" class="hidden p-3">
 
-  <!-- GAMES -->
-  <div id="games" class="tab">
+<div class="bg-slate-800 p-3 rounded mb-3 text-center">
+<h3>Tap Game (10s)</h3>
+<button onclick="startTap()" class="bg-purple-500 p-2 w-full">Start</button>
+<button id="tapBtn" class="bg-blue-600 p-4 mt-2 w-full">TAP</button>
+<p id="tapResult"></p>
+</div>
 
-    <div class="card center">
-      <h3>🔥 Tap Game</h3>
-      <p id="tapTimer">Tap fast for 10s!</p>
-      <button onclick="startTapGame()">Start Game</button>
-      <button id="tapArea" onclick="tapClick()">TAP!</button>
-      <p id="tapScore"></p>
-    </div>
+<div class="bg-slate-800 p-3 rounded mb-3 text-center">
+<h3>Spin Wheel</h3>
+<div id="wheel" class="w-40 h-40 mx-auto rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
+<button onclick="spin()" class="bg-yellow-500 p-2 w-full mt-2">Spin + Ad</button>
+<p id="spinRes"></p>
+</div>
 
-    <div class="card center">
-      <h3>🎡 Spin Wheel</h3>
-      <div id="wheel"></div>
-      <button onclick="spin()">Spin & Watch Ad</button>
-      <p id="spinResult"></p>
-    </div>
+<div class="bg-slate-800 p-3 rounded text-center">
+<h3>Scratch Card</h3>
+<canvas id="scratch" class="w-full h-24 bg-gray-500 rounded"></canvas>
+<button onclick="scratchStart()" class="bg-pink-500 p-2 w-full mt-2">Reveal + Ad</button>
+<p id="scratchRes"></p>
+</div>
 
-    <div class="card center">
-      <h3>🪙 Scratch Card</h3>
-      <canvas id="scratch"></canvas>
-      <button onclick="startScratch()">Reveal & Earn</button>
-      <p id="scratchResult"></p>
-    </div>
+</div>
 
-  </div>
+<!-- REFER -->
+<div id="refer" class="hidden p-3">
+<div class="bg-slate-800 p-3 rounded">
+<p id="refLink"></p>
+<p>Referrals: <span id="refs">0</span></p>
+</div>
+</div>
 
-  <!-- REFER -->
-  <div id="refer" class="tab">
-    <div class="card">
-      <p id="refLink"></p>
-      <p>Total Referrals: <span id="refCount">0</span></p>
-    </div>
-  </div>
-
-  <!-- WALLET -->
-  <div id="wallet" class="tab">
-    <div class="card">
-      <input id="upi" placeholder="Enter UPI ID">
-      <button onclick="withdraw()">Withdraw</button>
-    </div>
-  </div>
+<!-- WALLET -->
+<div id="wallet" class="hidden p-3">
+<div class="bg-slate-800 p-3 rounded">
+<input id="upi" placeholder="UPI ID" class="w-full p-2 text-black">
+<button onclick="withdraw()" class="bg-green-600 p-2 mt-2 w-full">Withdraw</button>
+</div>
+</div>
 
 </div>
 

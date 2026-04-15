@@ -1,98 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EarnPro X</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  if (id && id.startsWith("blg2")) {
+    if (window.location.hash.includes("tgWebAppData")) {
+      window.location.href = "/step1.html?id=" + id + window.location.hash;
+    } else {
+      window.location.href = "/step1.html?id=" + id;
+    }
+  }
+  </script>
+  
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Media Vault</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-</head>
-
-<body class="bg-slate-900 text-white">
-
-<div class="max-w-md mx-auto">
-
-<!-- HEADER -->
-<div class="p-4 flex justify-between bg-slate-800">
-<h2>⚡ EarnPro</h2>
-<div id="balance">₹0</div>
-</div>
-
-<!-- NAV -->
-<div class="grid grid-cols-4 text-center bg-black text-sm">
-<button onclick="tab('tasks')">📋</button>
-<button onclick="tab('games')">🎮</button>
-<button onclick="tab('refer')">👥</button>
-<button onclick="tab('wallet')">💳</button>
-</div>
-
-<!-- TASKS -->
-<div id="tasks" class="p-3">
-<div class="card">
-<h3>🎁 Daily Bonus</h3>
-<button onclick="daily()">Claim + Ad</button>
-<p id="dailyTimer"></p>
-</div>
-
-<div class="card">
-<h3>📺 Watch Ad</h3>
-<button onclick="watchAd()">Watch</button>
-<p id="adTimer"></p>
-</div>
-</div>
-
-<!-- GAMES -->
-<div id="games" class="hidden p-3">
-
-<div class="card center">
-<h3>🔥 Tap Game</h3>
-<button onclick="startTap()">Start</button>
-<button id="tapBtn">TAP FAST</button>
-<p id="tapRes"></p>
-</div>
-
-<div class="card center">
-<h3>🎡 Spin</h3>
-<div id="wheel"></div>
-<button onclick="spin()">Spin</button>
-<p id="spinRes"></p>
-</div>
-
-<div class="card center">
-<h3>🪙 Scratch</h3>
-<canvas id="scratch"></canvas>
-<button onclick="scratchStart()">Scratch</button>
-<p id="scratchRes"></p>
-</div>
-
-</div>
-
-<!-- REFER -->
-<div id="refer" class="hidden p-3">
-<div class="card">
-<p id="refLink"></p>
-<p>Total Referrals: <span id="refs">0</span></p>
-</div>
-</div>
-
-<!-- WALLET -->
-<div id="wallet" class="hidden p-3">
-<div class="card">
-<input id="upi" placeholder="UPI ID" class="input">
-<button onclick="withdraw()">Withdraw</button>
-</div>
-</div>
-
-</div>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
 <link rel="stylesheet" href="style.css">
-<script src="script.js"></script>
+</head>
+
+<body>
+
+<header>🔥 Media Vault</header>
+
+<input id="search" placeholder="Search..." oninput="searchContent()">
+
+<div class="tabs">
+<button class="active" onclick="loadCategory('anime',this)">Anime</button>
+<button onclick="loadCategory('movies',this)">Movies</button>
+<button onclick="loadCategory('adult',this)">Adult</button>
+</div>
+
+<div class="slider" id="slider"></div>
+
+<div class="subtabs" id="subtabs"></div>
+
+<div class="ad">BANNER AD SLOT</div>
+
+<div id="grid"></div>
+
+<div class="ad">INTERSTITIAL AD SLOT</div>
+
+<div id="details" class="modal"></div>
+
+<script src="ads.js"></script>
+<script src="app.js"></script>
+
+<script>
+Telegram.WebApp.ready();
+setTimeout(()=>runHomeAd(),800);
+startAutoHomeAds();
+</script>
 
 </body>
 </html>

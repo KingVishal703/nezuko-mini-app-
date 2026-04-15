@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nezuko Earn</title>
+<title>Nezuko Earn Pro</title>
 
 <!-- Adsgram -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -38,6 +38,13 @@ body{
   color:#fff;
   font-weight:bold;
 }
+.game-btn{
+  width:80px;height:80px;
+  border-radius:50%;
+  background:#22c55e;
+  border:none;
+  font-size:20px;
+}
 </style>
 </head>
 
@@ -46,17 +53,25 @@ body{
 <div class="container">
 
 <div class="card">
-<h2>💰 Balance: ₹<span id="balance">0</span></h2>
+<h2>💰 ₹<span id="balance">0</span></h2>
 </div>
 
 <div class="card">
 <button class="btn" onclick="showAd()">🎬 Watch Ad +₹5</button>
 <button class="btn" onclick="withdraw()">💳 Withdraw</button>
+<button class="btn" onclick="joinChannel()">📢 Join Channel +₹10</button>
 </div>
 
 <div class="card">
-<p>Your Referral Link:</p>
-<input id="refLink" style="width:100%;padding:10px;border-radius:8px;border:none;">
+<h3>🎮 Tap Game</h3>
+<p>Tap fast to earn!</p>
+<button class="game-btn" onclick="tapGame()">💥</button>
+<p>Score: <span id="score">0</span></p>
+<button class="btn" onclick="claimGame()">Claim Reward</button>
+</div>
+
+<div class="card">
+<input id="refLink" style="width:100%;padding:10px;border:none;border-radius:8px;">
 </div>
 
 </div>
@@ -65,11 +80,7 @@ body{
 const firebaseConfig = {
   apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
   authDomain: "nezuko-earning.firebaseapp.com",
-  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
-  projectId: "nezuko-earning",
-  storageBucket: "nezuko-earning.firebasestorage.app",
-  messagingSenderId: "941091730977",
-  appId: "1:941091730977:web:931e928cacac8eada49560"
+  projectId: "nezuko-earning"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -79,7 +90,9 @@ const db = firebase.firestore();
 
 let userId;
 let balance = 0;
+let lastAdTime = 0;
 
+// LOGIN
 auth.signInAnonymously().then(res=>{
   userId = res.user.uid;
 
@@ -106,19 +119,22 @@ auth.signInAnonymously().then(res=>{
 
   document.getElementById("refLink").value =
     window.location.origin + "?ref=" + userId;
+
+  setTimeout(dailyBonus,2000);
 });
 
 function updateUI(){
   document.getElementById("balance").innerText = balance;
 }
 
+// 💰 ADD MONEY
 function addMoney(amt){
   balance += amt;
   updateUI();
   db.collection("users").doc(userId).update({balance});
 }
 
-// Adsgram
+// 🎬 Adsgram
 let ad;
 
 window.onload = ()=>{
@@ -127,36 +143,93 @@ window.onload = ()=>{
   }
 };
 
+function canWatchAd(){
+  let now = Date.now();
+  if(now - lastAdTime < 20000){
+    alert("Wait 20 sec");
+    return false;
+  }
+  lastAdTime = now;
+  return true;
+}
+
 function showAd(){
   if(!ad) return alert("Ad not ready");
+  if(!canWatchAd()) return;
 
   ad.show().then(()=>{
     addMoney(5);
-    alert("₹5 added");
   });
 }
 
-function withdraw(){
-  if(balance < 50){
-    alert("Min ₹50 required");
-    return;
-  }
+// 🎁 DAILY BONUS
+function dailyBonus(){
+  let today = new Date().toDateString();
 
-  let upi = prompt("Enter UPI ID");
+  let ref = db.collection("users").doc(userId);
+
+  ref.get().then(doc=>{
+    if(doc.data().lastBonus !== today){
+      addMoney(5);
+      ref.update({lastBonus:today});
+      alert("Daily Bonus ₹5");
+    }
+  });
+}
+
+// 📢 JOIN CHANNEL
+function joinChannel(){
+  window.open("https://t.me/YOUR_CHANNEL","_blank");
+  setTimeout(()=>{
+    addMoney(10);
+  },4000);
+}
+
+// 💳 WITHDRAW
+function withdraw(){
+  if(balance < 50) return alert("Min ₹50");
+
+  let upi = prompt("Enter UPI");
   if(!upi) return;
 
   db.collection("withdraws").add({
     userId,
-    amount: balance,
+    amount:balance,
     upi,
     status:"pending",
-    time: Date.now()
+    time:Date.now()
   });
 
   balance = 0;
   updateUI();
 
-  alert("Withdraw request sent");
+  alert("Request sent");
+}
+
+// 🎮 GAME
+let score = 0;
+
+function tapGame(){
+  score++;
+  document.getElementById("score").innerText = score;
+}
+
+// claim reward with ad
+function claimGame(){
+  if(score < 10){
+    alert("Play more!");
+    return;
+  }
+
+  if(!ad) return;
+
+  ad.show().then(()=>{
+    let reward = Math.floor(score / 10) * 5;
+    addMoney(reward);
+    alert("Game reward ₹"+reward);
+    score = 0;
+    document.getElementById("score").innerText = 0;
+  });
 }
 </script>
 

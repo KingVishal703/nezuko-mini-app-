@@ -1,123 +1,230 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pro Earn App</title>
-
-<script src="config.js"></script>
-<script src="games.js"></script>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earn App</title>
 
 <style>
-body{margin:0;background:#0f172a;color:white;font-family:sans-serif;}
-.nav{display:flex;justify-content:space-around;background:#020617;padding:10px;}
-.nav button{background:none;color:white;border:none;}
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#0f172a;
+  color:white;
+}
 
-.section{display:none;padding:10px;}
-.active{display:block;}
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-around;
+  background:#020617;
+  padding:12px;
+  font-size:14px;
+}
 
-.card{background:#1e293b;padding:15px;margin:10px;border-radius:10px;}
+/* CARD */
+.card{
+  background:#1e293b;
+  margin:12px;
+  padding:15px;
+  border-radius:12px;
+}
 
-.btn{width:100%;padding:12px;background:#22c55e;border:none;border-radius:8px;margin-top:10px;color:white;}
+/* BUTTON */
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:white;
+  font-size:16px;
+  margin-top:10px;
+}
+
+/* SECTIONS */
+.section{ display:none; }
+.active{ display:block; }
+
+/* GAME BOX */
+.game{
+  background:#334155;
+  padding:15px;
+  border-radius:10px;
+  margin:10px 0;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
 
+<!-- NAV -->
 <div class="nav">
-<button onclick="show('tasks')">Tasks</button>
-<button onclick="show('games')">Games</button>
-<button onclick="show('withdraw')">Withdraw</button>
+  <div onclick="show('tasks')">📋 Tasks</div>
+  <div onclick="show('games')">🎮 Games</div>
+  <div onclick="show('refer')">👥 Refer</div>
+  <div onclick="show('withdraw')">💳 Withdraw</div>
 </div>
 
+<!-- TASKS -->
 <div id="tasks" class="section active">
-<div class="card">
-<button class="btn" onclick="dailyBonus()">Daily ₹${CONFIG.earnings.dailyBonus}</button>
-<button class="btn" onclick="watchAd()">Watch Ad</button>
-</div>
+  <div class="card">
+    <h3>🎁 Daily Bonus</h3>
+    <button class="btn" onclick="dailyBonus()"></button>
+  </div>
+
+  <div class="card">
+    <h3>📺 Watch Ad</h3>
+    <button class="btn" onclick="watchAd()"></button>
+  </div>
 </div>
 
+<!-- GAMES -->
 <div id="games" class="section">
-<div class="card">
-<button class="btn" onclick="startSnakeGame()">🐍 Snake Game</button>
-<button class="btn" onclick="startMemoryGame()">🧠 Memory Game</button>
+  <div class="game">
+    <h3>🎯 Tap Game</h3>
+    <button class="btn" onclick="playGame()">Tap & Earn</button>
+  </div>
+
+  <div class="game">
+    <h3>🎰 Spin Wheel</h3>
+    <button class="btn" onclick="spin()">Spin</button>
+  </div>
 </div>
 
-<div id="gameArea"></div>
+<!-- REFER -->
+<div id="refer" class="section">
+  <div class="card">
+    <h3>Your Link</h3>
+    <p id="refLink"></p>
+    <button class="btn" onclick="copy()">Copy</button>
+  </div>
+
+  <div class="card">
+    <h3>Referrals</h3>
+    <p id="refCount">0</p>
+  </div>
 </div>
 
+<!-- WITHDRAW -->
 <div id="withdraw" class="section">
-<div class="card">
-<input id="upi" placeholder="UPI ID">
-<button class="btn" onclick="withdraw()">Withdraw</button>
+  <div class="card">
+    <h3>Balance</h3>
+    <p id="bal">₹0</p>
+  </div>
+
+  <div class="card">
+    <input id="upi" placeholder="Enter UPI ID" style="width:100%;padding:10px;">
+    <button class="btn" onclick="withdraw()">Withdraw</button>
+  </div>
 </div>
-</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
 
 <script>
-// Firebase
-firebase.initializeApp({
- databaseURL:"https://nezuko-earning-default-rtdb.firebaseio.com"
-});
-const db=firebase.database();
+const CONFIG = {
+  earnings:{
+    daily:5,
+    ad:2,
+    game:1,
+    spinMin:1,
+    spinMax:10
+  },
+  withdrawMin:50
+};
 
-// Telegram
-let tg=window.Telegram.WebApp;
-let user=tg.initDataUnsafe?.user || {id:"test",first_name:"Test"};
+const firebaseConfig = {
+  apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
+  authDomain: "nezuko-earning.firebaseapp.com",
+  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
+  projectId: "nezuko-earning"
+};
 
-let userId=user.id;
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-// Balance
+let userId = localStorage.getItem("uid");
+if(!userId){
+  userId = "user_"+Math.floor(Math.random()*999999);
+  localStorage.setItem("uid",userId);
+}
+
 let balance=0;
 
-function loadUser(){
-db.ref("users/"+userId).once("value",snap=>{
- if(snap.exists()){
-   balance=snap.val().balance||0;
- }else{
-   db.ref("users/"+userId).set({balance:0});
- }
-});
+function load(){
+  db.ref("users/"+userId).once("value",snap=>{
+    if(snap.exists()){
+      balance = snap.val().balance || 0;
+      document.getElementById("refCount").innerText = snap.val().refs || 0;
+    }
+    update();
+  });
+
+  document.querySelectorAll(".btn")[0].innerText = "Claim ₹"+CONFIG.earnings.daily;
+  document.querySelectorAll(".btn")[1].innerText = "Earn ₹"+CONFIG.earnings.ad;
+
+  document.getElementById("refLink").innerText =
+    location.origin + "?ref=" + userId;
+}
+
+function update(){
+  document.getElementById("bal").innerText = "₹"+balance;
+  db.ref("users/"+userId).update({
+    balance:balance
+  });
 }
 
 function addMoney(x){
- balance+=x;
- db.ref("users/"+userId).update({balance});
+  balance+=x;
+  update();
 }
 
-// Tasks
+/* TASKS */
 function dailyBonus(){
- addMoney(CONFIG.earnings.dailyBonus);
+  addMoney(CONFIG.earnings.daily);
+  alert("Bonus added");
 }
 
-async function watchAd(){
- if(CONFIG.ads.adsgram.enable){
-   let ad=Adsgram.init({blockId:CONFIG.ads.adsgram.blockId});
-   await ad.show();
- }
- addMoney(CONFIG.earnings.adReward);
+function watchAd(){
+  addMoney(CONFIG.earnings.ad);
+  alert("Ad reward added");
 }
 
-// Withdraw
+/* GAMES */
+function playGame(){
+  addMoney(CONFIG.earnings.game);
+}
+
+function spin(){
+  let win = Math.floor(Math.random()*(CONFIG.earnings.spinMax - CONFIG.earnings.spinMin))+CONFIG.earnings.spinMin;
+  addMoney(win);
+  alert("You won ₹"+win);
+}
+
+/* REFER */
+function copy(){
+  navigator.clipboard.writeText(document.getElementById("refLink").innerText);
+  alert("Copied");
+}
+
+/* WITHDRAW */
 function withdraw(){
- if(balance < CONFIG.withdraw.min){
-   return alert("Min withdraw ₹"+CONFIG.withdraw.min);
- }
- alert("Request sent");
+  if(balance < CONFIG.withdrawMin){
+    alert("Minimum ₹"+CONFIG.withdrawMin);
+    return;
+  }
+  alert("Request Sent");
 }
 
-// Nav
+/* NAV */
 function show(id){
- document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-// Init
-loadUser();
-
+load();
 </script>
 
 </body>

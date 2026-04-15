@@ -1,73 +1,74 @@
 // CONFIG
 const CONFIG = {
-  dailyBonus: 5,
-  adReward: 2,
+  daily: 5,
+  ad: 2,
   spinMin: 1,
   spinMax: 10,
-  tapRewardRate: 0.2,
+  tapRate: 0.2,
   withdrawMin: 50
 };
 
-// Firebase
-const firebaseConfig = {
+// FIREBASE
+firebase.initializeApp({
   apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
-  authDomain: "nezuko-earning.firebaseapp.com",
-  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
-  projectId: "nezuko-earning",
-};
-
-firebase.initializeApp(firebaseConfig);
+  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com"
+});
 const db = firebase.database();
 
-// Telegram
-const tg = window.Telegram.WebApp;
+// TELEGRAM USER
+const tg = Telegram.WebApp;
 tg.expand();
 
 let user = tg.initDataUnsafe?.user || { id: "demo_" + Date.now() };
-let userId = user.id.toString();
+let uid = user.id.toString();
+let ref = db.ref("users/" + uid);
 
-let userRef = db.ref("users/" + userId);
-
-// Create user
-userRef.once("value").then(snap => {
-  if (!snap.exists()) {
-    userRef.set({
+// CREATE USER SAFE
+ref.once("value").then(s => {
+  if (!s.exists()) {
+    ref.set({
       balance: 0,
-      lastDailyBonus: 0,
-      lastAdTime: 0,
-      referrals: 0
+      lastDaily: 0,
+      lastAd: 0,
+      refs: 0
     });
   }
 });
 
-// Live update
-userRef.on("value", snap => {
-  let d = snap.val();
-  document.getElementById("balance").innerText = "₹" + d.balance;
-  document.getElementById("refCount").innerText = d.referrals;
+// LIVE UPDATE
+ref.on("value", s => {
+  let d = s.val();
+  balance.innerText = "₹" + d.balance;
+  refs.innerText = d.refs;
 });
 
-// Tabs
-function showTab(id){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+// TABS
+function tab(id){
+  ["tasks","games","refer","wallet"].forEach(x=>{
+    document.getElementById(x).classList.add("hidden");
+  });
+  document.getElementById(id).classList.remove("hidden");
 }
 
-// DAILY BONUS
-function claimDaily(){
-  userRef.once("value").then(snap=>{
-    let d = snap.val();
-    let now = Date.now();
+// ADSGRAM READY
+function showAd(cb){
+  // 👉 paste Adsgram code here
+  console.log("Ad...");
+  setTimeout(()=>cb(),2000);
+}
 
-    if(now - d.lastDailyBonus < 86400000){
-      alert("Already claimed");
-      return;
-    }
+// DAILY
+function daily(){
+  ref.once("value").then(s=>{
+    let d=s.val();
+    let now=Date.now();
+
+    if(now-d.lastDaily<86400000) return alert("Already");
 
     showAd(()=>{
-      userRef.update({
-        balance: d.balance + CONFIG.dailyBonus,
-        lastDailyBonus: now
+      ref.update({
+        balance:d.balance+CONFIG.daily,
+        lastDaily:now
       });
     });
   });
@@ -75,137 +76,121 @@ function claimDaily(){
 
 // WATCH AD
 function watchAd(){
-  userRef.once("value").then(snap=>{
-    let d = snap.val();
-    let now = Date.now();
+  ref.once("value").then(s=>{
+    let d=s.val();
+    let now=Date.now();
 
-    if(now - d.lastAdTime < 60000){
-      alert("Wait 60 sec");
-      return;
-    }
+    if(now-d.lastAd<60000) return alert("Wait");
 
     showAd(()=>{
-      userRef.update({
-        balance: d.balance + CONFIG.adReward,
-        lastAdTime: now
+      ref.update({
+        balance:d.balance+CONFIG.ad,
+        lastAd:now
       });
     });
   });
 }
 
 // TAP GAME
-let taps = 0, playing=false;
+let taps=0,playing=false;
 
-function startTapGame(){
-  taps = 0;
-  playing = true;
-  document.getElementById("tapTimer").innerText = "GO!!!";
+function startTap(){
+  taps=0;
+  playing=true;
 
   setTimeout(()=>{
-    playing = false;
+    playing=false;
 
-    let reward = Math.floor(taps * CONFIG.tapRewardRate);
+    let earn=Math.floor(taps*CONFIG.tapRate);
 
     showAd(()=>{
-      userRef.once("value").then(snap=>{
-        let d = snap.val();
-        userRef.update({ balance: d.balance + reward });
+      ref.once("value").then(s=>{
+        ref.update({balance:s.val().balance+earn});
       });
     });
 
-    document.getElementById("tapScore").innerText = "Earned ₹"+reward;
+    tapResult.innerText="Earn ₹"+earn;
 
   },10000);
 }
 
-function tapClick(){
+tapBtn.onclick=()=>{
   if(playing) taps++;
-}
+};
 
 // SPIN
 function spin(){
-  let wheel = document.getElementById("wheel");
-  let deg = Math.floor(Math.random()*3600);
+  let deg=Math.random()*3600;
+  wheel.style.transform=`rotate(${deg}deg)`;
 
-  wheel.style.transform = `rotate(${deg}deg)`;
-
-  let reward = Math.floor(Math.random()*(CONFIG.spinMax-CONFIG.spinMin+1))+CONFIG.spinMin;
+  let reward=Math.floor(Math.random()*(CONFIG.spinMax-CONFIG.spinMin+1))+CONFIG.spinMin;
 
   showAd(()=>{
-    userRef.once("value").then(snap=>{
-      let d = snap.val();
-      userRef.update({ balance: d.balance + reward });
+    ref.once("value").then(s=>{
+      ref.update({balance:s.val().balance+reward});
     });
   });
 
-  document.getElementById("spinResult").innerText = "Won ₹"+reward;
+  spinRes.innerText="Won ₹"+reward;
 }
 
 // SCRATCH
-let canvas = document.getElementById("scratch");
-let ctx = canvas.getContext("2d");
+let canvas=document.getElementById("scratch");
+let ctx=canvas.getContext("2d");
 
-canvas.width = 300;
-canvas.height = 100;
+canvas.width=300;
+canvas.height=100;
 
-function startScratch(){
+function scratchStart(){
   ctx.fillStyle="gray";
   ctx.fillRect(0,0,300,100);
 
-  let reward = Math.floor(Math.random()*5)+1;
+  let reward=Math.floor(Math.random()*5)+1;
 
-  canvas.onmousemove = (e)=>{
+  canvas.onmousemove=(e)=>{
     ctx.clearRect(e.offsetX,e.offsetY,20,20);
   };
 
-  canvas.onclick = ()=>{
+  canvas.onclick=()=>{
     showAd(()=>{
-      userRef.once("value").then(snap=>{
-        let d = snap.val();
-        userRef.update({ balance: d.balance + reward });
+      ref.once("value").then(s=>{
+        ref.update({balance:s.val().balance+reward});
       });
     });
 
-    document.getElementById("scratchResult").innerText="Won ₹"+reward;
+    scratchRes.innerText="Won ₹"+reward;
   };
 }
 
 // REFER
-let url = new URL(window.location);
-let ref = url.searchParams.get("ref");
+let url=new URL(location);
+let r=url.searchParams.get("ref");
 
-if(ref && ref!==userId){
-  db.ref("users/"+ref).once("value").then(snap=>{
-    if(snap.exists()){
-      db.ref("users/"+ref).update({
-        referrals: (snap.val().referrals||0)+1
+if(r && r!==uid){
+  db.ref("users/"+r).once("value").then(s=>{
+    if(s.exists()){
+      db.ref("users/"+r).update({
+        refs:(s.val().refs||0)+1
       });
     }
   });
 }
 
-document.getElementById("refLink").innerText =
-  location.origin + "?ref=" + userId;
+refLink.innerText=location.origin+"?ref="+uid;
 
 // WITHDRAW
 function withdraw(){
-  let upi = document.getElementById("upi").value;
+  let upi=document.getElementById("upi").value;
 
-  userRef.once("value").then(snap=>{
-    let d = snap.val();
+  ref.once("value").then(s=>{
+    let d=s.val();
 
-    if(d.balance < CONFIG.withdrawMin){
-      alert("Minimum not reached");
-      return;
-    }
+    if(d.balance<CONFIG.withdrawMin) return alert("Min not reached");
 
     db.ref("withdraws").push({
-      userId,
-      upi,
-      amount:d.balance,
-      time:Date.now()
+      uid,upi,amount:d.balance,time:Date.now()
     });
 
-    userRef.update({ balance:0 });
+    ref.update({balance:0});
   });
 }

@@ -6,9 +6,9 @@ autoInterval:600000
 };
 
 const IDS = {
-home:"int-22046",
-verify:"int-22056",
-reward:"22055"
+home:"int-27796",
+verify:"int-27796",
+reward:"27797"
 };
 
 let homeAd=null;

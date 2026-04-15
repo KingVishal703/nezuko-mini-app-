@@ -3,28 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Earn App</title>
+  <title>Earn App Pro</title>
 
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-  <!-- Telegram WebApp -->
+  <!-- Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Adsgram Placeholder -->
+  <script>
+    function showAd(callback){
+      // 👉 Adsgram integration here
+      console.log("Ad showing...");
+      setTimeout(() => {
+        console.log("Ad finished");
+        callback && callback();
+      }, 2500);
+    }
+  </script>
+
 </head>
 <body>
 
 <div class="app">
 
-  <!-- Header -->
   <div class="header">
-    <h2>💰 Earn App</h2>
+    <h2>⚡ Earn Pro</h2>
     <div id="balance">₹0</div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button onclick="showTab('tasks')">📋</button>
     <button onclick="showTab('games')">🎮</button>
@@ -32,43 +43,51 @@
     <button onclick="showTab('wallet')">💳</button>
   </div>
 
-  <!-- Tasks -->
+  <!-- TASKS -->
   <div id="tasks" class="tab active">
+
     <div class="card">
-      <h3>Daily Bonus</h3>
-      <button onclick="claimDaily()">Claim</button>
+      <h3>🎁 Daily Bonus</h3>
+      <button onclick="claimDaily()">Claim + Watch Ad</button>
       <p id="dailyStatus"></p>
     </div>
 
     <div class="card">
-      <h3>Watch Ad</h3>
-      <button onclick="watchAd()">Watch</button>
+      <h3>📺 Watch Ad</h3>
+      <button onclick="watchAd()">Watch & Earn</button>
       <p id="adTimer"></p>
     </div>
+
   </div>
 
-  <!-- Games -->
+  <!-- GAMES -->
   <div id="games" class="tab">
-    <div class="card">
-      <h3>Tap Game</h3>
-      <button onclick="startTapGame()">Start</button>
+
+    <div class="card center">
+      <h3>🔥 Tap Game</h3>
+      <p id="tapTimer">Tap fast for 10s!</p>
+      <button onclick="startTapGame()">Start Game</button>
+      <button id="tapArea" onclick="tapClick()">TAP!</button>
       <p id="tapScore"></p>
     </div>
 
-    <div class="card">
-      <h3>Spin Wheel</h3>
-      <button onclick="spin()">Spin</button>
+    <div class="card center">
+      <h3>🎡 Spin Wheel</h3>
+      <div id="wheel"></div>
+      <button onclick="spin()">Spin & Watch Ad</button>
       <p id="spinResult"></p>
     </div>
 
-    <div class="card">
-      <h3>Scratch Card</h3>
+    <div class="card center">
+      <h3>🪙 Scratch Card</h3>
       <canvas id="scratch"></canvas>
+      <button onclick="startScratch()">Reveal & Earn</button>
       <p id="scratchResult"></p>
     </div>
+
   </div>
 
-  <!-- Refer -->
+  <!-- REFER -->
   <div id="refer" class="tab">
     <div class="card">
       <p id="refLink"></p>
@@ -76,7 +95,7 @@
     </div>
   </div>
 
-  <!-- Wallet -->
+  <!-- WALLET -->
   <div id="wallet" class="tab">
     <div class="card">
       <input id="upi" placeholder="Enter UPI ID">

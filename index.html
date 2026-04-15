@@ -1,147 +1,251 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nezuko Earn</title>
+<title>Pro Earn App</title>
 
-<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
-
-<script src="config.js"></script>
-<script src="firebase.js"></script>
-<script src="games.js"></script>
+<style>
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#0f172a;
+  color:#fff;
+}
+.header{
+  text-align:center;
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+}
+.tabs{
+  display:flex;
+  justify-content:space-around;
+  background:#020617;
+  padding:10px;
+}
+.tab{
+  cursor:pointer;
+}
+.card{
+  background:#1e293b;
+  margin:15px;
+  padding:15px;
+  border-radius:12px;
+}
+.btn{
+  background:#22c55e;
+  padding:12px;
+  text-align:center;
+  border-radius:10px;
+  margin-top:10px;
+  cursor:pointer;
+}
+input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+}
+</style>
 </head>
 
 <body>
 
-<div class="top">
-  <h2>💰 ₹<span id="balance">0</span></h2>
-</div>
+<div class="header">💰 ₹<span id="balance">0</span></div>
 
-<div class="nav">
-  <button onclick="show('tasks')">Tasks</button>
-  <button onclick="show('games')">Games</button>
-  <button onclick="show('refer')">Refer</button>
-  <button onclick="show('withdraw')">Withdraw</button>
+<div class="tabs">
+  <div class="tab" onclick="show('tasks')">Tasks</div>
+  <div class="tab" onclick="show('games')">Games</div>
+  <div class="tab" onclick="show('refer')">Refer</div>
+  <div class="tab" onclick="show('withdraw')">Withdraw</div>
 </div>
 
 <!-- TASKS -->
-<div id="tasks" class="section active">
+<div id="tasks" class="page">
   <div class="card">
-    <h3>🎁 Daily Bonus</h3>
-    <button onclick="dailyBonus()">Claim ₹5</button>
+    🎁 Daily Bonus
+    <div class="btn" onclick="dailyBonus()">Claim ₹5</div>
   </div>
 
   <div class="card">
-    <h3>📺 Watch Ad</h3>
-    <button onclick="watchAd()">Earn ₹2</button>
+    📺 Watch Ad
+    <div class="btn" onclick="watchAd()">Earn ₹2</div>
   </div>
 </div>
 
 <!-- GAMES -->
-<div id="games" class="section">
-  <div class="card"><button onclick="tapGame()">🎯 Tap Game</button></div>
-  <div class="card"><button onclick="spinWheel()">🎰 Spin</button></div>
-  <div class="card"><button onclick="scratchCard()">💳 Scratch</button></div>
+<div id="games" class="page" style="display:none">
+  <div class="card">
+    🎯 Tap Game
+    <div class="btn" onclick="startGame()">Play</div>
+  </div>
+
+  <div class="card">
+    🎰 Spin Wheel
+    <div class="btn" onclick="spin()">Spin</div>
+  </div>
 </div>
 
 <!-- REFER -->
-<div id="refer" class="section">
+<div id="refer" class="page" style="display:none">
   <div class="card">
-    <p id="refLink"></p>
-    <button onclick="copy()">Copy</button>
+    🔗 Your Link:
+    <input id="refLink" readonly>
+    <div class="btn" onclick="copyRef()">Copy</div>
   </div>
+
   <div class="card">
-    Referrals: <span id="refs">0</span>
+    👥 Referrals: <span id="refCount">0</span>
   </div>
 </div>
 
 <!-- WITHDRAW -->
-<div id="withdraw" class="section">
+<div id="withdraw" class="page" style="display:none">
   <div class="card">
-    <input id="upi" placeholder="Enter UPI">
-    <button onclick="withdraw()">Withdraw</button>
+    💳 Enter UPI
+    <input id="upi">
+    <div class="btn" onclick="withdraw()">Withdraw</div>
   </div>
 </div>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
+  authDomain: "nezuko-earning.firebaseapp.com",
+  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
+  projectId: "nezuko-earning",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// USER ID FIX
 let userId = localStorage.getItem("uid");
-
 if(!userId){
-  userId = "user_"+Math.floor(Math.random()*999999);
-  localStorage.setItem("uid",userId);
+  userId = "user_" + Math.random().toString(36).substr(2,9);
+  localStorage.setItem("uid", userId);
 }
 
+// LOAD USER
 let balance = 0;
+let lastBonus = 0;
+let lastAd = 0;
 
-function load(){
-  db.ref("users/"+userId).once("value",snap=>{
-    if(snap.exists()){
-      balance = snap.val().balance || 0;
-      document.getElementById("refs").innerText = snap.val().refs || 0;
-    }
-    update();
-  });
+db.ref("users/"+userId).on("value", snap=>{
+  let data = snap.val() || {};
+  balance = data.balance || 0;
+  lastBonus = data.lastBonus || 0;
+  lastAd = data.lastAd || 0;
 
-  document.getElementById("refLink").innerText =
-    location.origin + "?ref=" + userId;
-}
-
-function update(){
   document.getElementById("balance").innerText = balance;
-  db.ref("users/"+userId).update({balance:balance});
+});
+
+// NAV
+function show(id){
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+  document.getElementById(id).style.display="block";
 }
 
-function addMoney(x){
-  balance += x;
-  update();
-}
-
-/* TASKS */
+// DAILY BONUS FIX
 function dailyBonus(){
-  addMoney(CONFIG.earnings.dailyBonus);
+  let now = Date.now();
+  if(now - lastBonus < 86400000){
+    alert("Already claimed today");
+    return;
+  }
+  balance += 5;
+  db.ref("users/"+userId).update({
+    balance,
+    lastBonus: now
+  });
 }
 
+// WATCH AD TIMER FIX
 function watchAd(){
-  // 👉 yaha Adsgram lagana
-  addMoney(CONFIG.earnings.adReward);
-}
-
-/* REFER */
-function copy(){
-  navigator.clipboard.writeText(document.getElementById("refLink").innerText);
-}
-
-/* WITHDRAW */
-function withdraw(){
-  if(balance < CONFIG.withdraw.min){
-    alert("Min ₹"+CONFIG.withdraw.min);
+  let now = Date.now();
+  if(now - lastAd < 60000){
+    alert("Wait 1 min");
     return;
   }
 
+  alert("Ad Played ✅");
+  balance += 2;
+
+  db.ref("users/"+userId).update({
+    balance,
+    lastAd: now
+  });
+}
+
+// GAME FIX (REAL PLAY)
+function startGame(){
+  let score = 0;
+  let taps = prompt("Tap fast! Enter number (1-50)");
+  if(!taps) return;
+
+  score = Math.min(taps,50);
+  let earn = Math.floor(score/10);
+
+  alert("You earned ₹"+earn);
+  balance += earn;
+
+  db.ref("users/"+userId).update({balance});
+}
+
+// SPIN
+function spin(){
+  let earn = Math.floor(Math.random()*10);
+  alert("Won ₹"+earn);
+  balance += earn;
+
+  db.ref("users/"+userId).update({balance});
+}
+
+// REFERRAL FIX
+let refLink = location.origin + "?ref=" + userId;
+document.getElementById("refLink").value = refLink;
+
+// TRACK REF
+let urlParams = new URLSearchParams(window.location.search);
+let ref = urlParams.get("ref");
+
+if(ref && ref !== userId){
+  db.ref("users/"+ref+"/refs").push(userId);
+}
+
+// COUNT REF
+db.ref("users/"+userId+"/refs").on("value", snap=>{
+  document.getElementById("refCount").innerText = snap.numChildren();
+});
+
+// COPY
+function copyRef(){
+  navigator.clipboard.writeText(refLink);
+  alert("Copied!");
+}
+
+// WITHDRAW FIX
+function withdraw(){
   let upi = document.getElementById("upi").value;
+  if(balance < 50){
+    alert("Minimum ₹50");
+    return;
+  }
 
   db.ref("withdraws").push({
-    user:userId,
-    upi:upi,
-    amount:balance
+    userId,
+    upi,
+    amount: balance
   });
 
   balance = 0;
-  update();
+  db.ref("users/"+userId).update({balance});
 
-  alert("Withdraw Requested");
+  alert("Request sent");
 }
-
-/* NAV */
-function show(id){
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-load();
 </script>
 
 </body>

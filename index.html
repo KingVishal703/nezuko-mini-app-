@@ -1,193 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Play & Earn Hub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nezuko Earn</title>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Adsgram -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-  <!-- Adsgram SDK -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #0f172a, #020617);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 420px;
-      padding: 16px;
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    }
-
-    .title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: #9ca3af;
-      margin-bottom: 16px;
-    }
-
-    .balance {
-      font-size: 26px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #4f46e5, #22c55e);
-      color: white;
-    }
-
-    .btn-secondary {
-      background: #111827;
-      color: #9ca3af;
-      border: 1px solid #1f2937;
-    }
-
-    .task {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      padding: 10px;
-      background: #020617;
-      border-radius: 10px;
-    }
-
-    .task span {
-      font-size: 13px;
-    }
-
-    .small-btn {
-      padding: 6px 12px;
-      font-size: 12px;
-      border-radius: 8px;
-      border: none;
-      background: #22c55e;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      color: #6b7280;
-      margin-top: 20px;
-    }
-
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:#020617;
+  color:#fff;
+  text-align:center;
+}
+.container{max-width:420px;margin:auto;padding:15px;}
+.card{
+  background:#0f172a;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:15px;
+}
+.btn{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  width:100%;
+  margin-top:10px;
+  background:#22c55e;
+  color:#fff;
+  font-weight:bold;
+}
+</style>
 </head>
+
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- Header -->
-    <div class="card">
-      <div class="title">🎮 Play & Earn Hub</div>
-      <div class="subtitle">Watch ads & complete tasks to earn reward points</div>
-    </div>
+<div class="card">
+<h2>💰 Balance: ₹<span id="balance">0</span></h2>
+</div>
 
-    <!-- Wallet -->
-    <div class="card">
-      <div class="balance">₹ <span id="balance">0</span></div>
-      <div class="subtitle">Your Reward Balance</div>
+<div class="card">
+<button class="btn" onclick="showAd()">🎬 Watch Ad +₹5</button>
+<button class="btn" onclick="withdraw()">💳 Withdraw</button>
+</div>
 
-      <button class="btn btn-primary" onclick="showAd()">🎬 Watch Ad & Earn</button>
-      <button class="btn btn-secondary">💳 Withdraw (Coming Soon)</button>
-    </div>
+<div class="card">
+<p>Your Referral Link:</p>
+<input id="refLink" style="width:100%;padding:10px;border-radius:8px;border:none;">
+</div>
 
-    <!-- Tasks -->
-    <div class="card">
-      <div class="title">🔥 Daily Tasks</div>
+</div>
 
-      <div class="task">
-        <span>Watch 1 Ad</span>
-        <button class="small-btn" onclick="showAd()">+₹5</button>
-      </div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
+  authDomain: "nezuko-earning.firebaseapp.com",
+  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
+  projectId: "nezuko-earning",
+  storageBucket: "nezuko-earning.firebasestorage.app",
+  messagingSenderId: "941091730977",
+  appId: "1:941091730977:web:931e928cacac8eada49560"
+};
 
-      <div class="task">
-        <span>Complete Offer</span>
-        <button class="small-btn">+₹10</button>
-      </div>
+firebase.initializeApp(firebaseConfig);
 
-    </div>
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-    <!-- Footer -->
-    <div class="footer">
-      © 2026 Play & Earn Hub • All rights reserved
-    </div>
+let userId;
+let balance = 0;
 
-  </div>
+auth.signInAnonymously().then(res=>{
+  userId = res.user.uid;
 
-  <script>
-    let balance = 0;
+  let ref = db.collection("users").doc(userId);
 
-    // Adsgram init
-    let AdController = null;
-
-    window.onload = () => {
-      if (window.Adsgram) {
-        AdController = window.Adsgram.init({
-          blockId: "YOUR_BLOCK_ID"
-        });
-      }
-    };
-
-    function showAd() {
-      if (!AdController) {
-        alert("Ad not ready");
-        return;
-      }
-
-      AdController.show()
-        .then(() => {
-          balance += 5;
-          document.getElementById("balance").innerText = balance;
-          alert("✅ You earned ₹5");
-        })
-        .catch(() => {
-          alert("❌ Ad not available");
-        });
+  ref.get().then(doc=>{
+    if(!doc.exists){
+      ref.set({balance:0});
+    }else{
+      balance = doc.data().balance || 0;
+      updateUI();
     }
-  </script>
+  });
+
+  // referral
+  const urlParams = new URLSearchParams(window.location.search);
+  const refId = urlParams.get("ref");
+
+  if(refId && refId !== userId){
+    db.collection("users").doc(refId).update({
+      balance: firebase.firestore.FieldValue.increment(10)
+    });
+  }
+
+  document.getElementById("refLink").value =
+    window.location.origin + "?ref=" + userId;
+});
+
+function updateUI(){
+  document.getElementById("balance").innerText = balance;
+}
+
+function addMoney(amt){
+  balance += amt;
+  updateUI();
+  db.collection("users").doc(userId).update({balance});
+}
+
+// Adsgram
+let ad;
+
+window.onload = ()=>{
+  if(window.Adsgram){
+    ad = window.Adsgram.init({blockId:"YOUR_BLOCK_ID"});
+  }
+};
+
+function showAd(){
+  if(!ad) return alert("Ad not ready");
+
+  ad.show().then(()=>{
+    addMoney(5);
+    alert("₹5 added");
+  });
+}
+
+function withdraw(){
+  if(balance < 50){
+    alert("Min ₹50 required");
+    return;
+  }
+
+  let upi = prompt("Enter UPI ID");
+  if(!upi) return;
+
+  db.collection("withdraws").add({
+    userId,
+    amount: balance,
+    upi,
+    status:"pending",
+    time: Date.now()
+  });
+
+  balance = 0;
+  updateUI();
+
+  alert("Withdraw request sent");
+}
+</script>
 
 </body>
 </html>

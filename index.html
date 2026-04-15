@@ -5,232 +5,202 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nezuko Earn Pro</title>
 
-<!-- Adsgram -->
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+<!-- AdsGram -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#020617;
-  color:#fff;
-  text-align:center;
+body {
+    margin:0;
+    font-family: Arial;
+    background:#0f172a;
+    color:white;
 }
-.container{max-width:420px;margin:auto;padding:15px;}
-.card{
-  background:#0f172a;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:15px;
+
+.header {
+    padding:15px;
+    text-align:center;
+    background:#1e293b;
+    font-size:18px;
 }
-.btn{
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  width:100%;
-  margin-top:10px;
-  background:#22c55e;
-  color:#fff;
-  font-weight:bold;
+
+.card {
+    background:#1e293b;
+    margin:10px;
+    padding:15px;
+    border-radius:10px;
 }
-.game-btn{
-  width:80px;height:80px;
-  border-radius:50%;
-  background:#22c55e;
-  border:none;
-  font-size:20px;
+
+.btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    background:#22c55e;
+    color:white;
+    border-radius:8px;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.game-btn {
+    background:#3b82f6;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="header">🚀 Nezuko Earn Pro</div>
 
 <div class="card">
-<h2>💰 ₹<span id="balance">0</span></h2>
+👤 User: <span id="username"></span><br>
+💰 Balance: ₹<span id="balance">0</span>
 </div>
 
 <div class="card">
-<button class="btn" onclick="showAd()">🎬 Watch Ad +₹5</button>
-<button class="btn" onclick="withdraw()">💳 Withdraw</button>
-<button class="btn" onclick="joinChannel()">📢 Join Channel +₹10</button>
+🎁 Daily Bonus  
+<button class="btn" onclick="dailyBonus()">Claim ₹5</button>
 </div>
 
 <div class="card">
-<h3>🎮 Tap Game</h3>
-<p>Tap fast to earn!</p>
-<button class="game-btn" onclick="tapGame()">💥</button>
-<p>Score: <span id="score">0</span></p>
-<button class="btn" onclick="claimGame()">Claim Reward</button>
+👥 Invite & Earn  
+<p>Your Link:</p>
+<input id="refLink" style="width:100%">
 </div>
 
 <div class="card">
-<input id="refLink" style="width:100%;padding:10px;border:none;border-radius:8px;">
+📺 Watch Ad & Earn  
+<button class="btn" onclick="watchAd()">Earn ₹2</button>
 </div>
 
+<div class="card">
+🎮 Games  
+<button class="btn game-btn" onclick="playGame()">Play Game (+₹1)</button>
+<button class="btn game-btn" onclick="spin()">Spin Wheel</button>
+<button class="btn game-btn" onclick="scratch()">Scratch Card</button>
+</div>
+
+<div class="card">
+🏆 Leaderboard  
+<div id="leaderboard"></div>
 </div>
 
 <script>
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDkdYO6sQvlLu7WRN3zfSLrzGpSzkUl0lg",
   authDomain: "nezuko-earning.firebaseapp.com",
-  projectId: "nezuko-earning"
+  databaseURL: "https://nezuko-earning-default-rtdb.firebaseio.com",
+  projectId: "nezuko-earning",
+  storageBucket: "nezuko-earning.firebasestorage.app",
+  messagingSenderId: "941091730977",
+  appId: "1:941091730977:web:931e928cacac8eada49560"
 };
 
 firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+// ✅ Telegram User Detect
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-let userId;
+const user = tg.initDataUnsafe?.user;
+const userId = user?.id || "guest_" + Math.random();
+const username = user?.first_name || "Guest";
+
+document.getElementById("username").innerText = username;
+
+// 🔥 User Data Load
 let balance = 0;
-let lastAdTime = 0;
 
-// LOGIN
-auth.signInAnonymously().then(res=>{
-  userId = res.user.uid;
-
-  let ref = db.collection("users").doc(userId);
-
-  ref.get().then(doc=>{
-    if(!doc.exists){
-      ref.set({balance:0});
-    }else{
-      balance = doc.data().balance || 0;
-      updateUI();
-    }
-  });
-
-  // referral
-  const urlParams = new URLSearchParams(window.location.search);
-  const refId = urlParams.get("ref");
-
-  if(refId && refId !== userId){
-    db.collection("users").doc(refId).update({
-      balance: firebase.firestore.FieldValue.increment(10)
+function loadUser() {
+    db.ref("users/" + userId).once("value", snap => {
+        if (snap.exists()) {
+            balance = snap.val().balance || 0;
+        } else {
+            db.ref("users/" + userId).set({
+                balance: 0,
+                name: username
+            });
+        }
+        updateUI();
     });
-  }
-
-  document.getElementById("refLink").value =
-    window.location.origin + "?ref=" + userId;
-
-  setTimeout(dailyBonus,2000);
-});
-
-function updateUI(){
-  document.getElementById("balance").innerText = balance;
 }
 
-// 💰 ADD MONEY
-function addMoney(amt){
-  balance += amt;
-  updateUI();
-  db.collection("users").doc(userId).update({balance});
+function updateUI() {
+    document.getElementById("balance").innerText = balance;
 }
 
-// 🎬 Adsgram
-let ad;
-
-window.onload = ()=>{
-  if(window.Adsgram){
-    ad = window.Adsgram.init({blockId:"YOUR_BLOCK_ID"});
-  }
-};
-
-function canWatchAd(){
-  let now = Date.now();
-  if(now - lastAdTime < 20000){
-    alert("Wait 20 sec");
-    return false;
-  }
-  lastAdTime = now;
-  return true;
+// 💰 Update Balance
+function addMoney(amount) {
+    balance += amount;
+    db.ref("users/" + userId).update({ balance });
+    updateUI();
 }
 
-function showAd(){
-  if(!ad) return alert("Ad not ready");
-  if(!canWatchAd()) return;
-
-  ad.show().then(()=>{
+// 🎁 Daily Bonus
+function dailyBonus() {
     addMoney(5);
-  });
 }
 
-// 🎁 DAILY BONUS
-function dailyBonus(){
-  let today = new Date().toDateString();
+// 📺 AdsGram
+let ad = null;
 
-  let ref = db.collection("users").doc(userId);
-
-  ref.get().then(doc=>{
-    if(doc.data().lastBonus !== today){
-      addMoney(5);
-      ref.update({lastBonus:today});
-      alert("Daily Bonus ₹5");
-    }
-  });
+function initAd() {
+    ad = Adsgram.init({ blockId: "27402" });
 }
 
-// 📢 JOIN CHANNEL
-function joinChannel(){
-  window.open("https://t.me/YOUR_CHANNEL","_blank");
-  setTimeout(()=>{
-    addMoney(10);
-  },4000);
+async function watchAd() {
+    try {
+        await ad.show();
+        addMoney(2);
+    } catch {}
 }
 
-// 💳 WITHDRAW
-function withdraw(){
-  if(balance < 50) return alert("Min ₹50");
-
-  let upi = prompt("Enter UPI");
-  if(!upi) return;
-
-  db.collection("withdraws").add({
-    userId,
-    amount:balance,
-    upi,
-    status:"pending",
-    time:Date.now()
-  });
-
-  balance = 0;
-  updateUI();
-
-  alert("Request sent");
+// 🎮 Game
+function playGame() {
+    addMoney(1);
 }
 
-// 🎮 GAME
-let score = 0;
-
-function tapGame(){
-  score++;
-  document.getElementById("score").innerText = score;
+// 🎰 Spin
+function spin() {
+    const win = Math.floor(Math.random()*10);
+    alert("You won ₹" + win);
+    addMoney(win);
 }
 
-// claim reward with ad
-function claimGame(){
-  if(score < 10){
-    alert("Play more!");
-    return;
-  }
-
-  if(!ad) return;
-
-  ad.show().then(()=>{
-    let reward = Math.floor(score / 10) * 5;
-    addMoney(reward);
-    alert("Game reward ₹"+reward);
-    score = 0;
-    document.getElementById("score").innerText = 0;
-  });
+// 💳 Scratch
+function scratch() {
+    const win = Math.floor(Math.random()*5);
+    alert("Scratch Reward ₹" + win);
+    addMoney(win);
 }
+
+// 🏆 Leaderboard
+function loadLeaderboard() {
+    db.ref("users").limitToLast(10).on("value", snap => {
+        let html = "";
+        snap.forEach(user => {
+            html += `<div>${user.val().name} - ₹${user.val().balance}</div>`;
+        });
+        document.getElementById("leaderboard").innerHTML = html;
+    });
+}
+
+// 👥 Referral
+const refLink = `https://t.me/YOUR_BOT?start=${userId}`;
+document.getElementById("refLink").value = refLink;
+
+// INIT
+loadUser();
+loadLeaderboard();
+initAd();
+
 </script>
 
 </body>

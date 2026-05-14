@@ -4,6 +4,20 @@
 
   <script src='//libtl.com/sdk.js' data-zone='11006692' data-sdk='show_11006692'></script>
 
+<script>
+
+// Rewarded Popup
+
+show_11006692('pop').then(() => {
+    // user watch ad till the end or close it in interstitial format
+    // your code to reward user for rewarded format
+}).catch(e => {
+    // user get error during playing ad
+    // do nothing or whatever you want
+})
+
+</script>
+
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -71,7 +85,7 @@ const CONFIG = {
 
   monetag: {
     adId: "11006692",
-    rewardedInterstitial:{ enabled:true, onLoad:true, onClick:false },
+    rewardedInterstitial:{ enabled:false, onLoad:false, onClick:false },
     rewardedPopup:{ enabled:false, onLoad:false, onClick:false },
     inApp:{ enabled:false, onLoad:false, onClick:false }
   }

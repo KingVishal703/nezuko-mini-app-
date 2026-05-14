@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
 
-	<meta name="adsmone-verification" content="eb76ab0cf1ae4f72" />
-
 	
   <!-- AdsGram SDK -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
+  
   <!-- Monetag (show_10222194 ke liye) -->
-	<script src='//libtl.com/sdk.js' data-zone='10849043' data-sdk='show_10849043'></script>
+	<script src='//libtl.com/sdk.js' data-zone='11006692' data-sdk='show_11006692'></script>
   
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -361,18 +358,18 @@
     // Monetag helpers
     function showMonetagPopup() {
       return new Promise((resolve) => {
-        if (typeof show_10222194 !== "function") return resolve();
+        if (typeof show_11006692 !== "function") return resolve();
         try {
-          show_10222194("pop").then(resolve).catch(() => resolve());
+          show_11006692("pop").then(resolve).catch(() => resolve());
         } catch { resolve(); }
       });
     }
 
     function showMonetagInterstitial() {
       return new Promise((resolve) => {
-        if (typeof show_10222194 !== "function") return resolve();
+        if (typeof show_11006692 !== "function") return resolve();
         try {
-          const p = show_10222194();
+          const p = show_11006692();
           if (p && typeof p.then === "function") p.then(resolve).catch(() => resolve());
           else resolve();
         } catch { resolve(); }
@@ -517,53 +514,3 @@
 </body>
 </html>
 
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-
-	<script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
-<script>
-  const ads = window.TelegaIn.AdsController.create_miniapp({
-    token: '04b27d83-8024-454d-978e-d171a21dd711' });
-</script>
-  <meta charset="UTF-8">
-  <title>AdsMone Test</title>
-
-  <!-- ✅ AdsMone SDK (dashboard se exact link lena) -->
-  <script src="https://adsmone.com/sdk.js"></script>
-
-</head>
-
-<body style="display:flex;justify-content:center;align-items:center;height:100vh;background:#111;color:white;font-family:Arial;">
-
-  <button onclick="showAd()" style="padding:15px 30px;font-size:18px;background:#00c853;color:white;border:none;border-radius:8px;cursor:pointer;">
-    ▶ Show Ad
-  </button>
-
-  <script>
-
-    async function showAd(){
-      try{
-
-        await ads.ad_show({
-          adBlockUuid: "b0c18aa2-80fe-40dd-a955-eb295ff23e04"
-        });
-
-        console.log("✅ Ad Completed");
-        alert("Ad finished successfully!");
-
-      }catch(e){
-
-        console.log("❌ Ad Failed:", e);
-        alert("Ad failed or skipped");
-
-      }
-    }
-
-  </script>
-
-</body>
-      </html>

@@ -6,6 +6,19 @@
   
 
   <!-- Monetag (show_10222194 ke liye) -->
+	<script src='//libtl.com/sdk.js' data-zone='11006692' data-sdk='show_11006692'></script>
+
+<script>
+
+// Rewarded interstitial
+
+show_11006692().then(() => {
+    // You need to add your user reward function here, which will be executed after the user watches the ad.
+    // For more details, please refer to the detailed instructions.
+    alert('You have seen an ad!');
+})
+
+</script>
 	
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -266,14 +279,14 @@
       },
 
       monetag: {
-        popupOnLoad: true,
+        popupOnLoad: false,
         popupOnClick: false,
         interOnLoad: false,
         interOnClick: false
       },
 
       directAd: {
-        url: "https://omg10.com/4/10850839",
+        url: "https://omg10.com/4/8451527",
         onLoad: false,
         onClick: true
       }

@@ -1,4 +1,149 @@
 [
+{
+  "id": "DS_S2",
+  "title": "Demon Slayer Season 2",
+  "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx142329.jpg",
+  "category": "anime",
+  "sub": "Series",
+  "season": "2",
+  "episodes": "18",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi OFFICIAL",
+  "genre": "Action, Fantasy",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "OPM_S1",
+  "title": "One Punch Man",
+  "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21087.jpg",
+  "category": "anime",
+  "sub": "Series",
+  "season": "1",
+  "episodes": "12",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub",
+  "genre": "Action, Comedy",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "YOUR_NAME",
+  "title": "Your Name Movie",
+  "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21519.jpg",
+  "category": "anime",
+  "sub": "Movies",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub",
+  "genre": "Romance, Drama",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+
+{
+  "id": "AVENGERS_ENDGAME",
+  "title": "Avengers Endgame",
+  "image": "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Action, Sci-Fi",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "AVATAR",
+  "title": "Avatar",
+  "image": "https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Sci-Fi, Adventure",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "JOHN_WICK",
+  "title": "John Wick",
+  "image": "https://image.tmdb.org/t/p/w500/fZPSd91yGE9fCcCe6OoQr6E3Bev.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "1",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Action, Thriller",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "SPIDERMAN_NWH",
+  "title": "Spider-Man No Way Home",
+  "image": "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Action, Superhero",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+
+{
+  "id": "KGF2",
+  "title": "KGF Chapter 2",
+  "image": "https://image.tmdb.org/t/p/w500/khNvM87hRxp3ZL6hV2e3nZ1k3Uu.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "2",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Action, Drama",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "PATHAAN",
+  "title": "Pathaan",
+  "image": "https://image.tmdb.org/t/p/w500/6Y0K2Q3G5j3sX9e7jH730GgxShA.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Action, Thriller",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "JAWAN",
+  "title": "Jawan",
+  "image": "https://image.tmdb.org/t/p/w500/jFt1gS4BGHlK8xt76Y81Alp4dbt.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Action, Thriller",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "DANGAL",
+  "title": "Dangal",
+  "image": "https://image.tmdb.org/t/p/w500/p2lVAcPuRPSO8Al6hDDGwWnC0uK.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Drama, Sports",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
   {
     "id": "MDUD_S1",
     "title": "My Dress Up Darling",
@@ -232,9 +377,152 @@
     "language": "English",
     "genre": "Uncensored, She's a f*cking beauty",
     "token": "https://x-waifu-bot.blogspot.com/2025/12/x-waifu-bot.html?id=Z2V0LTc4MTg0ODIwODc3MjI4LTc5MTg3MTkwMzc1NjU0"
-  }
+  },
+{
+  "id": "DS_S2",
+  "title": "Demon Slayer Season 2",
+  "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx142329.jpg",
+  "category": "anime",
+  "sub": "Series",
+  "season": "2",
+  "episodes": "18",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi OFFICIAL",
+  "genre": "Action, Fantasy",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "OPM_S1",
+  "title": "One Punch Man",
+  "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21087.jpg",
+  "category": "anime",
+  "sub": "Series",
+  "season": "1",
+  "episodes": "12",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub",
+  "genre": "Action, Comedy",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "YOUR_NAME",
+  "title": "Your Name Movie",
+  "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21519.jpg",
+  "category": "anime",
+  "sub": "Movies",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub",
+  "genre": "Romance, Drama",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+
+{
+  "id": "AVENGERS_ENDGAME",
+  "title": "Avengers Endgame",
+  "image": "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Action, Sci-Fi",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "AVATAR",
+  "title": "Avatar",
+  "image": "https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Sci-Fi, Adventure",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "JOHN_WICK",
+  "title": "John Wick",
+  "image": "https://image.tmdb.org/t/p/w500/fZPSd91yGE9fCcCe6OoQr6E3Bev.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "1",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Action, Thriller",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "SPIDERMAN_NWH",
+  "title": "Spider-Man No Way Home",
+  "image": "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+  "category": "movies",
+  "sub": "Hollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi Dub + English",
+  "genre": "Action, Superhero",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+
+{
+  "id": "KGF2",
+  "title": "KGF Chapter 2",
+  "image": "https://image.tmdb.org/t/p/w500/khNvM87hRxp3ZL6hV2e3nZ1k3Uu.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "2",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Action, Drama",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "PATHAAN",
+  "title": "Pathaan",
+  "image": "https://image.tmdb.org/t/p/w500/6Y0K2Q3G5j3sX9e7jH730GgxShA.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Action, Thriller",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "JAWAN",
+  "title": "Jawan",
+  "image": "https://image.tmdb.org/t/p/w500/jFt1gS4BGHlK8xt76Y81Alp4dbt.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Action, Thriller",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+},
+{
+  "id": "DANGAL",
+  "title": "Dangal",
+  "image": "https://image.tmdb.org/t/p/w500/p2lVAcPuRPSO8Al6hDDGwWnC0uK.jpg",
+  "category": "movies",
+  "sub": "Bollywood",
+  "season": "0",
+  "episodes": "1",
+  "quality": "480p + 720p + 1080p",
+  "language": "Hindi",
+  "genre": "Drama, Sports",
+  "token": "https://t.me/+IWKqNYdGQ_dkMTRl"
+}
 
   
-
-  
-    ]
+  ]

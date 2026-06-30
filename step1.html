@@ -4,8 +4,6 @@
 
 	
   <!-- AdsGram SDK -->
-	<script src="https://www.monetixads.online/ads.js"
-        data-mxid="MX-D5D6614F"></script>
 	<meta name="clckd" content="b09fdf77c4a5fc3276b3d344b6877477" />
   
   <!-- Monetag (show_10222194 ke liye) -->
@@ -425,30 +423,6 @@
       if (CONFIG.directAd.onLoad) openDirectAd();
     });
 
-
-	  window.addEventListener("load", async () => {
-
-      if (
-        typeof window.showRewardAd === "function" &&
-        CONFIG.adsgram.reward.onLoad
-      ) {
-
-        window.showRewardAd(function(res){
-          console.log(res);
-        });
-
-      }
-
-      if (CONFIG.monetag.popupOnLoad)
-        await showMonetagPopup();
-      else if (CONFIG.monetag.interOnLoad)
-        await showMonetagInterstitial();
-
-      if (CONFIG.directAd.onLoad)
-        openDirectAd();
-
-    });
-
     // BUTTON CLICK + REDIRECT (YAHI IMPORTANT FIX HAI)
     btn.addEventListener("click", async () => {
       if (btn.disabled) return;
@@ -478,31 +452,6 @@
 
       if (CONFIG.monetag.popupOnClick)   await showMonetagPopup();
       else if (CONFIG.monetag.interOnClick) await showMonetagInterstitial();
-
-      if (
-      typeof window.showRewardAd === "function" &&
-      CONFIG.adsgram.reward.onClick
-    ) {
-
-      await new Promise(resolve => {
-
-        window.showRewardAd(function(res){
-
-          if (
-            res &&
-            (res.status === "completed" ||
-             res.status === "closed")
-          ) {
-            resolve();
-          } else {
-            resolve();
-          }
-
-        });
-
-      });
-
-    }
 
       if (CONFIG.directAd.onClick) openDirectAd();
 
@@ -596,4 +545,3 @@
 
 </body>
 </html>
-

@@ -45,8 +45,7 @@ data-mxid="MX-D5D6614F"></script>
 <div class="subtabs" id="subtabs"></div>
 
 <div class="ad">click here to reward</div>
-
-  <div style="text-align:center; margin:15px;">
+  <div style="text-align:center; margin:20px;">
   <button id="rewardBtn" style="
     background:#ff0044;
     color:white;
@@ -56,31 +55,10 @@ data-mxid="MX-D5D6614F"></script>
     font-weight:bold;
     cursor:pointer;
   ">
-    🎁 Watch Ad & Earn Reward
+    🎁 Watch Reward Ad
   </button>
+  </div>
 
-    <script>
-document.getElementById("rewardBtn").addEventListener("click", function () {
-
-  if (typeof window.showRewardAd !== "function") {
-    alert("Reward ad not loaded");
-    return;
-  }
-
-  window.showRewardAd(function(res) {
-
-    console.log(res);
-
-    if (res && (res.status === "completed" || res.status === "closed")) {
-      alert("🎉 Reward success!");
-    } else {
-      alert("❌ Ad not completed");
-    }
-
-  });
-
-});
-    </script>
   </div>
 
 <div id="grid"></div>
@@ -91,6 +69,38 @@ document.getElementById("rewardBtn").addEventListener("click", function () {
 
 <script src="ads.js"></script>
 <script src="app.js"></script>
+
+  <script>
+document.getElementById("rewardBtn").addEventListener("click", function () {
+
+  // check if function exists
+  if (typeof window.showRewardAd !== "function") {
+    alert("Reward ad load nahi hua");
+    return;
+  }
+
+  window.showRewardAd(function(res) {
+
+    console.log("Reward response:", res);
+
+    if (res && (res.status === "completed" || res.status === "closed")) {
+
+      // ✅ SUCCESS ACTION
+      alert("🎉 Reward Granted!");
+
+      // yahan tum redirect / coin / unlock kar sakte ho
+      // window.location = "verify.html";
+
+    } else {
+
+      alert("❌ Ad complete nahi hua");
+
+    }
+
+  });
+
+});
+  </script>
 
 <script>
 Telegram.WebApp.ready();

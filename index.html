@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://www.monetixads.online/ads.js" data-mxid="MX-D5D6614F"></script>
   <script src="https://www.monetixads.online/ads.js"
-data-mxid="MX-81912BAB"
-data-format="pushinpage"></script>
+data-mxid="MX-D5D6614F"></script>
   <script src='//libtl.com/sdk.js' data-zone='11006692' data-sdk='show_11006692'></script>
 
   <script>
@@ -46,7 +44,28 @@ data-format="pushinpage"></script>
 
 <div class="subtabs" id="subtabs"></div>
 
-<div class="ad">BANNER AD SLOT</div>
+<div class="ad"><script>
+document.getElementById("rewardBtn").addEventListener("click", function () {
+
+  if (typeof window.showRewardAd !== "function") {
+    alert("Reward ad not loaded");
+    return;
+  }
+
+  window.showRewardAd(function(res) {
+
+    console.log(res);
+
+    if (res && (res.status === "completed" || res.status === "closed")) {
+      alert("🎉 Reward success!");
+    } else {
+      alert("❌ Ad not completed");
+    }
+
+  });
+
+});
+</script></div>
   <div style="text-align:center; margin:15px;">
   <button id="rewardBtn" style="
     background:#ff0044;

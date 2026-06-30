@@ -124,29 +124,7 @@ details.style.display="none";
 
 
 function verify(link){
-
-  if(typeof window.showRewardAd === "function"){
-
-    window.showRewardAd(function(res){
-
-      console.log("Reward result:", res);
-
-      if(res && (res.status === "completed" || res.status === "closed")){
-
-        // ✅ success → open verify page
-        window.location = "verify.html?link=" + link;
-
-      } else {
-        alert("❌ Ad complete karo tabhi continue hoga");
-      }
-
-    });
-
-  } else {
-
-    alert("⚠️ Reward ad load nahi hua");
-  }
-
+window.location="verify.html?link="+link;
 }
 /* SLIDER */
 

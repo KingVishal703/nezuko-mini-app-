@@ -30,25 +30,6 @@
 
 <header>🔥 VIP ONLY </header>
 
-  <script>
-
-  document.getElementById("watchAdBtn").onclick = function () {
-  window.showRewardAd(function(res) {
-
-    if (res.status === "completed") {
-      // 💰 Reward do (safe side: only completed)
-      addCoins(10);
-      alert("You earned 10 coins!");
-    }
-
-    else if (res.status === "closed") {
-      alert("Ad closed, no reward");
-    }
-
-  });
-};
-  </script>
-
     
 <input id="search" placeholder="Search..." oninput="searchContent()">
 

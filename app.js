@@ -123,9 +123,25 @@ details.style.display="none";
 }
 
 function verify(link){
-window.location="verify.html?link="+link;
-}
 
+  // optional: direct reward ad before verify page
+  if(window.rewardAd || window.Adsgram){
+
+    runReward(()=>{
+
+      // after ad → go verify page
+      window.location="verify.html?link="+link;
+
+    });
+
+  } else {
+
+    // fallback
+    window.location="verify.html?link="+link;
+
+  }
+
+}
 /* SLIDER */
 
 function runSlider(){

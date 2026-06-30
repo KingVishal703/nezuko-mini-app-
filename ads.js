@@ -1,67 +1,35 @@
-const ADS = {
-homeInterstitial:true,
-verifyInterstitial:true,
-reward:true,
-autoInterval:600000
-};
-
-const IDS = {
-home:"MX-81912BAB",
-verify:"MX-81912BAB",
-reward:"MX-81912BAB"
-};
-
-let homeAd=null;
-let verifyAd=null;
-let rewardAd=null;
-
-function waitForAdsgram(callback){
-let timer=setInterval(()=>{
-if(window.Adsgram){
-clearInterval(timer);
-callback();
-}
-},300);
+function runHomeAd() {
+  // Monetix me home interstitial nahi hai
 }
 
-function initAds(){
-
-function safe(id){
-try{
-return window.Adsgram.init({blockId:id});
-}catch(e){
-console.log("Ad init error:",id,e);
-return null;
-}
+function runVerifyAd() {
+  // Agar verify ad nahi use karna to empty chhod do
 }
 
-homeAd = safe(IDS.home);
-verifyAd = safe(IDS.verify);
-rewardAd = safe(IDS.reward);
+function runReward(callback) {
 
-console.log("Ads ready");
-}
+  if (typeof window.showRewardAd !== "function") {
+    alert("Reward ad load nahi hua");
+    if (callback) callback(false);
+    return;
+  }
 
-waitForAdsgram(initAds);
+  window.showRewardAd(function(res) {
 
-function runHomeAd(){
-if(homeAd) homeAd.show().catch(()=>{});
-}
+    console.log("Reward Result:", res);
 
-function runVerifyAd(){
-if(verifyAd) verifyAd.show().catch(()=>{});
-}
+    if (res &&
+        (res.status === "completed" ||
+         res.status === "closed")) {
 
-function runReward(callback){
-if(!rewardAd){callback();return;}
+      if (callback) callback(true);
 
-rewardAd.show()
-.then(()=>callback())
-.catch(()=>callback());
-}
+    } else {
 
-function startAutoHomeAds(){
-setInterval(()=>{
-runHomeAd();
-},ADS.autoInterval);
+      if (callback) callback(false);
+
+    }
+
+  });
+
 }

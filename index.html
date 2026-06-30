@@ -17,20 +17,25 @@
   }
   </script>
   
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VIP MINI APP</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VIP MINI APP</title>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>🔥 VIP ONLY </header>
 
-    
+<!-- 🎁 REWARD BUTTON ADDED -->
+<div style="padding:10px; text-align:center;">
+  <button id="rewardBtn">🎁 Watch Ad & Earn Coins</button>
+  <div id="coinBox">Coins: 0</div>
+</div>
+
 <input id="search" placeholder="Search..." oninput="searchContent()">
 
 <div class="tabs">
@@ -56,6 +61,50 @@
 
 <script>
 Telegram.WebApp.ready();
+
+/* =========================
+   💰 COIN SYSTEM
+========================= */
+function getCoins() {
+  return parseInt(localStorage.getItem("coins") || "0");
+}
+
+function setCoins(val) {
+  localStorage.setItem("coins", val);
+  document.getElementById("coinBox").innerText = "Coins: " + val;
+}
+
+// init coins UI
+setCoins(getCoins());
+
+/* =========================
+   🎯 REWARD AD LOGIC
+========================= */
+document.getElementById("rewardBtn").addEventListener("click", function () {
+
+  // try AdsGram / Monetix / SDK fallback
+  if (window.showRewardAd) {
+
+    window.showRewardAd(function(res) {
+
+      if (res.status === "completed") {
+
+        let coins = getCoins() + 10;
+        setCoins(coins);
+
+        alert("🎉 You earned 10 coins!");
+
+      } else {
+        alert("❌ No reward");
+      }
+
+    });
+
+  } else {
+    alert("⚠️ Reward ad not available");
+  }
+
+});
 </script>
 
 </body>

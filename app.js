@@ -122,23 +122,29 @@ function closeDetails(){
 details.style.display="none";
 }
 
+
 function verify(link){
 
-  // optional: direct reward ad before verify page
-  if(window.rewardAd || window.Adsgram){
+  if(typeof window.showRewardAd === "function"){
 
-    runReward(()=>{
+    window.showRewardAd(function(res){
 
-      // after ad → go verify page
-      window.location="verify.html?link="+link;
+      console.log("Reward result:", res);
+
+      if(res && (res.status === "completed" || res.status === "closed")){
+
+        // ✅ success → open verify page
+        window.location = "verify.html?link=" + link;
+
+      } else {
+        alert("❌ Ad complete karo tabhi continue hoga");
+      }
 
     });
 
   } else {
 
-    // fallback
-    window.location="verify.html?link="+link;
-
+    alert("⚠️ Reward ad load nahi hua");
   }
 
 }

@@ -6,9 +6,9 @@ autoInterval:600000
 };
 
 const IDS = {
-home:"",
-verify:"",
-reward:""
+home:"MX-81912BAB",
+verify:"MX-81912BAB",
+reward:"MX-81912BAB"
 };
 
 let homeAd=null;

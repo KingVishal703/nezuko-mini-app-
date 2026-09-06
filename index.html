@@ -31,20 +31,52 @@
 
 <header>🔥 VIP ONLY </header>
 
-  <button id="adBtn">🎁 Watch Ad & Earn</button>
+  <div style="text-align:center; margin:20px;">
+  <button id="rewardBtn" style="
+    background:#ff0044;
+    color:white;
+    padding:12px 18px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+  ">
+    🎁 Watch Reward Ad
+  </button>
+</div>
 
 <script>
-document.getElementById("adBtn").onclick = async () => {
+document.getElementById("rewardBtn").addEventListener("click", async function () {
+
+  const btn = this;
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Loading Ad...";
+
   try {
+
     await window.showGiga("main");
 
-    // Ad complete hone ke baad reward
-    alert("Ad completed! Reward added.");
-    
+    // ✅ GigaPub ad successfully completed
+    alert("🎉 Reward Granted!");
+
+    // Yahan apna reward logic lagao
+    // Example:
+    // addCoins(10);
+
   } catch (e) {
-    console.error(e);
+
+    console.error("GigaPub error:", e);
+    alert("❌ Ad complete nahi hua.");
+
+  } finally {
+
+    btn.disabled = false;
+    btn.textContent = "🎁 Watch Reward Ad";
+
   }
-};
+
+});
 </script>
   
 

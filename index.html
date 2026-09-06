@@ -31,6 +31,29 @@
 
 <header>🔥 VIP ONLY </header>
 
+
+  <button id="rewardBtn">🎁 Watch Ad & Earn</button>
+
+<script>
+document.getElementById("rewardBtn").onclick = async function () {
+  try {
+    await window.showGiga();
+
+    // ✅ Ad ke baad reward
+    alert("🎉 Reward Granted!");
+
+  } catch (e) {
+    console.error(e);
+    alert("❌ Ad show nahi hua");
+  }
+};
+</script>
+
+
+
+
+  
+
   <div style="text-align:center; margin:20px;">
   <button id="rewardBtn" style="
     background:#ff0044;

@@ -209,8 +209,8 @@
    CONFIG — put your real Adsgram Block ID(s) here before publishing
    Get them from your Adsgram publisher dashboard: https://adsgram.ai
    ============================================================ */
-const ADSGRAM_REWARD_BLOCK_ID = "YOUR_REWARD_BLOCK_ID";
-const ADSGRAM_INTERSTITIAL_BLOCK_ID = "YOUR_INTERSTITIAL_BLOCK_ID";
+const ADSGRAM_REWARD_BLOCK_ID = "48406";
+const ADSGRAM_INTERSTITIAL_BLOCK_ID = "int-48405";
 
 /* Set this to your deployed backend, e.g. "https://your-server.com"
    Leave empty ("") to run in local demo mode (coins stored only on this device,
@@ -263,10 +263,10 @@ async function apiCall(path, options={}){
 let AdController = null, InterstitialController = null;
 function initAds(){
   try{
-    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "YOUR_REWARD_BLOCK_ID") {
+    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "48406") {
       AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID });
     }
-    if (window.Adsgram && ADSGRAM_INTERSTITIAL_BLOCK_ID !== "YOUR_INTERSTITIAL_BLOCK_ID") {
+    if (window.Adsgram && ADSGRAM_INTERSTITIAL_BLOCK_ID !== "int-48405") {
       InterstitialController = window.Adsgram.init({ blockId: ADSGRAM_INTERSTITIAL_BLOCK_ID });
     }
   }catch(e){ console.warn("Adsgram init skipped:", e); }

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CoinSpin — Tap & Win</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Adsgram SDK — replace nothing here, just set YOUR_BLOCK_ID below -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+  :root{
+    --bg-deep:#0E0B1A;
+    --bg-panel:#181233;
+    --gold:#FFC24B;
+    --gold-dim:#8A6A1F;
+    --teal:#3FE1C5;
+    --ink:#F4F0FF;
+    --ink-dim:#9C93C2;
+    --danger:#FF6B6B;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; width:100%; min-height:100vh;
+    background:
+      radial-gradient(circle at 50% -10%, #241a4a 0%, var(--bg-deep) 55%);
+    color:var(--ink);
+    font-family:'Baloo 2', 'Inter', system-ui, sans-serif;
+    overflow-x:hidden;
+    user-select:none;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  body{font-family:'Inter', system-ui, sans-serif;}
+  .display{font-family:'Baloo 2', system-ui, sans-serif;}
+
+  .wrap{max-width:480px; margin:0 auto; padding:18px 16px 32px; min-height:100vh; display:flex; flex-direction:column;}
+
+  /* Header */
+  header{display:flex; align-items:center; justify-content:space-between; padding:4px 2px 14px;}
+  .brand{display:flex; align-items:center; gap:8px;}
+  .brand-mark{width:30px; height:30px; border-radius:50%; background:conic-gradient(from 200deg, var(--gold), #FFE9B8, var(--gold)); box-shadow:0 0 14px rgba(255,194,75,.45);}
+  .brand-name{font-family:'Baloo 2'; font-weight:800; font-size:19px; letter-spacing:.3px;}
+  .streak{font-size:12px; color:var(--ink-dim); background:rgba(255,255,255,.05); padding:5px 10px; border-radius:20px;}
+
+  /* Balance */
+  .balance-card{
+    background:linear-gradient(160deg, var(--bg-panel), #120D26 85%);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:22px;
+    padding:22px 20px 20px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .balance-card::before{
+    content:''; position:absolute; top:-40%; right:-20%; width:220px; height:220px;
+    background:radial-gradient(circle, rgba(255,194,75,.16), transparent 70%);
+  }
+  .balance-label{font-size:12px; color:var(--ink-dim); letter-spacing:.4px;}
+  .balance-num{font-family:'Baloo 2'; font-weight:800; font-size:44px; color:var(--gold); margin:4px 0 2px; text-shadow:0 0 22px rgba(255,194,75,.35);}
+  .balance-sub{font-size:12px; color:var(--ink-dim);}
+
+  /* Tap zone */
+  .tap-zone{margin:26px 0 10px; display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .coin-btn{
+    width:168px; height:168px; border-radius:50%; border:none; cursor:pointer;
+    background:radial-gradient(circle at 35% 30%, #FFE9B8, var(--gold) 55%, #C98F1D 100%);
+    box-shadow:0 10px 0 var(--gold-dim), 0 16px 26px rgba(0,0,0,.45);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2'; font-weight:800; font-size:15px; color:#3A2A05;
+    transition:transform .08s ease, box-shadow .08s ease;
+    position:relative;
+  }
+  .coin-btn:active{transform:translateY(8px); box-shadow:0 2px 0 var(--gold-dim), 0 6px 14px rgba(0,0,0,.4);}
+  .coin-btn span{display:block; line-height:1.15;}
+  .coin-btn .plus{font-size:26px;}
+  .tap-hint{font-size:12px; color:var(--ink-dim);}
+
+  .float-pop{
+    position:fixed; pointer-events:none; font-family:'Baloo 2'; font-weight:800;
+    color:var(--gold); font-size:20px; z-index:50; animation:floatUp .8s ease-out forwards;
+  }
+  @keyframes floatUp{ to{ transform:translateY(-70px); opacity:0; } }
+
+  /* Section cards */
+  .section-title{font-size:13px; color:var(--ink-dim); margin:22px 2px 10px; font-weight:600;}
+  .action-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--bg-panel); border:1px solid rgba(255,255,255,.06);
+    border-radius:16px; padding:14px 16px; margin-bottom:10px;
+  }
+  .action-icon{
+    width:42px; height:42px; border-radius:12px; flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .icon-ad{background:rgba(63,225,197,.14); color:var(--teal);}
+  .icon-spin{background:rgba(255,194,75,.14); color:var(--gold);}
+  .action-body{flex:1;}
+  .action-title{font-weight:600; font-size:14.5px;}
+  .action-sub{font-size:12px; color:var(--ink-dim); margin-top:2px;}
+  .action-btn{
+    border:none; border-radius:12px; padding:10px 16px; font-weight:700; font-size:13px;
+    cursor:pointer; white-space:nowrap;
+  }
+  .btn-teal{background:var(--teal); color:#062A24;}
+  .btn-gold{background:var(--gold); color:#3A2A05;}
+  .action-btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  /* Spin wheel modal */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(6,4,16,.78); backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-card{
+    background:var(--bg-panel); border:1px solid rgba(255,255,255,.08);
+    border-radius:24px; padding:24px 20px; width:100%; max-width:340px; text-align:center;
+  }
+  .modal-title{font-family:'Baloo 2'; font-weight:800; font-size:20px; margin-bottom:14px;}
+  canvas#wheel{display:block; margin:0 auto;}
+  .pointer{width:0; height:0; margin:0 auto -6px; position:relative; z-index:2;
+    border-left:10px solid transparent; border-right:10px solid transparent; border-top:16px solid var(--danger);}
+  .spin-result{font-size:14px; color:var(--ink-dim); min-height:20px; margin:12px 0 4px;}
+  .modal-close{margin-top:6px; background:none; border:none; color:var(--ink-dim); font-size:13px; cursor:pointer; text-decoration:underline;}
+
+  .icon-gift{background:rgba(255,107,107,.14); color:var(--danger);}
+  .action-card.disabled{opacity:.55;}
+  .action-btn.btn-outline{background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--ink-dim);}
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+    background:#1D1740; border:1px solid rgba(255,255,255,.1); color:var(--ink);
+    padding:12px 18px; border-radius:14px; font-size:13px; text-align:center; max-width:88%;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:200;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .footer-note{margin-top:auto; padding-top:22px; text-align:center; font-size:11px; color:var(--ink-dim); line-height:1.5;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">CoinSpin</div>
+    </div>
+    <div class="streak" id="streakBadge">Day 1 streak</div>
+  </header>
+
+  <div class="balance-card">
+    <div class="balance-label">YOUR BALANCE</div>
+    <div class="balance-num" id="balance">0</div>
+    <div class="balance-sub">coins</div>
+  </div>
+
+  <div class="tap-zone">
+    <button class="coin-btn" id="tapCoin">
+      <span class="plus">+1</span>
+      <span>TAP</span>
+    </button>
+    <div class="tap-hint" id="tapHint">Tap the coin to earn</div>
+  </div>
+
+  <div class="section-title">Earn more</div>
+
+  <div class="action-card">
+    <div class="action-icon icon-ad">▶</div>
+    <div class="action-body">
+      <div class="action-title">Watch a video</div>
+      <div class="action-sub">+150 coins, no limit</div>
+    </div>
+    <button class="action-btn btn-teal" id="watchAdBtn">Watch</button>
+  </div>
+
+  <div class="action-card">
+    <div class="action-icon icon-spin">◎</div>
+    <div class="action-body">
+      <div class="action-title">Daily spin</div>
+      <div class="action-sub" id="spinSub">Free once every 4 hours</div>
+    </div>
+    <button class="action-btn btn-gold" id="openSpinBtn">Spin</button>
+  </div>
+
+  <div class="section-title">Redeem</div>
+  <div id="redeemList"></div>
+
+  <div class="footer-note">
+    Coins are earned inside this app. Ad rewards are provided by our ad partner.
+    Redemptions are reviewed manually — you'll get a confirmation once it's approved.
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="spinOverlay">
+  <div class="modal-card">
+    <div class="modal-title">Daily Spin</div>
+    <div class="pointer"></div>
+    <canvas id="wheel" width="260" height="260"></canvas>
+    <div class="spin-result" id="spinResultText">Tap below to spin</div>
+    <button class="action-btn btn-gold" id="spinNowBtn" style="width:100%; padding:12px;">Spin (free)</button>
+    <br>
+    <button class="modal-close" id="closeSpinBtn">Close</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — put your real Adsgram Block ID(s) here before publishing
+   Get them from your Adsgram publisher dashboard: https://adsgram.ai
+   ============================================================ */
+const ADSGRAM_REWARD_BLOCK_ID = "YOUR_REWARD_BLOCK_ID";
+const ADSGRAM_INTERSTITIAL_BLOCK_ID = "YOUR_INTERSTITIAL_BLOCK_ID";
+
+/* Set this to your deployed backend, e.g. "https://your-server.com"
+   Leave empty ("") to run in local demo mode (coins stored only on this device,
+   no real withdraw requests are sent anywhere). */
+const BACKEND_URL = "https://fun-fawne-moviesrenamebit-953df7e3.koyeb.app";
+
+/* Shown even in demo mode so you can see how the Redeem section looks.
+   When BACKEND_URL is set, the real list comes from the server instead. */
+const DEMO_TIERS = [
+  { id: "premium_8d",  coins: 800,  reward: "8 Days Bot Premium",  type: "premium" },
+  { id: "premium_16d", coins: 1500, reward: "16 Days Bot Premium", type: "premium" },
+  { id: "premium_30d", coins: 2600, reward: "30 Days Bot Premium", type: "premium" },
+  { id: "cash",        coins: 0,    reward: "Real Cash Withdrawal", type: "cash_coming_soon" },
+];
+
+/* ---------- Telegram WebApp init ---------- */
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  document.documentElement.style.setProperty('--bg-deep', tg.themeParams.bg_color || '#0E0B1A');
+}
+function haptic(type){ if(tg && tg.HapticFeedback){ tg.HapticFeedback.impactOccurred(type||'light'); } }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* Calls the backend with the user's Telegram initData attached, so the server
+   can verify the request really came from this Telegram user. */
+async function apiCall(path, options={}){
+  if (!BACKEND_URL) throw new Error("no_backend");
+  const res = await fetch(BACKEND_URL + path, {
+    method: options.method || "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": (tg && tg.initData) || "",
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || "request_failed"), { data });
+  return data;
+}
+
+/* ---------- Adsgram init (safe no-op if SDK/IDs missing) ---------- */
+let AdController = null, InterstitialController = null;
+function initAds(){
+  try{
+    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "YOUR_REWARD_BLOCK_ID") {
+      AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID });
+    }
+    if (window.Adsgram && ADSGRAM_INTERSTITIAL_BLOCK_ID !== "YOUR_INTERSTITIAL_BLOCK_ID") {
+      InterstitialController = window.Adsgram.init({ blockId: ADSGRAM_INTERSTITIAL_BLOCK_ID });
+    }
+  }catch(e){ console.warn("Adsgram init skipped:", e); }
+}
+window.addEventListener('load', initAds);
+
+/* ---------- State (persisted locally on device) ---------- */
+const state = {
+  balance: Number(localStorage.getItem('cs_balance') || 0),
+  taps: Number(localStorage.getItem('cs_taps') || 0),
+  lastSpin: Number(localStorage.getItem('cs_lastSpin') || 0),
+  streak: Number(localStorage.getItem('cs_streak') || 1),
+};
+function save(){
+  localStorage.setItem('cs_balance', state.balance);
+  localStorage.setItem('cs_taps', state.taps);
+  localStorage.setItem('cs_lastSpin', state.lastSpin);
+  localStorage.setItem('cs_streak', state.streak);
+}
+function render(){
+  document.getElementById('balance').textContent = state.balance.toLocaleString();
+  document.getElementById('streakBadge').textContent = `Day ${state.streak} streak`;
+  updateSpinAvailability();
+}
+
+/* ---------- Tap to earn ---------- */
+const tapBtn = document.getElementById('tapCoin');
+const SPIN_COOLDOWN_MS = 4 * 60 * 60 * 1000;
+const INTERSTITIAL_EVERY_N_TAPS = 12; // show an interstitial occasionally, not on every tap
+
+tapBtn.addEventListener('click', async (e) => {
+  state.taps += 1;
+  haptic('light');
+  popCoin(e.clientX, e.clientY, "+1");
+
+  if (BACKEND_URL) {
+    try {
+      const data = await apiCall('/api/tap', { method: 'POST' });
+      state.balance = data.balance;
+    } catch (err) { console.warn('tap sync failed', err); }
+  } else {
+    state.balance += 1;
+  }
+  save(); render();
+
+  if (state.taps % INTERSTITIAL_EVERY_N_TAPS === 0 && InterstitialController) {
+    InterstitialController.show().catch(()=>{ /* user skipped or no fill — ignore */ });
+  }
+});
+
+function popCoin(x, y, text){
+  const el = document.createElement('div');
+  el.className = 'float-pop';
+  el.textContent = text;
+  el.style.left = (x - 14) + 'px';
+  el.style.top = (y - 20) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 800);
+}
+
+/* ---------- Watch ad for reward ---------- */
+const watchAdBtn = document.getElementById('watchAdBtn');
+watchAdBtn.addEventListener('click', () => {
+  if (!AdController) {
+    // SDK not configured yet — demo fallback so the flow can still be tested
+    grantReward(150);
+    return;
+  }
+  watchAdBtn.disabled = true;
+  watchAdBtn.textContent = "Loading…";
+  AdController.show()
+    .then(() => { grantReward(150); })
+    .catch((err) => { console.warn("Ad not shown:", err); })
+    .finally(() => { watchAdBtn.disabled = false; watchAdBtn.textContent = "Watch"; });
+});
+
+async function grantReward(amount){
+  if (BACKEND_URL) {
+    try {
+      const data = await apiCall('/api/ad_reward', { method: 'POST' });
+      state.balance = data.balance;
+    } catch (err) { console.warn('ad reward sync failed', err); state.balance += amount; }
+  } else {
+    state.balance += amount;
+  }
+  save(); render();
+  haptic('medium');
+  const rect = watchAdBtn.getBoundingClientRect();
+  popCoin(rect.left, rect.top, "+" + amount);
+}
+
+/* ---------- Spin wheel ---------- */
+const segments = [
+  { label: "50",  value: 50,  color: "#3FE1C5" },
+  { label: "0",   value: 0,   color: "#2A2350" },
+  { label: "100", value: 100, color: "#FFC24B" },
+  { label: "20",  value: 20,  color: "#7E6BFF" },
+  { label: "500", value: 500, color: "#FF6B6B" },
+  { label: "30",  value: 30,  color: "#3FE1C5" },
+  { label: "200", value: 200, color: "#FFC24B" },
+  { label: "10",  value: 10,  color: "#2A2350" },
+];
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const cx = 130, cy = 130, r = 120;
+let wheelRotation = 0;
+
+function drawWheel(rotation){
+  ctx.clearRect(0,0,260,260);
+  const step = (Math.PI * 2) / segments.length;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+  segments.forEach((seg, i) => {
+    const start = i * step;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,r, start, start + step);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    ctx.save();
+    ctx.rotate(start + step/2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#0E0B1A';
+    ctx.font = "700 15px 'Baloo 2', sans-serif";
+    ctx.fillText(seg.label, r - 14, 5);
+    ctx.restore();
+  });
+  ctx.restore();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 14, 0, Math.PI*2);
+  ctx.fillStyle = '#F4F0FF';
+  ctx.fill();
+}
+drawWheel(0);
+
+function updateSpinAvailability(){
+  const remaining = SPIN_COOLDOWN_MS - (Date.now() - state.lastSpin);
+  const sub = document.getElementById('spinSub');
+  if (remaining > 0){
+    const h = Math.floor(remaining / 3600000), m = Math.floor((remaining % 3600000) / 60000);
+    sub.textContent = `Next free spin in ${h}h ${m}m`;
+  } else {
+    sub.textContent = "Free once every 4 hours";
+  }
+}
+setInterval(updateSpinAvailability, 30000);
+
+const overlay = document.getElementById('spinOverlay');
+document.getElementById('openSpinBtn').addEventListener('click', () => {
+  overlay.classList.add('open');
+  document.getElementById('spinResultText').textContent = "Tap below to spin";
+});
+document.getElementById('closeSpinBtn').addEventListener('click', () => overlay.classList.remove('open'));
+
+const spinNowBtn = document.getElementById('spinNowBtn');
+spinNowBtn.addEventListener('click', async () => {
+  const remaining = SPIN_COOLDOWN_MS - (Date.now() - state.lastSpin);
+  if (remaining > 0){
+    document.getElementById('spinResultText').textContent = "Come back later, or watch an ad to spin now.";
+    return;
+  }
+  spinNowBtn.disabled = true;
+
+  let winnerIndex = Math.floor(Math.random() * segments.length);
+  let serverWin = null;
+  if (BACKEND_URL) {
+    try {
+      const data = await apiCall('/api/spin', { method: 'POST' });
+      winnerIndex = data.win_index;
+      serverWin = data;
+    } catch (err) {
+      console.warn('spin sync failed, using local result', err);
+    }
+  }
+  const step = (Math.PI*2) / segments.length;
+  const targetAngle = (Math.PI*2 * 6) + (Math.PI*2 - (winnerIndex * step + step/2)) - Math.PI/2;
+
+  let start = null;
+  const duration = 3200;
+  const from = wheelRotation % (Math.PI*2);
+  function animate(ts){
+    if (!start) start = ts;
+    const t = Math.min((ts - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const angle = from + eased * (targetAngle - from);
+    drawWheel(angle);
+    if (t < 1){ requestAnimationFrame(animate); }
+    else {
+      wheelRotation = angle;
+      const win = segments[winnerIndex];
+      if (serverWin) {
+        state.balance = serverWin.balance;
+      } else {
+        state.balance += win.value;
+      }
+      state.lastSpin = Date.now();
+      save(); render();
+      document.getElementById('spinResultText').textContent = win.value > 0 ? `You won ${win.value} coins!` : "No luck this time — try again in 4h";
+      spinNowBtn.disabled = false;
+      haptic('heavy');
+    }
+  }
+  requestAnimationFrame(animate);
+});
+
+/* ---------- Redeem / withdraw ---------- */
+let tiers = DEMO_TIERS;
+
+function renderRedeemList(){
+  const list = document.getElementById('redeemList');
+  list.innerHTML = '';
+  tiers.forEach(tier => {
+    const isCash = tier.type === 'cash_coming_soon';
+    const card = document.createElement('div');
+    card.className = 'action-card' + (isCash ? ' disabled' : '');
+    card.innerHTML = `
+      <div class="action-icon icon-gift">🎁</div>
+      <div class="action-body">
+        <div class="action-title">${tier.reward}</div>
+        <div class="action-sub">${isCash ? 'Coming soon' : tier.coins.toLocaleString() + ' coins'}</div>
+      </div>
+      <button class="action-btn ${isCash ? 'btn-outline' : 'btn-gold'}" ${isCash ? 'disabled' : ''} data-tier="${tier.id}">
+        ${isCash ? 'Soon' : 'Redeem'}
+      </button>
+    `;
+    list.appendChild(card);
+  });
+  list.querySelectorAll('button[data-tier]').forEach(btn => {
+    btn.addEventListener('click', () => requestWithdraw(btn.getAttribute('data-tier')));
+  });
+}
+
+async function requestWithdraw(tierId){
+  const tier = tiers.find(t => t.id === tierId);
+  if (!tier) return;
+
+  if (!BACKEND_URL) {
+    showToast("Demo mode: connect the backend to send real redeem requests.");
+    return;
+  }
+  if (state.balance < tier.coins) {
+    showToast("Not enough coins yet — keep tapping!");
+    return;
+  }
+  try {
+    const data = await apiCall('/api/withdraw', { method: 'POST', body: { tier_id: tierId } });
+    state.balance = data.balance;
+    save(); render();
+    showToast(`Request sent! ${tier.reward} will be added once approved.`);
+  } catch (err) {
+    if (err.data && err.data.error === 'insufficient_balance') showToast("Not enough coins yet.");
+    else if (err.data && err.data.error === 'not_available') showToast("This option isn't available yet.");
+    else showToast("Couldn't send the request — try again.");
+  }
+}
+
+async function syncFromServer(){
+  if (!BACKEND_URL) { renderRedeemList(); return; }
+  try {
+    const data = await apiCall('/api/state');
+    state.balance = data.balance;
+    state.taps = data.taps;
+    state.streak = data.streak;
+    state.lastSpin = Date.now() - (SPIN_COOLDOWN_MS - data.spin_cooldown_remaining * 1000);
+    if (data.tiers && data.tiers.length) tiers = data.tiers;
+  } catch (err) {
+    console.warn('initial sync failed, using local state', err);
+  }
+  save(); render(); renderRedeemList();
+}
+
+render();
+syncFromServer();
+</script>
+</body>
+</html>

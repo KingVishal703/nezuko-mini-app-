@@ -71,6 +71,8 @@
     position:relative;
   }
   .coin-btn:active{transform:translateY(8px); box-shadow:0 2px 0 var(--gold-dim), 0 6px 14px rgba(0,0,0,.4);}
+  .coin-btn:disabled{opacity:.5; cursor:not-allowed; filter:grayscale(.4);}
+  .coin-btn:disabled:active{transform:none; box-shadow:0 10px 0 var(--gold-dim), 0 16px 26px rgba(0,0,0,.45);}
   .coin-btn span{display:block; line-height:1.15;}
   .coin-btn .plus{font-size:26px;}
   .tap-hint{font-size:12px; color:var(--ink-dim);}
@@ -142,7 +144,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"></div>
-      <div class="brand-name">Vip CoinSpin to premium</div>
+      <div class="brand-name">CoinSpin</div>
     </div>
     <div class="streak" id="streakBadge">Day 1 streak</div>
   </header>
@@ -158,7 +160,7 @@
       <span class="plus">+1</span>
       <span>TAP</span>
     </button>
-    <div class="tap-hint" id="tapHint">Tap the coin to earn</div>
+    <div class="tap-hint" id="tapHint">Tap the coin to earn — up to 200 coins every 2 hours</div>
   </div>
 
   <div class="section-title">Earn more</div>
@@ -167,7 +169,7 @@
     <div class="action-icon icon-ad">▶</div>
     <div class="action-body">
       <div class="action-title">Watch a video</div>
-      <div class="action-sub">+150 coins, no limit</div>
+      <div class="action-sub" id="adSub">+150 coins, 3 per day</div>
     </div>
     <button class="action-btn btn-teal" id="watchAdBtn">Watch</button>
   </div>
@@ -209,8 +211,8 @@
    CONFIG — put your real Adsgram Block ID(s) here before publishing
    Get them from your Adsgram publisher dashboard: https://adsgram.ai
    ============================================================ */
-const ADSGRAM_REWARD_BLOCK_ID = "48406";
-const ADSGRAM_INTERSTITIAL_BLOCK_ID = "int-48405";
+const ADSGRAM_REWARD_BLOCK_ID = "YOUR_REWARD_BLOCK_ID";
+const ADSGRAM_INTERSTITIAL_BLOCK_ID = "YOUR_INTERSTITIAL_BLOCK_ID";
 
 /* Set this to your deployed backend, e.g. "https://your-server.com"
    Leave empty ("") to run in local demo mode (coins stored only on this device,
@@ -263,10 +265,10 @@ async function apiCall(path, options={}){
 let AdController = null, InterstitialController = null;
 function initAds(){
   try{
-    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "48406") {
+    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "YOUR_REWARD_BLOCK_ID") {
       AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID });
     }
-    if (window.Adsgram && ADSGRAM_INTERSTITIAL_BLOCK_ID !== "int-48405") {
+    if (window.Adsgram && ADSGRAM_INTERSTITIAL_BLOCK_ID !== "YOUR_INTERSTITIAL_BLOCK_ID") {
       InterstitialController = window.Adsgram.init({ blockId: ADSGRAM_INTERSTITIAL_BLOCK_ID });
     }
   }catch(e){ console.warn("Adsgram init skipped:", e); }
@@ -285,6 +287,10 @@ function save(){
   localStorage.setItem('cs_taps', state.taps);
   localStorage.setItem('cs_lastSpin', state.lastSpin);
   localStorage.setItem('cs_streak', state.streak);
+  localStorage.setItem('cs_tapWindowStart', state.tapWindowStart);
+  localStorage.setItem('cs_tapWindowCoins', state.tapWindowCoins);
+  localStorage.setItem('cs_adWatchDate', state.adWatchDate);
+  localStorage.setItem('cs_adWatchCount', state.adWatchCount);
 }
 function render(){
   document.getElementById('balance').textContent = state.balance.toLocaleString();
@@ -296,9 +302,53 @@ function render(){
 const tapBtn = document.getElementById('tapCoin');
 const SPIN_COOLDOWN_MS = 4 * 60 * 60 * 1000;
 const INTERSTITIAL_EVERY_N_TAPS = 12; // show an interstitial occasionally, not on every tap
+const TAP_WINDOW_MS = 2 * 60 * 60 * 1000;   // 2 hours
+const TAP_WINDOW_LIMIT = 200;               // max coins from tapping per window
+const AD_DAILY_LIMIT = 3;                   // max video-ad rewards per day
+
+// extra local fields (kept alongside `state`, same load/save pattern)
+state.tapWindowStart = Number(localStorage.getItem('cs_tapWindowStart') || 0);
+state.tapWindowCoins = Number(localStorage.getItem('cs_tapWindowCoins') || 0);
+state.adWatchDate = localStorage.getItem('cs_adWatchDate') || '';
+state.adWatchCount = Number(localStorage.getItem('cs_adWatchCount') || 0);
+
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+
+function updateTapUI(){
+  const hint = document.getElementById('tapHint');
+  const now = Date.now();
+  const windowActive = (now - state.tapWindowStart) < TAP_WINDOW_MS;
+  const used = windowActive ? state.tapWindowCoins : 0;
+  const capped = windowActive && used >= TAP_WINDOW_LIMIT;
+  tapBtn.disabled = capped;
+  if (capped){
+    const remaining = TAP_WINDOW_MS - (now - state.tapWindowStart);
+    const h = Math.floor(remaining / 3600000), m = Math.floor((remaining % 3600000) / 60000);
+    hint.textContent = `Limit reached — resets in ${h}h ${m}m`;
+  } else {
+    hint.textContent = `${used}/${TAP_WINDOW_LIMIT} coins this cycle`;
+  }
+}
+setInterval(updateTapUI, 30000);
+
+function updateAdUI(){
+  const sub = document.getElementById('adSub');
+  const count = state.adWatchDate === todayKey() ? state.adWatchCount : 0;
+  const reached = count >= AD_DAILY_LIMIT;
+  watchAdBtnRef().disabled = reached;
+  sub.textContent = reached ? "Come back tomorrow" : `+150 coins, ${count}/${AD_DAILY_LIMIT} watched today`;
+}
+function watchAdBtnRef(){ return document.getElementById('watchAdBtn'); }
 
 tapBtn.addEventListener('click', async (e) => {
-  state.taps += 1;
+  const now = Date.now();
+  const windowActive = (now - state.tapWindowStart) < TAP_WINDOW_MS;
+  if (windowActive && state.tapWindowCoins >= TAP_WINDOW_LIMIT) {
+    updateTapUI();
+    showToast("Tap limit reached for this 2-hour cycle.");
+    return;
+  }
+
   haptic('light');
   popCoin(e.clientX, e.clientY, "+1");
 
@@ -306,11 +356,26 @@ tapBtn.addEventListener('click', async (e) => {
     try {
       const data = await apiCall('/api/tap', { method: 'POST' });
       state.balance = data.balance;
-    } catch (err) { console.warn('tap sync failed', err); }
+      state.taps = data.taps;
+      state.tapWindowCoins = data.window_coins;
+      state.tapWindowStart = now - ((TAP_WINDOW_MS - data.window_remaining * 1000) || 0);
+    } catch (err) {
+      if (err.data && err.data.error === 'tap_limit_reached') {
+        state.tapWindowStart = now - (TAP_WINDOW_MS - err.data.remaining * 1000);
+        state.tapWindowCoins = TAP_WINDOW_LIMIT;
+        updateTapUI();
+        showToast("Tap limit reached for this 2-hour cycle.");
+        return;
+      }
+      console.warn('tap sync failed', err);
+    }
   } else {
+    if (!windowActive) { state.tapWindowStart = now; state.tapWindowCoins = 0; }
     state.balance += 1;
+    state.taps += 1;
+    state.tapWindowCoins += 1;
   }
-  save(); render();
+  save(); render(); updateTapUI();
 
   if (state.taps % INTERSTITIAL_EVERY_N_TAPS === 0 && InterstitialController) {
     InterstitialController.show().catch(()=>{ /* user skipped or no fill — ignore */ });
@@ -330,6 +395,11 @@ function popCoin(x, y, text){
 /* ---------- Watch ad for reward ---------- */
 const watchAdBtn = document.getElementById('watchAdBtn');
 watchAdBtn.addEventListener('click', () => {
+  const count = state.adWatchDate === todayKey() ? state.adWatchCount : 0;
+  if (count >= AD_DAILY_LIMIT) {
+    showToast("You've hit today's video limit — come back tomorrow.");
+    return;
+  }
   if (!AdController) {
     // SDK not configured yet — demo fallback so the flow can still be tested
     grantReward(150);
@@ -340,7 +410,7 @@ watchAdBtn.addEventListener('click', () => {
   AdController.show()
     .then(() => { grantReward(150); })
     .catch((err) => { console.warn("Ad not shown:", err); })
-    .finally(() => { watchAdBtn.disabled = false; watchAdBtn.textContent = "Watch"; });
+    .finally(() => { watchAdBtn.disabled = false; watchAdBtn.textContent = "Watch"; updateAdUI(); });
 });
 
 async function grantReward(amount){
@@ -348,11 +418,24 @@ async function grantReward(amount){
     try {
       const data = await apiCall('/api/ad_reward', { method: 'POST' });
       state.balance = data.balance;
-    } catch (err) { console.warn('ad reward sync failed', err); state.balance += amount; }
+      state.adWatchDate = todayKey();
+      state.adWatchCount = data.watched;
+    } catch (err) {
+      if (err.data && err.data.error === 'daily_limit_reached') {
+        state.adWatchDate = todayKey();
+        state.adWatchCount = err.data.watched;
+        save(); render(); updateAdUI();
+        showToast("You've hit today's video limit — come back tomorrow.");
+        return;
+      }
+      console.warn('ad reward sync failed', err); state.balance += amount;
+    }
   } else {
+    if (state.adWatchDate !== todayKey()) { state.adWatchDate = todayKey(); state.adWatchCount = 0; }
     state.balance += amount;
+    state.adWatchCount += 1;
   }
-  save(); render();
+  save(); render(); updateAdUI();
   haptic('medium');
   const rect = watchAdBtn.getBoundingClientRect();
   popCoin(rect.left, rect.top, "+" + amount);
@@ -526,18 +609,22 @@ async function requestWithdraw(tierId){
 }
 
 async function syncFromServer(){
-  if (!BACKEND_URL) { renderRedeemList(); return; }
+  if (!BACKEND_URL) { renderRedeemList(); updateTapUI(); updateAdUI(); return; }
   try {
     const data = await apiCall('/api/state');
     state.balance = data.balance;
     state.taps = data.taps;
     state.streak = data.streak;
     state.lastSpin = Date.now() - (SPIN_COOLDOWN_MS - data.spin_cooldown_remaining * 1000);
+    state.tapWindowCoins = data.tap_window_coins;
+    state.tapWindowStart = Date.now() - (TAP_WINDOW_MS - data.tap_window_remaining * 1000);
+    state.adWatchDate = todayKey();
+    state.adWatchCount = data.ads_watched_today;
     if (data.tiers && data.tiers.length) tiers = data.tiers;
   } catch (err) {
     console.warn('initial sync failed, using local state', err);
   }
-  save(); render(); renderRedeemList();
+  save(); render(); renderRedeemList(); updateTapUI(); updateAdUI();
 }
 
 render();

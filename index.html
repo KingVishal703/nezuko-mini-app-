@@ -127,6 +127,21 @@
   .icon-gift{background:rgba(255,107,107,.14); color:var(--danger);}
   .action-card.disabled{opacity:.55;}
   .action-btn.btn-outline{background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--ink-dim);}
+
+  .proof-card{
+    background:var(--bg-panel); border:1px solid rgba(255,255,255,.06);
+    border-radius:16px; padding:6px 16px;
+  }
+  .proof-empty{padding:14px 0; text-align:center; font-size:12.5px; color:var(--ink-dim);}
+  .proof-list{list-style:none; margin:0; padding:0;}
+  .proof-list li{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:11px 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:13px;
+  }
+  .proof-list li:last-child{border-bottom:none;}
+  .proof-user{color:var(--ink-dim);}
+  .proof-reward{font-weight:600; color:var(--teal); text-align:right;}
+  .proof-time{display:block; font-size:11px; color:var(--ink-dim); font-weight:400; margin-top:1px;}
   .toast{
     position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
     background:#1D1740; border:1px solid rgba(255,255,255,.1); color:var(--ink);
@@ -170,6 +185,7 @@
     <div class="action-body">
       <div class="action-title">Watch a video</div>
       <div class="action-sub" id="adSub">+150 coins, 3 per day</div>
+      <div class="action-sub" style="opacity:.7; margin-top:2px;">Tap to view a short ad — fully optional</div>
     </div>
     <button class="action-btn btn-teal" id="watchAdBtn">Watch</button>
   </div>
@@ -186,9 +202,16 @@
   <div class="section-title">Redeem</div>
   <div id="redeemList"></div>
 
+  <div class="section-title">Recent rewards</div>
+  <div class="proof-card" id="proofCard">
+    <div class="proof-empty" id="proofEmpty">No redemptions yet — be the first!</div>
+    <ul class="proof-list" id="proofList"></ul>
+  </div>
+
   <div class="footer-note">
-    Coins are earned inside this app. Ad rewards are provided by our ad partner.
-    Redemptions are reviewed manually — you'll get a confirmation once it's approved.
+    Ads only ever appear when you tap "Watch a video" above — nothing else in
+    this app shows or requires an ad. Redemptions are reviewed manually; once
+    approved, they're added to Recent rewards above as proof.
   </div>
 </div>
 
@@ -211,7 +234,7 @@
    CONFIG — put your real Adsgram Block ID(s) here before publishing
    Get them from your Adsgram publisher dashboard: https://adsgram.ai
    ============================================================ */
-const ADSGRAM_REWARD_BLOCK_ID = "48501";
+const ADSGRAM_REWARD_BLOCK_ID = "YOUR_REWARD_BLOCK_ID";
 const ADSGRAM_INTERSTITIAL_BLOCK_ID = "YOUR_INTERSTITIAL_BLOCK_ID";
 
 /* Set this to your deployed backend, e.g. "https://your-server.com"
@@ -301,7 +324,6 @@ function render(){
 /* ---------- Tap to earn ---------- */
 const tapBtn = document.getElementById('tapCoin');
 const SPIN_COOLDOWN_MS = 4 * 60 * 60 * 1000;
-const INTERSTITIAL_EVERY_N_TAPS = 12; // show an interstitial occasionally, not on every tap
 const TAP_WINDOW_MS = 2 * 60 * 60 * 1000;   // 2 hours
 const TAP_WINDOW_LIMIT = 200;               // max coins from tapping per window
 const AD_DAILY_LIMIT = 3;                   // max video-ad rewards per day
@@ -376,10 +398,9 @@ tapBtn.addEventListener('click', async (e) => {
     state.tapWindowCoins += 1;
   }
   save(); render(); updateTapUI();
-
-  if (state.taps % INTERSTITIAL_EVERY_N_TAPS === 0 && InterstitialController) {
-    InterstitialController.show().catch(()=>{ /* user skipped or no fill — ignore */ });
-  }
+  // NOTE: no forced/automatic ad here on purpose — AdsGram rejects apps where
+  // a core action (tapping) is gated behind or interrupted by an ad.
+  // Ads are only ever shown when the user chooses "Watch a video" below.
 });
 
 function popCoin(x, y, text){
@@ -609,22 +630,18 @@ async function requestWithdraw(tierId){
 }
 
 async function syncFromServer(){
-  if (!BACKEND_URL) { renderRedeemList(); updateTapUI(); updateAdUI(); return; }
+  if (!BACKEND_URL) { renderRedeemList(); return; }
   try {
     const data = await apiCall('/api/state');
     state.balance = data.balance;
     state.taps = data.taps;
     state.streak = data.streak;
     state.lastSpin = Date.now() - (SPIN_COOLDOWN_MS - data.spin_cooldown_remaining * 1000);
-    state.tapWindowCoins = data.tap_window_coins;
-    state.tapWindowStart = Date.now() - (TAP_WINDOW_MS - data.tap_window_remaining * 1000);
-    state.adWatchDate = todayKey();
-    state.adWatchCount = data.ads_watched_today;
     if (data.tiers && data.tiers.length) tiers = data.tiers;
   } catch (err) {
     console.warn('initial sync failed, using local state', err);
   }
-  save(); render(); renderRedeemList(); updateTapUI(); updateAdUI();
+  save(); render(); renderRedeemList();
 }
 
 render();

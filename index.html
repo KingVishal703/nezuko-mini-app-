@@ -168,6 +168,26 @@
 </head>
 <body>
 
+
+  <script src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+
+<button id="adexiumBtn">🎬 Watch Ad</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const adexiumWidget = new AdexiumWidget({
+        wid: 'a14332f9-4bec-4264-ab0e-06045b74f3db',
+        adFormat: 'interstitial'
+    });
+
+    document.getElementById('adexiumBtn').addEventListener('click', () => {
+        adexiumWidget.show();
+    });
+
+});
+</script>
+
 <div class="wrap">
   <header>
     <div class="brand">

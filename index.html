@@ -521,44 +521,62 @@ document.getElementById('imgSupportBtn').addEventListener('click', watchSupportA
 refreshProUI();
 </script>
 
-  <!-- CoinSpin Popup -->
+<!-- CoinSpin Popup -->
 <style>
   #coinSpinPopup {
     position: fixed;
-    right: 15px;
-    bottom: 20px;
+    right: 18px;
+    bottom: 28px;
+    width: 330px;
+    max-width: calc(100vw - 36px);
+    height: 82px;
     z-index: 99999;
+
     background: #ffffff;
-    border-radius: 14px;
-    padding: 12px 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    cursor: pointer;
-    font-family: Arial, sans-serif;
+    border-radius: 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+
     display: flex;
     align-items: center;
-    gap: 10px;
-    animation: coinSpinPopupIn 0.5s ease;
+    padding: 10px 18px;
+    box-sizing: border-box;
+
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+
+    animation: coinPopupIn 0.5s ease;
   }
 
   #coinSpinPopup .coin-icon {
-    font-size: 28px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    margin-right: 14px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 38px;
   }
 
   #coinSpinPopup .coin-text {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
     color: #222;
+    line-height: 1.2;
   }
 
   #coinSpinPopup .coin-subtext {
-    font-size: 11px;
-    color: #777;
-    margin-top: 2px;
+    font-size: 15px;
+    color: #888;
+    margin-top: 5px;
   }
 
-  @keyframes coinSpinPopupIn {
+  @keyframes coinPopupIn {
     from {
-      transform: translateY(100px);
+      transform: translateY(80px);
       opacity: 0;
     }
     to {
@@ -569,9 +587,27 @@ refreshProUI();
 
   @media (max-width: 480px) {
     #coinSpinPopup {
-      right: 10px;
-      bottom: 15px;
-      padding: 10px 13px;
+      right: 18px;
+      bottom: 28px;
+      width: 350px;
+      max-width: calc(100vw - 36px);
+      height: 82px;
+      border-radius: 24px;
+    }
+
+    #coinSpinPopup .coin-icon {
+      width: 55px;
+      height: 55px;
+      font-size: 34px;
+      margin-right: 12px;
+    }
+
+    #coinSpinPopup .coin-text {
+      font-size: 20px;
+    }
+
+    #coinSpinPopup .coin-subtext {
+      font-size: 14px;
     }
   }
 </style>

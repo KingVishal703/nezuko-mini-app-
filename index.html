@@ -9,32 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
 <!-- Adsgram SDK — used only for the fully optional "Pro Mode" bonus below -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
-  <script>
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-
-  // Only run if valid id
-  if (id && id.startsWith("blg2")) {
-
-    // Telegram hash safely capture
-    const hash = window.location.hash || "";
-
-    // OPTIONAL: Debug (remove later)
-    console.log("ID:", id);
-    console.log("HASH:", hash);
-
-    // ⏳ IMPORTANT: Delay so ads + SDK load properly
-    setTimeout(() => {
-
-      // Always forward hash (VERY IMPORTANT for AdsGram)
-      window.location.href = "/step1.html?id=" + id + hash;
-
-    }, 2500); // 2.5 sec delay (best)
-
-  }
-  </script>
-  
 <style>
   :root{
     --bg-deep:#0E0B1A; --bg-panel:#181233;
@@ -139,6 +113,7 @@
       <button class="btn btn-gold" id="qrGenBtn">Generate QR Code</button>
       <div class="qr-box" id="qrBox" style="display:none;"><div id="qrCanvas"></div></div>
       <button class="btn btn-outline" id="qrDownloadBtn" style="display:none;">Download PNG</button>
+      <button class="btn btn-outline" id="qrSupportBtn" style="display:none; color:var(--gold); border-color:rgba(255,194,75,.3);">💛 Enjoyed this? Watch a quick ad to support us (optional)</button>
     </div>
 
     <div class="card">
@@ -228,6 +203,7 @@
       <div class="chip-row" id="imgSizeInfo"></div>
       <button class="btn btn-teal" id="imgCompressBtn" style="display:none;">Compress</button>
       <a class="btn btn-outline" id="imgDownloadBtn" style="display:none; text-align:center; text-decoration:none;">Download result</a>
+      <button class="btn btn-outline" id="imgSupportBtn" style="display:none; color:var(--gold); border-color:rgba(255,194,75,.3);">💛 Enjoyed this? Watch a quick ad to support us (optional)</button>
     </div>
   </div>
 
@@ -290,6 +266,7 @@ document.getElementById('qrGenBtn').addEventListener('click', () => {
   new QRCode(box, { text: val, width: 220, height: 220, colorDark: '#0E0B1A', colorLight: '#ffffff' });
   document.getElementById('qrBox').style.display = 'flex';
   document.getElementById('qrDownloadBtn').style.display = 'block';
+  document.getElementById('qrSupportBtn').style.display = 'block';
   haptic('medium');
 });
 document.getElementById('qrDownloadBtn').addEventListener('click', () => {
@@ -460,6 +437,7 @@ document.getElementById('imgCompressBtn').addEventListener('click', () => {
       const url = URL.createObjectURL(blob);
       const dl = document.getElementById('imgDownloadBtn');
       dl.href = url; dl.download = 'compressed.jpg'; dl.style.display = 'block';
+      document.getElementById('imgSupportBtn').style.display = 'block';
       document.getElementById('imgSizeInfo').innerHTML =
         `<span class="chip">Original: ${(originalSize/1024).toFixed(1)} KB</span>` +
         `<span class="chip">Compressed: ${(blob.size/1024).toFixed(1)} KB</span>` +
@@ -471,18 +449,36 @@ document.getElementById('imgCompressBtn').addEventListener('click', () => {
 });
 
 /* ---------- Pro Mode (optional ad-unlocked bonus — nothing else requires this) ---------- */
-const ADSGRAM_REWARD_BLOCK_ID = "49067"; // set this in your Adsgram dashboard
+const ADSGRAM_REWARD_BLOCK_ID = "49067";
+const ADSGRAM_INTERSTITIAL_BLOCK_ID = "int-49106"; // used only for the fully optional "Support us" button below
 let AdController = null;
+let SupportAdController = null;
 let proUntil = Number(sessionStorage.getItem('qt_proUntil') || 0);
 
 function initAds(){
   try {
-    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "49067") {
+    if (window.Adsgram) {
       AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID, debug: false });
+      SupportAdController = window.Adsgram.init({ blockId: ADSGRAM_INTERSTITIAL_BLOCK_ID, debug: false });
     }
   } catch (e) { console.warn("Adsgram init skipped:", e); }
 }
 window.addEventListener('load', initAds);
+
+/* Purely optional, no reward attached — just a way for users who enjoy the app
+   to voluntarily watch a quick ad and support it. Never triggered automatically. */
+function watchSupportAd(){
+  if (!SupportAdController) {
+    showToast("Thanks for wanting to support us! Ad slot isn't live yet.");
+    return;
+  }
+  SupportAdController.show()
+    .then(() => showToast("Thanks for supporting QuickTools! 💛"))
+    .catch((err) => {
+      console.warn('Support ad not shown:', err);
+      showToast('No ad available right now — thanks for trying though!');
+    });
+}
 
 function refreshProUI(){
   const active = Date.now() < proUntil;
@@ -520,6 +516,8 @@ function watchAdForPro(){
 }
 document.getElementById('watchAdBtn').addEventListener('click', watchAdForPro);
 document.getElementById('watchAdBtnHome').addEventListener('click', watchAdForPro);
+document.getElementById('qrSupportBtn').addEventListener('click', watchSupportAd);
+document.getElementById('imgSupportBtn').addEventListener('click', watchSupportAd);
 refreshProUI();
 </script>
 </body>

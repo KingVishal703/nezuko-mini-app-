@@ -521,106 +521,162 @@ document.getElementById('imgSupportBtn').addEventListener('click', watchSupportA
 refreshProUI();
 </script>
 
-<!-- CoinSpin Popup -->
+<!-- ============================= -->
+<!-- CoinSpin Floating Popup -->
+<!-- ============================= -->
+
 <style>
   #coinSpinPopup {
     position: fixed;
     right: 18px;
-    bottom: 28px;
+    bottom: 250px;
+
     width: 330px;
     max-width: calc(100vw - 36px);
     height: 82px;
-    z-index: 99999;
 
     background: #ffffff;
     border-radius: 24px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 
     display: flex;
     align-items: center;
+
     padding: 10px 18px;
     box-sizing: border-box;
 
+    z-index: 999999;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.28);
+
     cursor: pointer;
+
     font-family: Arial, sans-serif;
 
     animation: coinPopupIn 0.5s ease;
   }
 
+
+  /* Coin Icon */
   #coinSpinPopup .coin-icon {
     width: 58px;
     height: 58px;
-    border-radius: 50%;
-    margin-right: 14px;
-    flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
+    margin-right: 14px;
+
+    flex-shrink: 0;
+
     font-size: 38px;
   }
 
+
+  /* Main Text */
   #coinSpinPopup .coin-text {
     font-size: 22px;
     font-weight: 700;
-    color: #222;
+
+    color: #222222;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+  }
+
+
+  /* Small Text */
+  #coinSpinPopup .coin-subtext {
+    font-size: 15px;
+
+    color: #888888;
+
+    margin-top: 5px;
+
     line-height: 1.2;
   }
 
-  #coinSpinPopup .coin-subtext {
-    font-size: 15px;
-    color: #888;
-    margin-top: 5px;
-  }
 
+  /* Popup Animation */
   @keyframes coinPopupIn {
     from {
-      transform: translateY(80px);
+      transform: translateY(60px);
       opacity: 0;
     }
+
     to {
       transform: translateY(0);
       opacity: 1;
     }
   }
 
+
+  /* Mobile */
   @media (max-width: 480px) {
+
     #coinSpinPopup {
       right: 18px;
-      bottom: 28px;
+      bottom: 250px;
+
       width: 350px;
       max-width: calc(100vw - 36px);
+
       height: 82px;
+
       border-radius: 24px;
+
+      padding: 10px 18px;
     }
+
 
     #coinSpinPopup .coin-icon {
       width: 55px;
       height: 55px;
+
       font-size: 34px;
+
       margin-right: 12px;
     }
+
 
     #coinSpinPopup .coin-text {
       font-size: 20px;
     }
 
+
     #coinSpinPopup .coin-subtext {
       font-size: 14px;
+
+      margin-top: 5px;
     }
   }
 </style>
 
-<div id="coinSpinPopup" onclick="window.location.href='coinspin.html'">
-  <div class="coin-icon">🪙</div>
+
+<!-- Popup -->
+<div id="coinSpinPopup"
+     onclick="window.location.href='coinspin.html'">
+
+  <div class="coin-icon">
+    🪙
+  </div>
 
   <div>
-    <div class="coin-text">Spin & Earn Coins</div>
-    <div class="coin-subtext">Tap to play →</div>
+    <div class="coin-text">
+      Spin &amp; Earn Coins
+    </div>
+
+    <div class="coin-subtext">
+      Tap to play →
+    </div>
   </div>
+
 </div>
+
+<!-- ============================= -->
 <!-- End CoinSpin Popup -->
+<!-- ============================= -->
   
 </body>
 </html>

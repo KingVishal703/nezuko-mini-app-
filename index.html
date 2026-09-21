@@ -96,6 +96,13 @@
     <div class="brand-name">QuickTools</div>
   </header>
 
+  <!-- AD PLACEMENT — always visible on the home screen, first thing anyone sees -->
+  <div class="card" id="homeAdCard">
+    <h2>🎬 Watch a video</h2>
+    <div class="sub" id="homeAdSub">Unlock Pro Mode (batch image compression) for 24 hours. Fully optional — every tool below stays free either way.</div>
+    <button class="btn btn-gold" id="watchAdBtnHome">Watch a video to unlock</button>
+  </div>
+
   <!-- QR GENERATOR -->
   <div class="panel active" id="panel-qr">
     <div class="card">
@@ -438,7 +445,7 @@ document.getElementById('imgCompressBtn').addEventListener('click', () => {
 });
 
 /* ---------- Pro Mode (optional ad-unlocked bonus — nothing else requires this) ---------- */
-const ADSGRAM_REWARD_BLOCK_ID = "49034"; // set this in your Adsgram dashboard
+const ADSGRAM_REWARD_BLOCK_ID = "YOUR_REWARD_BLOCK_ID"; // set this in your Adsgram dashboard
 let AdController = null;
 let proUntil = Number(sessionStorage.getItem('qt_proUntil') || 0);
 
@@ -453,14 +460,19 @@ window.addEventListener('load', initAds);
 
 function refreshProUI(){
   const active = Date.now() < proUntil;
+  const label = active
+    ? `Pro active — ${Math.ceil((proUntil - Date.now()) / 3600000)}h left`
+    : 'Watch a video to unlock';
   document.getElementById('proStatus').textContent = active
     ? `Status: Pro active (${Math.ceil((proUntil - Date.now()) / 3600000)}h left)`
     : 'Status: Free plan';
   document.getElementById('watchAdBtn').style.display = active ? 'none' : 'block';
   document.getElementById('batchBadge').style.display = active ? 'none' : 'inline-block';
+  document.getElementById('homeAdCard').style.display = active ? 'none' : 'block';
+  document.getElementById('watchAdBtnHome').textContent = label;
 }
 
-document.getElementById('watchAdBtn').addEventListener('click', () => {
+function watchAdForPro(){
   const grant = () => {
     proUntil = Date.now() + 24 * 60 * 60 * 1000;
     sessionStorage.setItem('qt_proUntil', proUntil);
@@ -468,11 +480,21 @@ document.getElementById('watchAdBtn').addEventListener('click', () => {
     showToast('Pro Mode unlocked for 24 hours!');
     haptic('medium');
   };
-  if (!AdController) { grant(); return; } // demo fallback until a real Block ID is set
-  AdController.show().then(grant).catch((err) => console.warn('Ad not shown:', err));
-});
+  if (!AdController) {
+    showToast('Ad slot not configured yet (demo mode) — unlocking anyway for testing.');
+    grant();
+    return;
+  }
+  AdController.show()
+    .then(grant)
+    .catch((err) => {
+      console.warn('Ad not shown:', err);
+      showToast('No ad available right now — please try again in a moment.');
+    });
+}
+document.getElementById('watchAdBtn').addEventListener('click', watchAdForPro);
+document.getElementById('watchAdBtnHome').addEventListener('click', watchAdForPro);
 refreshProUI();
 </script>
 </body>
 </html>
-

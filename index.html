@@ -451,7 +451,7 @@ let proUntil = Number(sessionStorage.getItem('qt_proUntil') || 0);
 
 function initAds(){
   try {
-    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "YOUR_REWARD_BLOCK_ID") {
+    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "49067") {
       AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID, debug: false });
     }
   } catch (e) { console.warn("Adsgram init skipped:", e); }

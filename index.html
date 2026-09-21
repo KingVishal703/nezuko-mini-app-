@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>QuickTools</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+<!-- Adsgram SDK — used only for the fully optional "Pro Mode" bonus below -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+  :root{
+    --bg-deep:#0E0B1A; --bg-panel:#181233;
+    --gold:#FFC24B; --gold-dim:#8A6A1F;
+    --teal:#3FE1C5; --ink:#F4F0FF; --ink-dim:#9C93C2; --danger:#FF6B6B;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  html,body{margin:0; padding:0; background:radial-gradient(circle at 50% -10%, #241a4a 0%, var(--bg-deep) 55%);
+    color:var(--ink); font-family:'Inter', system-ui, sans-serif; min-height:100vh; user-select:none;}
+  .display{font-family:'Baloo 2', system-ui, sans-serif;}
+  .wrap{max-width:480px; margin:0 auto; padding:16px 16px 90px;}
+
+  header{display:flex; align-items:center; gap:8px; padding:6px 2px 16px;}
+  .brand-mark{width:28px; height:28px; border-radius:9px; background:linear-gradient(135deg, var(--teal), var(--gold)); flex:0 0 auto;}
+  .brand-name{font-family:'Baloo 2'; font-weight:800; font-size:19px;}
+
+  .card{background:var(--bg-panel); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:18px; margin-bottom:14px;}
+  .card h2{font-family:'Baloo 2'; font-size:16px; margin:0 0 4px;}
+  .card .sub{font-size:12px; color:var(--ink-dim); margin-bottom:14px;}
+
+  input[type=text], textarea, select{
+    width:100%; background:#100C24; border:1px solid rgba(255,255,255,.1); border-radius:12px;
+    color:var(--ink); padding:12px 14px; font-size:14px; font-family:inherit; outline:none;
+  }
+  textarea{resize:vertical; min-height:80px;}
+  label{font-size:12px; color:var(--ink-dim); display:block; margin:10px 0 6px;}
+  label:first-child{margin-top:0;}
+
+  .btn{border:none; border-radius:12px; padding:12px 16px; font-weight:700; font-size:13.5px; cursor:pointer; width:100%; margin-top:12px;}
+  .btn-gold{background:var(--gold); color:#3A2A05;}
+  .btn-teal{background:var(--teal); color:#062A24;}
+  .btn-outline{background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--ink);}
+  .btn-row{display:flex; gap:10px;}
+  .btn-row .btn{margin-top:0;}
+
+  .qr-box{display:flex; justify-content:center; padding:16px; background:#fff; border-radius:14px; margin-top:14px;}
+  .result-box{background:#100C24; border-radius:12px; padding:12px 14px; font-size:13px; margin-top:12px; word-break:break-word; color:var(--teal); min-height:20px;}
+
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .chip{background:#100C24; border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:7px 13px; font-size:12px; color:var(--ink-dim);}
+
+  .swatch{width:100%; height:70px; border-radius:12px; margin-top:12px; border:1px solid rgba(255,255,255,.1);}
+  input[type=color]{width:100%; height:44px; border:none; border-radius:10px; background:none; margin-top:10px; cursor:pointer;}
+
+  .drop-zone{
+    border:2px dashed rgba(255,255,255,.14); border-radius:14px; padding:26px 14px; text-align:center;
+    font-size:13px; color:var(--ink-dim); cursor:pointer;
+  }
+  .drop-zone.active{border-color:var(--teal); color:var(--teal);}
+  .preview-img{max-width:100%; border-radius:12px; margin-top:12px; display:none;}
+
+  .pro-badge{display:inline-block; background:rgba(255,194,75,.15); color:var(--gold); font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; margin-left:6px;}
+  .locked{opacity:.5; pointer-events:none;}
+
+  nav.tabbar{
+    position:fixed; left:0; right:0; bottom:0; background:#140F2A; border-top:1px solid rgba(255,255,255,.06);
+    display:flex; padding:6px calc(env(safe-area-inset-bottom,0px) + 6px) calc(env(safe-area-inset-bottom,0px) + 6px);
+    padding-top:6px; z-index:20;
+  }
+  nav.tabbar button{
+    flex:1; background:none; border:none; color:var(--ink-dim); font-size:10.5px; padding:7px 2px 5px;
+    display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-family:inherit;
+  }
+  nav.tabbar button .ic{font-size:19px;}
+  nav.tabbar button.active{color:var(--gold);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .toast{
+    position:fixed; left:50%; bottom:82px; transform:translateX(-50%) translateY(20px);
+    background:#1D1740; border:1px solid rgba(255,255,255,.1); color:var(--ink);
+    padding:11px 16px; border-radius:14px; font-size:12.5px; text-align:center; max-width:88%;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:200;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand-mark"></div>
+    <div class="brand-name">QuickTools</div>
+  </header>
+
+  <!-- QR GENERATOR -->
+  <div class="panel active" id="panel-qr">
+    <div class="card">
+      <h2>QR Code Generator</h2>
+      <div class="sub">Turn any text or link into a scannable QR code</div>
+      <label>Text or URL</label>
+      <textarea id="qrInput" placeholder="https://example.com"></textarea>
+      <button class="btn btn-gold" id="qrGenBtn">Generate QR Code</button>
+      <div class="qr-box" id="qrBox" style="display:none;"><div id="qrCanvas"></div></div>
+      <button class="btn btn-outline" id="qrDownloadBtn" style="display:none;">Download PNG</button>
+    </div>
+
+    <div class="card">
+      <h2>QR Code Scanner</h2>
+      <div class="sub">Upload a QR code image to decode it</div>
+      <div class="drop-zone" id="qrScanZone">Tap to choose an image</div>
+      <input type="file" id="qrScanInput" accept="image/*" style="display:none;">
+      <div class="result-box" id="qrScanResult" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- TEXT TOOLS -->
+  <div class="panel" id="panel-text">
+    <div class="card">
+      <h2>Text Tools</h2>
+      <div class="sub">Case conversion, word & character count</div>
+      <label>Your text</label>
+      <textarea id="textInput" placeholder="Paste or type text here..."></textarea>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn btn-outline" data-case="upper">UPPER</button>
+        <button class="btn btn-outline" data-case="lower">lower</button>
+        <button class="btn btn-outline" data-case="title">Title</button>
+      </div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn btn-outline" data-case="sentence">Sentence</button>
+        <button class="btn btn-outline" data-case="trim">Trim spaces</button>
+      </div>
+      <div class="chip-row" id="textStats">
+        <span class="chip">0 characters</span>
+        <span class="chip">0 words</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNIT CONVERTER -->
+  <div class="panel" id="panel-convert">
+    <div class="card">
+      <h2>Unit Converter</h2>
+      <div class="sub">Length, weight, and temperature</div>
+      <label>Category</label>
+      <select id="convCategory">
+        <option value="length">Length</option>
+        <option value="weight">Weight</option>
+        <option value="temp">Temperature</option>
+      </select>
+      <div class="btn-row" style="margin-top:10px;">
+        <div style="flex:1;">
+          <label>From</label>
+          <select id="convFrom"></select>
+        </div>
+        <div style="flex:1;">
+          <label>To</label>
+          <select id="convTo"></select>
+        </div>
+      </div>
+      <label>Value</label>
+      <input type="text" id="convValue" placeholder="Enter a number" inputmode="decimal">
+      <div class="result-box" id="convResult">Result will appear here</div>
+    </div>
+  </div>
+
+  <!-- COLOR TOOL -->
+  <div class="panel" id="panel-color">
+    <div class="card">
+      <h2>Color Tool</h2>
+      <div class="sub">Pick a color or convert HEX ↔ RGB ↔ HSL</div>
+      <input type="color" id="colorPicker" value="#ffc24b">
+      <div class="swatch" id="colorSwatch" style="background:#ffc24b;"></div>
+      <div class="chip-row" id="colorValues">
+        <span class="chip" id="colorHex">HEX: #FFC24B</span>
+        <span class="chip" id="colorRgb">RGB: 255,194,75</span>
+        <span class="chip" id="colorHsl">HSL: 39°,100%,65%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE COMPRESSOR -->
+  <div class="panel" id="panel-compress">
+    <div class="card">
+      <h2>Image Compressor <span class="pro-badge" id="batchBadge">PRO</span></h2>
+      <div class="sub" id="compressSub">Shrink a photo's file size, right in your browser</div>
+      <div class="drop-zone" id="imgDropZone">Tap to choose an image</div>
+      <input type="file" id="imgInput" accept="image/*" style="display:none;">
+      <img class="preview-img" id="imgPreview">
+      <label>Quality</label>
+      <input type="range" id="qualitySlider" min="10" max="95" value="70" style="width:100%;">
+      <div class="chip-row" id="imgSizeInfo"></div>
+      <button class="btn btn-teal" id="imgCompressBtn" style="display:none;">Compress</button>
+      <a class="btn btn-outline" id="imgDownloadBtn" style="display:none; text-align:center; text-decoration:none;">Download result</a>
+    </div>
+  </div>
+
+  <!-- PRO / EARN -->
+  <div class="panel" id="panel-pro">
+    <div class="card">
+      <h2>Pro Mode</h2>
+      <div class="sub">Everything above already works fully free, forever. Pro Mode is a completely optional bonus.</div>
+      <div class="chip-row">
+        <span class="chip" id="proStatus">Status: Free plan</span>
+      </div>
+      <div style="font-size:13px; color:var(--ink-dim); margin-top:12px; line-height:1.6;">
+        Watching a short video unlocks <b>batch image compression</b> (multiple photos at once) for 24 hours.
+        Nothing else in this app requires an ad — every tool above works the same with or without it.
+      </div>
+      <button class="btn btn-gold" id="watchAdBtn">Watch a video to unlock</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="tabbar">
+  <button class="tab-btn active" data-panel="panel-qr"><span class="ic">▦</span>QR</button>
+  <button class="tab-btn" data-panel="panel-text"><span class="ic">✍</span>Text</button>
+  <button class="tab-btn" data-panel="panel-convert"><span class="ic">⇄</span>Convert</button>
+  <button class="tab-btn" data-panel="panel-color"><span class="ic">◍</span>Color</button>
+  <button class="tab-btn" data-panel="panel-compress"><span class="ic">🗜</span>Compress</button>
+  <button class="tab-btn" data-panel="panel-pro"><span class="ic">★</span>Pro</button>
+</nav>
+
+<script>
+/* ---------- Telegram WebApp init ---------- */
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
+function haptic(t){ if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(t||'light'); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ---------- Tab navigation ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+    haptic('light');
+  });
+});
+
+/* ---------- QR Generator ---------- */
+document.getElementById('qrGenBtn').addEventListener('click', () => {
+  const val = document.getElementById('qrInput').value.trim();
+  if (!val) { showToast('Type some text or a link first'); return; }
+  const box = document.getElementById('qrCanvas');
+  box.innerHTML = '';
+  new QRCode(box, { text: val, width: 220, height: 220, colorDark: '#0E0B1A', colorLight: '#ffffff' });
+  document.getElementById('qrBox').style.display = 'flex';
+  document.getElementById('qrDownloadBtn').style.display = 'block';
+  haptic('medium');
+});
+document.getElementById('qrDownloadBtn').addEventListener('click', () => {
+  const canvas = document.querySelector('#qrCanvas canvas');
+  if (!canvas) return;
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'qrcode.png';
+  a.click();
+});
+
+/* ---------- QR Scanner ---------- */
+const qrScanZone = document.getElementById('qrScanZone');
+const qrScanInput = document.getElementById('qrScanInput');
+qrScanZone.addEventListener('click', () => qrScanInput.click());
+qrScanInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    const resultBox = document.getElementById('qrScanResult');
+    resultBox.style.display = 'block';
+    resultBox.textContent = code ? code.data : "No QR code found in that image.";
+    haptic(code ? 'medium' : 'light');
+  };
+  img.src = URL.createObjectURL(file);
+});
+
+/* ---------- Text Tools ---------- */
+const textInput = document.getElementById('textInput');
+function updateTextStats(){
+  const v = textInput.value;
+  const words = v.trim() ? v.trim().split(/\s+/).length : 0;
+  document.getElementById('textStats').innerHTML =
+    `<span class="chip">${v.length} characters</span><span class="chip">${words} words</span>`;
+}
+textInput.addEventListener('input', updateTextStats);
+document.querySelectorAll('[data-case]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mode = btn.dataset.case;
+    let v = textInput.value;
+    if (mode === 'upper') v = v.toUpperCase();
+    else if (mode === 'lower') v = v.toLowerCase();
+    else if (mode === 'title') v = v.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+    else if (mode === 'sentence') v = v.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+    else if (mode === 'trim') v = v.trim().replace(/\s+/g, ' ');
+    textInput.value = v;
+    updateTextStats();
+    haptic('light');
+  });
+});
+
+/* ---------- Unit Converter ---------- */
+const units = {
+  length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
+  weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, ton: 1000 },
+};
+const convCategory = document.getElementById('convCategory');
+const convFrom = document.getElementById('convFrom');
+const convTo = document.getElementById('convTo');
+const convValue = document.getElementById('convValue');
+const convResult = document.getElementById('convResult');
+
+function fillUnitOptions(){
+  const cat = convCategory.value;
+  convFrom.innerHTML = ''; convTo.innerHTML = '';
+  if (cat === 'temp') {
+    ['C','F','K'].forEach(u => {
+      convFrom.innerHTML += `<option value="${u}">${u}</option>`;
+      convTo.innerHTML += `<option value="${u}">${u}</option>`;
+    });
+    convTo.value = 'F';
+  } else {
+    Object.keys(units[cat]).forEach(u => {
+      convFrom.innerHTML += `<option value="${u}">${u}</option>`;
+      convTo.innerHTML += `<option value="${u}">${u}</option>`;
+    });
+    convTo.selectedIndex = 1;
+  }
+  runConvert();
+}
+function toCelsius(v, u){ return u === 'C' ? v : u === 'F' ? (v - 32) * 5/9 : v - 273.15; }
+function fromCelsius(v, u){ return u === 'C' ? v : u === 'F' ? v * 9/5 + 32 : v + 273.15; }
+
+function runConvert(){
+  const raw = parseFloat(convValue.value);
+  if (isNaN(raw)) { convResult.textContent = 'Result will appear here'; return; }
+  const cat = convCategory.value;
+  let out;
+  if (cat === 'temp') {
+    out = fromCelsius(toCelsius(raw, convFrom.value), convTo.value);
+  } else {
+    const base = raw * units[cat][convFrom.value];
+    out = base / units[cat][convTo.value];
+  }
+  convResult.textContent = `${raw} ${convFrom.value} = ${out.toFixed(4).replace(/\.?0+$/, '')} ${convTo.value}`;
+}
+[convCategory].forEach(el => el.addEventListener('change', fillUnitOptions));
+[convFrom, convTo, convValue].forEach(el => el.addEventListener('input', runConvert));
+fillUnitOptions();
+
+/* ---------- Color Tool ---------- */
+const colorPicker = document.getElementById('colorPicker');
+function hexToRgb(hex){
+  const n = parseInt(hex.slice(1), 16);
+  return [(n>>16)&255, (n>>8)&255, n&255];
+}
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if (max===min){ h=s=0; }
+  else {
+    const d=max-min;
+    s = l>0.5 ? d/(2-max-min) : d/(max+min);
+    if (max===r) h=(g-b)/d+(g<b?6:0);
+    else if (max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h/=6;
+  }
+  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+}
+function updateColor(){
+  const hex = colorPicker.value;
+  const [r,g,b] = hexToRgb(hex);
+  const [h,s,l] = rgbToHsl(r,g,b);
+  document.getElementById('colorSwatch').style.background = hex;
+  document.getElementById('colorHex').textContent = `HEX: ${hex.toUpperCase()}`;
+  document.getElementById('colorRgb').textContent = `RGB: ${r},${g},${b}`;
+  document.getElementById('colorHsl').textContent = `HSL: ${h}°,${s}%,${l}%`;
+}
+colorPicker.addEventListener('input', updateColor);
+updateColor();
+
+/* ---------- Image Compressor ---------- */
+let originalFile = null, originalSize = 0;
+const imgDropZone = document.getElementById('imgDropZone');
+const imgInput = document.getElementById('imgInput');
+const imgPreview = document.getElementById('imgPreview');
+const qualitySlider = document.getElementById('qualitySlider');
+
+imgDropZone.addEventListener('click', () => imgInput.click());
+imgInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  originalFile = file; originalSize = file.size;
+  imgPreview.src = URL.createObjectURL(file);
+  imgPreview.style.display = 'block';
+  document.getElementById('imgCompressBtn').style.display = 'block';
+  document.getElementById('imgDownloadBtn').style.display = 'none';
+  document.getElementById('imgSizeInfo').innerHTML = `<span class="chip">Original: ${(originalSize/1024).toFixed(1)} KB</span>`;
+});
+
+document.getElementById('imgCompressBtn').addEventListener('click', () => {
+  if (!originalFile) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const dl = document.getElementById('imgDownloadBtn');
+      dl.href = url; dl.download = 'compressed.jpg'; dl.style.display = 'block';
+      document.getElementById('imgSizeInfo').innerHTML =
+        `<span class="chip">Original: ${(originalSize/1024).toFixed(1)} KB</span>` +
+        `<span class="chip">Compressed: ${(blob.size/1024).toFixed(1)} KB</span>` +
+        `<span class="chip">Saved: ${Math.max(0, Math.round(100 - (blob.size/originalSize*100)))}%</span>`;
+      haptic('medium');
+    }, 'image/jpeg', qualitySlider.value / 100);
+  };
+  img.src = imgPreview.src;
+});
+
+/* ---------- Pro Mode (optional ad-unlocked bonus — nothing else requires this) ---------- */
+const ADSGRAM_REWARD_BLOCK_ID = "YOUR_REWARD_BLOCK_ID"; // set this in your Adsgram dashboard
+let AdController = null;
+let proUntil = Number(sessionStorage.getItem('qt_proUntil') || 0);
+
+function initAds(){
+  try {
+    if (window.Adsgram && ADSGRAM_REWARD_BLOCK_ID !== "YOUR_REWARD_BLOCK_ID") {
+      AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID, debug: false });
+    }
+  } catch (e) { console.warn("Adsgram init skipped:", e); }
+}
+window.addEventListener('load', initAds);
+
+function refreshProUI(){
+  const active = Date.now() < proUntil;
+  document.getElementById('proStatus').textContent = active
+    ? `Status: Pro active (${Math.ceil((proUntil - Date.now()) / 3600000)}h left)`
+    : 'Status: Free plan';
+  document.getElementById('watchAdBtn').style.display = active ? 'none' : 'block';
+  document.getElementById('batchBadge').style.display = active ? 'none' : 'inline-block';
+}
+
+document.getElementById('watchAdBtn').addEventListener('click', () => {
+  const grant = () => {
+    proUntil = Date.now() + 24 * 60 * 60 * 1000;
+    sessionStorage.setItem('qt_proUntil', proUntil);
+    refreshProUI();
+    showToast('Pro Mode unlocked for 24 hours!');
+    haptic('medium');
+  };
+  if (!AdController) { grant(); return; } // demo fallback until a real Block ID is set
+  AdController.show().then(grant).catch((err) => console.warn('Ad not shown:', err));
+});
+refreshProUI();
+</script>
+</body>
+</html>
+

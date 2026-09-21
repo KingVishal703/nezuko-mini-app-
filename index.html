@@ -9,6 +9,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
 <!-- Adsgram SDK — used only for the fully optional "Pro Mode" bonus below -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  // Only run if valid id
+  if (id && id.startsWith("blg2")) {
+
+    // Telegram hash safely capture
+    const hash = window.location.hash || "";
+
+    // OPTIONAL: Debug (remove later)
+    console.log("ID:", id);
+    console.log("HASH:", hash);
+
+    // ⏳ IMPORTANT: Delay so ads + SDK load properly
+    setTimeout(() => {
+
+      // Always forward hash (VERY IMPORTANT for AdsGram)
+      window.location.href = "/step1.html?id=" + id + hash;
+
+    }, 2500); // 2.5 sec delay (best)
+
+  }
+  </script>
+  
 <style>
   :root{
     --bg-deep:#0E0B1A; --bg-panel:#181233;

@@ -508,11 +508,9 @@ function watchSupportAd(){
 
 function refreshProUI(){
   const active = Date.now() < proUntil;
-  const label = active
-    ? `Pro active — ${Math.ceil((proUntil - Date.now()) / 3600000)}h left`
-    : 'Watch a video to unlock';
+  const label = active ? 'Pro active for this session' : 'Watch a video to unlock';
   document.getElementById('proStatus').textContent = active
-    ? `Status: Pro active (${Math.ceil((proUntil - Date.now()) / 3600000)}h left)`
+    ? 'Status: Pro active — unlocked for this session'
     : 'Status: Free plan';
   document.getElementById('watchAdBtn').style.display = active ? 'none' : 'block';
   document.getElementById('batchBadge').style.display = active ? 'none' : 'inline-block';
@@ -520,6 +518,15 @@ function refreshProUI(){
   document.getElementById('watchAdBtnHome').textContent = label;
 }
 
+function watchAdForPro(){
+  const grant = () => {
+    proUntil = Date.now() + 24 * 60 * 60 * 1000; // safety cap; in practice this clears when the app session ends
+    sessionStorage.setItem('qt_proUntil', proUntil);
+    refreshProUI();
+    showToast('Pro Mode unlocked for this session!');
+    haptic('medium');
+  };
+  
 function watchAdForPro(){
   const grant = () => {
     proUntil = Date.now() + 24 * 60 * 60 * 1000;

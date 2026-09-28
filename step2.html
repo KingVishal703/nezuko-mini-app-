@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
 
-  <!-- AdsGram SDK -->
+	<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-</script>
+  <!-- AdsGram SDK -->
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+  <!-- Monetag (show_10222194 ke liye) -->
+	<meta name="monetag" content="18ad0ee39c94cbe247af33559f2a6502">
+
 	
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -192,6 +197,7 @@
   </style>
 </head>
 <body>
+	
   <div class="card">
     <div class="step-text" id="step-info">STEP 1 OF 2</div>
     <h1 id="title-main">Secure redirect in progress</h1>
@@ -206,6 +212,8 @@
     <span>SPONSORED</span>
     <span class="ad-pill">AD SLOT 1</span>
   </div>
+	
+	
 	
           
 <div id="container-3de62902b8c1402ee56b6e4c367cf5a4"></div>
@@ -237,6 +245,7 @@
         <span>SPONSORED</span>
         <span class="ad-pill">AD SLOT 2</span>
       </div>
+
 		
     </div>
 
@@ -254,12 +263,12 @@
       isLastPage: false,
       nextPagePath: "step3.html",
 
-      botUsername: "Vip_Adult_only_bot",
+      botUsername: "Xnezukochan_bot",
       botStartPrefix: "blg2",
 
       adsgram: {
-        interstitial: { blockId: "int-49106", onLoad: true,  onClick: false },
-        reward:       { blockId: "int-49106",    onLoad: false, onClick: true  }
+        interstitial: { blockId: "int-22056", onLoad: true,  onClick: false },
+        reward:       { blockId: "22055",    onLoad: false, onClick: true  }
       },
 
       monetag: {
@@ -270,7 +279,7 @@
       },
 
       directAd: {
-        url: "https://get.atechspace.live/dl/2e18ca27-f3cc-4754-bdc5-4415b24d2243",
+        url: "https://omg10.com/4/11253970",
         onLoad: false,
         onClick: false
       }
@@ -327,7 +336,7 @@
       }
       secondsEl.textContent = left.toString();
       updateProgress();
-    }, 2000);
+    }, 1550);
 
     // AdsGram
     let adsgramInter = null;
@@ -358,18 +367,18 @@
     // Monetag helpers
     function showMonetagPopup() {
       return new Promise((resolve) => {
-        if (typeof show_11006692 !== "function") return resolve();
+        if (typeof show_10849043 !== "function") return resolve();
         try {
-          show_11006692("pop").then(resolve).catch(() => resolve());
+          show_10849043("pop").then(resolve).catch(() => resolve());
         } catch { resolve(); }
       });
     }
 
     function showMonetagInterstitial() {
       return new Promise((resolve) => {
-        if (typeof show_11006692 !== "function") return resolve();
+        if (typeof show_10849043 !== "function") return resolve();
         try {
-          const p = show_11006692();
+          const p = show_10849043();
           if (p && typeof p.then === "function") p.then(resolve).catch(() => resolve());
           else resolve();
         } catch { resolve(); }
@@ -437,7 +446,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Footer - Nezuko Mini App</title>
+  <title>Footer - All Media Mini App</title>
 
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -507,7 +516,7 @@
     </div>
 
     <div class="copyright">
-      © 2026 Nezuko Mini App. All Rights Reserved.
+      © 2026 All Media Mini App. All Rights Reserved.
     </div>
   </div>
 

@@ -2,21 +2,43 @@
 <html lang="en">
 <head>
 
-  <script src='//libtl.com/sdk.js' data-zone='11006692' data-sdk='show_11006692'></script>
+
+    <!-- AdsBitvex -->
+  <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000260"></script>
+
 
 <script>
+  const tg = window.Telegram?.WebApp;
 
-// Rewarded Popup
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
 
-show_11006692('pop').then(() => {
-    // user watch ad till the end or close it in interstitial format
-    // your code to reward user for rewarded format
-}).catch(e => {
-    // user get error during playing ad
-    // do nothing or whatever you want
-})
+  // Mini App open hone ke thodi der baad automatic ad
+  window.addEventListener("load", function () {
 
+    setTimeout(function () {
+
+      if (typeof window.showadsbitvex_init === "function") {
+
+        window.showadsbitvex_init()
+          .then(() => {
+            console.log("AdsBitvex ad completed/closed");
+          })
+          .catch((error) => {
+            console.log("AdsBitvex ad unavailable:", error);
+          });
+
+      } else {
+        console.log("AdsBitvex SDK abhi load nahi hua.");
+      }
+
+    }, 2000); // 2 second delay
+
+  });
 </script>
+
 
 
   <meta charset="UTF-8" />

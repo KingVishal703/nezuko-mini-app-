@@ -4,42 +4,21 @@
 
 
     <!-- AdsBitvex -->
-  <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000260"></script>
+ <head>
+<script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+ </head>
 
-
+<body>
 <script>
-  const tg = window.Telegram?.WebApp;
-
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-
-  // Mini App open hone ke thodi der baad automatic ad
-  window.addEventListener("load", function () {
-
-    setTimeout(function () {
-
-      if (typeof window.showadsbitvex_init === "function") {
-
-        window.showadsbitvex_init()
-          .then(() => {
-            console.log("AdsBitvex ad completed/closed");
-          })
-          .catch((error) => {
-            console.log("AdsBitvex ad unavailable:", error);
-          });
-
-      } else {
-        console.log("AdsBitvex SDK abhi load nahi hua.");
-      }
-
-    }, 2000); // 2 second delay
-
-  });
+// Initialize the ad engine and retrieve the SHOW method for displaying ads
+  window.initCdTma?.({ id: 'Your Spot ID' }).then(show => window.show = show).catch(e => console.log(e))
 </script>
-
-
+// On button click, activate the retrieved SHOW method, which will return a Promise with the ad display success result
+<button onclick="window.show?.().then(() => console.log('tma ad played')).catch(e => console.log(e))">
+  Play Ads
+</button>
+</body>
+    
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

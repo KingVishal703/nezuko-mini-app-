@@ -8,7 +8,6 @@
 <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
  </head>
 
-<body>
 <script>
 // Initialize the ad engine and retrieve the SHOW method for displaying ads
   window.initCdTma?.({ id: 'Your Spot ID' }).then(show => window.show = show).catch(e => console.log(e))
@@ -17,7 +16,6 @@
 <button onclick="window.show?.().then(() => console.log('tma ad played')).catch(e => console.log(e))">
   Play Ads
 </button>
-</body>
     
 
   <meta charset="UTF-8" />

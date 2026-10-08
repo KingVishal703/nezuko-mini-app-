@@ -49,7 +49,7 @@
   </style>
 </head>
 
-    <button id="playTmaAd">PLAY AD</button>
+
 
 <body>
 <div class="card">
@@ -62,65 +62,7 @@
 
   <button class="btn-main" id="action-btn" disabled>WAIT...</button>
 </div>
-
-    <script>
-let tmaShow = null;
-
-// IMPORTANT: Yahan apna actual Spot ID lagao
-const TMA_SPOT_ID = "6153301";
-
-async function initTMA() {
-    try {
-        if (typeof window.initCdTma !== "function") {
-            console.log("TMA SDK load nahi hua");
-            return;
-        }
-
-        tmaShow = await window.initCdTma({
-            id: TMA_SPOT_ID
-        });
-
-        console.log("TMA ad ready");
-    } catch (e) {
-        console.log("TMA init error:", e);
-    }
-}
-
-async function playTMA() {
-    try {
-        if (typeof tmaShow !== "function") {
-            console.log("TMA ad available nahi hai");
-            return;
-        }
-
-        await tmaShow();
-
-        console.log("TMA ad played");
-    } catch (e) {
-        console.log("TMA ad error:", e);
-    }
-}
-
-
-// Page load hone ke baad initialize
-window.addEventListener("load", async () => {
-
-    await initTMA();
-
-    // 2 second baad automatic ad
-    setTimeout(() => {
-        playTMA();
-    }, 2000);
-
-});
-
-
-// Button click par ad
-document.getElementById("playTmaAd")?.addEventListener("click", () => {
-    playTMA();
-});
-    </script>
-
+    
 <script>
 const CONFIG = {
   waitSeconds: 5,

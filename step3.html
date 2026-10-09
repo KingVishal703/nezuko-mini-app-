@@ -149,42 +149,61 @@ btn.addEventListener("click", async ()=>{
 
   
 
+
 <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
 
 <script>
-window.TelegramAdsController =
-  new TelegramAdsController();
-
-window.TelegramAdsController.initialize({
-  pubId: "995812",
-  appId: "9222"
-});
-</script>
-
-<!-- RichAds ka official Playable Ads
-     rendering/trigger code yahan add karein -->
-    
-<script>
 (async function () {
+  let ads;
+
   try {
-    if (!window.TelegramAdsController) {
-      window.TelegramAdsController =
-        new TelegramAdsController();
+    ads = new TelegramAdsController();
 
-      await window.TelegramAdsController.initialize({
-        pubId: "995812",
-        appId: "9222"
-      });
-    }
-
-    await window.TelegramAdsController
-      .triggerInterstitialVideo();
-
-  } catch (error) {
-    console.error("RichAds video error:", error);
+    await ads.initialize({
+      pubId: "995812",
+      appId: "9222",
+      debug: false
+    });
+  } catch (e) {
+    console.error("RichAds initialization failed:", e);
+    return;
   }
+
+  // Har format ko ek baar try karo.
+  // Promise resolve hona ad view ki guarantee nahi hai.
+  const formats = [
+    {
+      name: "Interstitial Banner",
+      run: () => ads.triggerInterstitialBanner()
+    },
+    {
+      name: "Interstitial Video",
+      run: () => ads.triggerInterstitialVideo()
+    }
+  ];
+
+  for (const format of formats) {
+    try {
+      console.log("Trying:", format.name);
+      const result = await format.run();
+      console.log(format.name, "result:", result);
+
+      // Official result ko check karo.
+      // Sirf result ke documented success signal par hi
+      // sequence ko rokna chahiye.
+      if (result && result.success === true) {
+        console.log("Ad success:", format.name);
+        return;
+      }
+    } catch (error) {
+      console.warn("Skipping:", format.name, error);
+    }
+  }
+
+  console.log("No confirmed ad success from available formats.");
 })();
 </script>
+
     
   
 </body>

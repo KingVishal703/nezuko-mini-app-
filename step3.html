@@ -3,6 +3,68 @@
 <head>
 
 
+
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
+<script>
+window.TelegramAdsController = new TelegramAdsController();
+
+window.TelegramAdsController.initialize({
+  pubId: "995812",
+  appId: "9222"
+});
+</script>
+
+<button id="watchAdButton" type="button">
+  ▶ Watch Ad
+</button>
+
+<script>
+document.getElementById("watchAdButton").addEventListener("click", async function () {
+  const button = this;
+
+  button.disabled = true;
+  button.textContent = "Loading Ad...";
+
+  try {
+    await window.TelegramAdsController.triggerInterstitialVideo();
+  } catch (error) {
+    console.error("RichAds video error:", error);
+  } finally {
+    button.disabled = false;
+    button.textContent = "▶ Watch Ad";
+  }
+});
+</script>
+    
+
+
+<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
+<script>
+(async function () {
+  try {
+    window.TelegramAdsController =
+      new TelegramAdsController();
+
+    await window.TelegramAdsController.initialize({
+      pubId: "995812",
+      appId: "9222"
+    });
+
+    console.log("RichAds initialized");
+
+    await window.TelegramAdsController
+      .triggerInterstitialVideo();
+
+    console.log("RichAds video trigger completed");
+
+  } catch (error) {
+    console.error("RichAds error:", error);
+  }
+})();
+</script>
+    
     <!-- AdsBitvex -->
  
           <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
@@ -175,70 +237,8 @@ btn.addEventListener("click", async ()=>{
 });
 </script>
 
-  
-<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-
-<script>
-window.TelegramAdsController = new TelegramAdsController();
-
-window.TelegramAdsController.initialize({
-  pubId: "995812",
-  appId: "9222"
-});
-</script>
-
-<button id="watchAdButton" type="button">
-  ▶ Watch Ad
-</button>
-
-<script>
-document.getElementById("watchAdButton").addEventListener("click", async function () {
-  const button = this;
-
-  button.disabled = true;
-  button.textContent = "Loading Ad...";
-
-  try {
-    await window.TelegramAdsController.triggerInterstitialVideo();
-  } catch (error) {
-    console.error("RichAds video error:", error);
-  } finally {
-    button.disabled = false;
-    button.textContent = "▶ Watch Ad";
-  }
-});
-</script>
-    
-
-
-<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-
-<script>
-(async function () {
-  try {
-    window.TelegramAdsController =
-      new TelegramAdsController();
-
-    await window.TelegramAdsController.initialize({
-      pubId: "995812",
-      appId: "9222"
-    });
-
-    console.log("RichAds initialized");
-
-    await window.TelegramAdsController
-      .triggerInterstitialVideo();
-
-    console.log("RichAds video trigger completed");
-
-  } catch (error) {
-    console.error("RichAds error:", error);
-  }
-})();
-</script>
-    
 
     
-  
+
 </body>
 </html>

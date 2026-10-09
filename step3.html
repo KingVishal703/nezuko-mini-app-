@@ -154,55 +154,28 @@ btn.addEventListener("click", async ()=>{
 
 <script>
 (async function () {
-  let ads;
-
   try {
-    ads = new TelegramAdsController();
+    window.TelegramAdsController =
+      new TelegramAdsController();
 
-    await ads.initialize({
+    await window.TelegramAdsController.initialize({
       pubId: "995812",
-      appId: "9222",
-      debug: false
+      appId: "9222"
     });
-  } catch (e) {
-    console.error("RichAds initialization failed:", e);
-    return;
+
+    console.log("RichAds initialized");
+
+    await window.TelegramAdsController
+      .triggerInterstitialVideo();
+
+    console.log("RichAds video trigger completed");
+
+  } catch (error) {
+    console.error("RichAds error:", error);
   }
-
-  // Har format ko ek baar try karo.
-  // Promise resolve hona ad view ki guarantee nahi hai.
-  const formats = [
-    {
-      name: "Interstitial Banner",
-      run: () => ads.triggerInterstitialBanner()
-    },
-    {
-      name: "Interstitial Video",
-      run: () => ads.triggerInterstitialVideo()
-    }
-  ];
-
-  for (const format of formats) {
-    try {
-      console.log("Trying:", format.name);
-      const result = await format.run();
-      console.log(format.name, "result:", result);
-
-      // Official result ko check karo.
-      // Sirf result ke documented success signal par hi
-      // sequence ko rokna chahiye.
-      if (result && result.success === true) {
-        console.log("Ad success:", format.name);
-        return;
-      }
-    } catch (error) {
-      console.warn("Skipping:", format.name, error);
-    }
-  }
-
-  console.log("No confirmed ad success from available formats.");
 })();
 </script>
+    
 
     
   

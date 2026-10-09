@@ -148,8 +148,6 @@ btn.addEventListener("click", async ()=>{
 </script>
 
   
-<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-
 
 <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
 
@@ -166,7 +164,28 @@ window.TelegramAdsController.initialize({
 <!-- RichAds ka official Playable Ads
      rendering/trigger code yahan add karein -->
     
+<script>
+(async function () {
+  try {
+    if (!window.TelegramAdsController) {
+      window.TelegramAdsController =
+        new TelegramAdsController();
 
+      await window.TelegramAdsController.initialize({
+        pubId: "995812",
+        appId: "9222"
+      });
+    }
+
+    await window.TelegramAdsController
+      .triggerInterstitialVideo();
+
+  } catch (error) {
+    console.error("RichAds video error:", error);
+  }
+})();
+</script>
+    
   
 </body>
 </html>

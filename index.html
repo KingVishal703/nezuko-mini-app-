@@ -11,40 +11,16 @@
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
   <!-- AdsBitvex -->
-  <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000260"></script>
+  
+          <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+          <script>
+            window.TelegramAdsController = new TelegramAdsController();
+            window.TelegramAdsController.initialize({
+              pubId: "995812",
+              appId: "9222",
+            });
+          </script>
 
-
-<script>
-  const tg = window.Telegram?.WebApp;
-
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-
-  // Mini App open hone ke thodi der baad automatic ad
-  window.addEventListener("load", function () {
-
-    setTimeout(function () {
-
-      if (typeof window.showadsbitvex_init === "function") {
-
-        window.showadsbitvex_init()
-          .then(() => {
-            console.log("AdsBitvex ad completed/closed");
-          })
-          .catch((error) => {
-            console.log("AdsBitvex ad unavailable:", error);
-          });
-
-      } else {
-        console.log("AdsBitvex SDK abhi load nahi hua.");
-      }
-
-    }, 2000); // 2 second delay
-
-  });
-</script>
 
   <script>
   const params = new URLSearchParams(window.location.search);

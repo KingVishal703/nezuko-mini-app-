@@ -2,565 +2,178 @@
 <html lang="en">
 <head>
 
+
+    <!-- AdsBitvex -->
+ 
+    
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecting...</title>
 
-  <!-- =========================================
-       ONCLICK REWARDED VIDEO SDK
-       ========================================= -->
-  <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
-
-  <!-- =========================================
-       ONCLICK IN-PAGE SDK
-       ========================================= -->
-  <script
-    async
-    src="https://js.onclckmn.com/static/onclicka.js"
-    data-admpid="467623">
-  </script>
-
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box
-    }
-
+    *{margin:0;padding:0;box-sizing:border-box}
     body{
-      min-height:100vh;
-      background:#020617;
+      min-height:100vh;background:#020617;
       font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      color:#e5e7eb;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-      text-align:center
+      color:#e5e7eb;display:flex;align-items:center;justify-content:center;
+      padding:16px;text-align:center
     }
-
     .card{
-      width:100%;
-      max-width:420px;
-      background:radial-gradient(
-        circle at top,
-        #111827 0,
-        #020617 65%,
-        #000 100%
-      );
-      border-radius:18px;
-      padding:20px 18px 18px;
+      width:100%;max-width:420px;
+      background:radial-gradient(circle at top,#111827 0,#020617 65%,#000 100%);
+      border-radius:18px;padding:20px 18px 18px;
       box-shadow:0 18px 40px rgba(15,23,42,.85);
       border:1px solid rgba(148,163,184,.18)
     }
-
-    .step-text{
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      color:#9ca3af;
-      margin-bottom:8px
-    }
-
-    h1{
-      font-size:18px;
-      font-weight:600;
-      margin-bottom:6px;
-      color:#f9fafb
-    }
-
-    .sub{
-      font-size:13px;
-      color:#9ca3af;
-      margin-bottom:14px;
-      line-height:1.45
-    }
-
+    .step-text{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:#9ca3af;margin-bottom:8px}
+    h1{font-size:18px;font-weight:600;margin-bottom:6px;color:#f9fafb}
+    .sub{font-size:13px;color:#9ca3af;margin-bottom:14px;line-height:1.45}
     .circle{
-      width:82px;
-      height:82px;
-      border-radius:999px;
+      width:82px;height:82px;border-radius:999px;
       border:2px solid rgba(148,163,184,.7);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex;align-items:center;justify-content:center;
       margin:0 auto 10px;
-      background:radial-gradient(
-        circle at 30% 0,
-        #22c55e 0,
-        #020617 55%
-      );
-      color:#f9fafb;
-      font-size:26px;
-      font-weight:600
+      background:radial-gradient(circle at 30% 0,#22c55e 0,#020617 55%);
+      color:#f9fafb;font-size:26px;font-weight:600
     }
-
-    .progress{
-      width:100%;
-      height:7px;
-      border-radius:999px;
-      background:#020617;
-      border:1px solid #0f172a;
-      margin-bottom:16px;
-      overflow:hidden
-    }
-
-    .progress-inner{
-      height:100%;
-      width:0%;
-      background:linear-gradient(
-        90deg,
-        #22c55e,
-        #eab308,
-        #f97316
-      )
-    }
-
+    .progress{width:100%;height:7px;border-radius:999px;background:#020617;border:1px solid #0f172a;margin-bottom:16px;overflow:hidden}
+    .progress-inner{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#eab308,#f97316)}
     .btn-main{
-      width:100%;
-      border:none;
-      padding:11px 16px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:600;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      cursor:pointer
+      width:100%;border:none;padding:11px 16px;border-radius:999px;
+      font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase
     }
-
-    .btn-main:disabled{
-      background:#020617;
-      color:#6b7280;
-      border:1px solid #111827
-    }
-
-    .btn-main:not(:disabled){
-      background:linear-gradient(
-        135deg,
-        #4f46e5,
-        #22c55e
-      );
-      color:#fff
-    }
-
-    .status{
-      margin-top:10px;
-      font-size:11px;
-      color:#6b7280
-    }
+    .btn-main:disabled{background:#020617;color:#6b7280;border:1px solid #111827}
+    .btn-main:not(:disabled){background:linear-gradient(135deg,#4f46e5,#22c55e);color:#fff}
   </style>
-
 </head>
 
 <body>
-
 <div class="card">
-
   <div class="step-text">FINAL STEP</div>
-
   <h1>Final step – get your file</h1>
+  <p class="sub">Timer khatm hone ke baad button unlock hoga</p>
 
-  <p class="sub">
-    Timer khatm hone ke baad button unlock hoga
-  </p>
+  <div class="circle"><span id="seconds">5</span></div>
+  <div class="progress"><div class="progress-inner" id="progress-inner"></div></div>
 
-  <div class="circle">
-    <span id="seconds">5</span>
-  </div>
-
-  <div class="progress">
-    <div
-      class="progress-inner"
-      id="progress-inner">
-    </div>
-  </div>
-
-  <button
-    class="btn-main"
-    id="action-btn"
-    disabled>
-    WAIT...
-  </button>
-
-  <div class="status" id="ad-status"></div>
-
+  <button class="btn-main" id="action-btn" disabled>WAIT...</button>
 </div>
 
-
 <script>
-
-/* =====================================================
-   🔧 MAIN CONFIGURATION
-   ===================================================== */
-
 const CONFIG = {
-
-  /* -----------------------------
-     TIMER
-     ----------------------------- */
-
   waitSeconds: 5,
-
-
-  /* -----------------------------
-     TELEGRAM BOT
-     ----------------------------- */
-
   botUsername: "Vip_Adult_only_bot",
-
   botStartPrefix: "blg2",
 
-
-  /* =================================================
-     ONCLICK IN-PAGE AD
-     ================================================= */
-
-  onclickInPage: {
-
-    /*
-      true  = ON
-      false = OFF
-    */
-
-    enabled: true,
-
-    /*
-      Tumhara OnClick Admpid
-    */
-
-    admpid: "467623"
-
+  adsgram: {
+    interstitial:{ blockId:"int-18636", onLoad: false, onClick:false },
+    reward:{ blockId:"18127", onLoad:false, onClick:false }
   },
 
-
-  /* =================================================
-     ONCLICK REWARDED VIDEO
-     ================================================= */
-
-  onclickReward: {
-
-    /*
-      true  = ON
-      false = OFF
-    */
-
-    enabled: true,
-
-    /*
-      Tumhara OnClick Spot ID
-    */
-
-    spotId: "6153302"
-
+  monetag: {
+    adId: "11006692",
+    rewardedInterstitial:{ enabled:false, onLoad:false, onClick:false },
+    rewardedPopup:{ enabled:false, onLoad:false, onClick:false },
+    inApp:{ enabled:false, onLoad:false, onClick:false }
   }
-
 };
 
+const btn=document.getElementById("action-btn");
+const sec=document.getElementById("seconds");
+const prog=document.getElementById("progress-inner");
 
-/* =====================================================
-   ELEMENTS
-   ===================================================== */
+let left=CONFIG.waitSeconds;
+sec.textContent=left;
 
-const btn =
-  document.getElementById("action-btn");
-
-const sec =
-  document.getElementById("seconds");
-
-const prog =
-  document.getElementById("progress-inner");
-
-const adStatus =
-  document.getElementById("ad-status");
-
-
-/* =====================================================
-   TIMER
-   ===================================================== */
-
-let left = CONFIG.waitSeconds;
-
-sec.textContent = left;
-
-const timer = setInterval(() => {
-
+const t=setInterval(()=>{
   left--;
-
-  sec.textContent = Math.max(left, 0);
-
-  prog.style.width =
-    (
-      (CONFIG.waitSeconds - left)
-      /
-      CONFIG.waitSeconds
-      *
-      100
-    ) + "%";
-
-
-  if(left <= 0){
-
-    clearInterval(timer);
-
-    btn.disabled = false;
-
-    btn.textContent = "GET FILE";
-
+  sec.textContent=left;
+  prog.style.width=((CONFIG.waitSeconds-left)/CONFIG.waitSeconds*100)+"%";
+  if(left<=0){
+    clearInterval(t);
+    btn.disabled=false;
+    btn.textContent="GET FILE";
   }
+},1000);
 
-}, 1000);
+let agInter=null, agReward=null;
+function initAdsgram(){
+  if(!window.Adsgram) return;
+  agInter=Adsgram.init({blockId:CONFIG.adsgram.interstitial.blockId});
+  agReward=Adsgram.init({blockId:CONFIG.adsgram.reward.blockId});
+}
+async function showAGInter(){ try{ if(agInter) await agInter.show(); }catch{} }
+async function showAGReward(){ try{ if(agReward) await agReward.show(); }catch{} }
 
-
-/* =====================================================
-   ONCLICK REWARDED INITIALIZATION
-   ===================================================== */
-
-let onclickRewardShow = null;
-
-
-async function initOnClickReward(){
-
-  if(!CONFIG.onclickReward.enabled){
-
-    console.log(
-      "OnClick Rewarded: OFF"
-    );
-
-    return;
-
-  }
-
-
-  if(!window.initCdTma){
-
-    console.log(
-      "OnClick Rewarded SDK not available"
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    onclickRewardShow =
-      await window.initCdTma({
-
-        id:
-          CONFIG.onclickReward.spotId
-
-      });
-
-
-    console.log(
-      "OnClick Rewarded initialized"
-    );
-
-  }catch(error){
-
-    console.log(
-      "OnClick Rewarded initialization error:",
-      error
-    );
-
-  }
-
+function mtInterstitial(){
+  return new Promise(r=>{
+    const fn=window["show_"+CONFIG.monetag.adId];
+    if(typeof fn!=="function") return r();
+    fn().then(()=>r()).catch(()=>r());
+  });
+}
+function mtPopup(){
+  return new Promise(r=>{
+    const fn=window["show_"+CONFIG.monetag.adId];
+    if(typeof fn!=="function") return r();
+    fn("pop").then(()=>r()).catch(()=>r());
+  });
+}
+function mtInApp(){
+  const fn=window["show_"+CONFIG.monetag.adId];
+  if(typeof fn==="function") fn({type:"inApp"});
 }
 
-
-/* =====================================================
-   SHOW ONCLICK REWARDED
-   ===================================================== */
-
-async function showOnClickReward(){
-
-  if(!CONFIG.onclickReward.enabled){
-
-    console.log(
-      "OnClick Rewarded is OFF"
-    );
-
-    return true;
-
-  }
-
-
-  if(typeof onclickRewardShow !== "function"){
-
-    console.log(
-      "OnClick Rewarded is not ready"
-    );
-
-    /*
-      Ad ready na ho to user ko block
-      nahi karenge.
-    */
-
-    return true;
-
-  }
-
-
-  try{
-
-    adStatus.textContent =
-      "Advertisement loading...";
-
-    const result =
-      await onclickRewardShow();
-
-
-    console.log(
-      "OnClick Rewarded result:",
-      result
-    );
-
-
-    adStatus.textContent = "";
-
-    return true;
-
-
-  }catch(error){
-
-    console.log(
-      "OnClick Rewarded error:",
-      error
-    );
-
-
-    adStatus.textContent = "";
-
-    /*
-      Ad fail hone par bhi Telegram
-      redirect continue hoga.
-    */
-
-    return true;
-
-  }
-
-}
-
-
-/* =====================================================
-   ONCLICK IN-PAGE AD
-   ===================================================== */
-
-function initOnClickInPage(){
-
-  if(!CONFIG.onclickInPage.enabled){
-
-    console.log(
-      "OnClick In-Page: OFF"
-    );
-
-    return;
-
-  }
-
-
-  console.log(
-    "OnClick In-Page enabled:",
-    CONFIG.onclickInPage.admpid
-  );
-
-
-  /*
-    In-page SDK automatically loaded hai.
-
-    data-admpid HTML SDK tag mein diya gaya hai.
-  */
-
-}
-
-
-/* =====================================================
-   PAGE LOAD
-   ===================================================== */
-
-window.addEventListener("load", async () => {
-
-  /*
-    In-page ad
-    automatically initialize
-  */
-
-  initOnClickInPage();
-
-
-  /*
-    Rewarded ad
-    pehle se initialize kar do,
-    taki button click par delay kam ho.
-  */
-
-  await initOnClickReward();
-
+window.addEventListener("load", async ()=>{
+  initAdsgram();
 });
 
+btn.addEventListener("click", async ()=>{
+  btn.disabled=true;
 
-/* =====================================================
-   GET FILE BUTTON
-   ===================================================== */
+  if(CONFIG.adsgram.interstitial.onClick) await showAGInter();
+  if(CONFIG.adsgram.reward.onClick) await showAGReward();
 
-btn.addEventListener("click", async () => {
+  if(CONFIG.monetag.rewardedInterstitial.onClick) await mtInterstitial();
+  if(CONFIG.monetag.rewardedPopup.onClick) await mtPopup();
+  if(CONFIG.monetag.inApp.onClick) mtInApp();
 
-  /*
-    Prevent multiple clicks
-  */
+  // ✅ POPUP MESSAGE
+  alert("Tumhari file Telegram bot par send kar di gayi hai.\nPlease Telegram bot par wapas jao.");
 
-  btn.disabled = true;
-
-  btn.textContent = "LOADING...";
-
-
-  /* -----------------------------------------------
-     ONCLICK REWARDED
-     ----------------------------------------------- */
-
-  if(CONFIG.onclickReward.enabled){
-
-    await showOnClickReward();
-
-  }
-
-
-  /* -----------------------------------------------
-     TELEGRAM MESSAGE
-     ----------------------------------------------- */
-
-  alert(
-    "Tumhari file Telegram bot par send kar di gayi hai.\n\n" +
-    "Please Telegram bot par wapas jao."
-  );
-
-
-  /* -----------------------------------------------
-     GET ID
-     ----------------------------------------------- */
-
-  const id =
-    new URLSearchParams(
-      location.search
-    ).get("id") || "";
-
-
-  /* -----------------------------------------------
-     TELEGRAM REDIRECT
-     ----------------------------------------------- */
-
-  location.href =
-    "https://t.me/" +
-    CONFIG.botUsername +
-    "?start=" +
-    CONFIG.botStartPrefix +
-    id;
-
+  const id=new URLSearchParams(location.search).get("id")||"";
+  location.href="https://t.me/"+CONFIG.botUsername+"?start="+CONFIG.botStartPrefix+id;
 });
-
 </script>
 
+  
+<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
+<script>
+(async function () {
+  try {
+    window.TelegramAdsController =
+      new TelegramAdsController();
+
+    await window.TelegramAdsController.initialize({
+      pubId: "995812",
+      appId: "9222"
+    });
+
+    console.log("RichAds initialized");
+
+    await window.TelegramAdsController
+      .triggerInterstitialVideo();
+
+    console.log("RichAds video trigger completed");
+
+  } catch (error) {
+    console.error("RichAds error:", error);
+  }
+})();
+</script>
+
+  
 </body>
 </html>

@@ -2,9 +2,99 @@
 <html lang="en">
 <head>
 
-
-
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
+    <script>
+(function () {
+    const PUB_ID = "995812";
+    const APP_ID = "9222";
+
+    let adsController = null;
+    let started = false;
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function tryAd(method, formatName) {
+        try {
+            if (
+                !adsController ||
+                typeof adsController[method] !== "function"
+            ) {
+                console.log(formatName + ": method unavailable");
+                return;
+            }
+
+            console.log("Trying RichAds format:", formatName);
+
+            await adsController[method]();
+
+            console.log("Finished trying:", formatName);
+        } catch (error) {
+            console.warn(formatName + " failed:", error);
+        }
+
+        // Short pause before attempting the next format
+        await delay(1000);
+    }
+
+    async function startRichAds() {
+        if (started) return;
+        started = true;
+
+        try {
+            if (!window.TelegramAdsController) {
+                console.warn("RichAds SDK is not available");
+                return;
+            }
+
+            adsController = new window.TelegramAdsController();
+
+            adsController.initialize({
+                pubId: PUB_ID,
+                appId: APP_ID,
+                debug: false
+            });
+
+            // Attempt each supported trigger sequentially
+            await delay(1000);
+
+            await tryAd(
+                "triggerInterstitialBanner",
+                "Interstitial Video"
+            );
+
+            await tryAd(
+                "triggerNativeNotification",
+                "Interstitial Banner"
+            );
+
+            await tryAd(
+                "triggerInterstitialVideo",
+                "Native Notification"
+            );
+
+            console.log("RichAds format attempts completed.");
+
+        } catch (error) {
+            console.error("RichAds initialization failed:", error);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            startRichAds,
+            { once: true }
+        );
+    } else {
+        startRichAds();
+    }
+})();
+</script>
+
+    
 
 <script>
 window.TelegramAdsController = new TelegramAdsController();

@@ -11,15 +11,50 @@
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
   <!-- AdsBitvex -->
+
   
-          <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-          <script>
-            window.TelegramAdsController = new TelegramAdsController();
-            window.TelegramAdsController.initialize({
-              pubId: "995812",
-              appId: "9222",
-            });
-          </script>
+<!-- Coinspin Floating Button -->
+<a href="/coinspin.html" class="coinspin-float">
+  🪙 Coin Spin
+</a>
+
+<style>
+.coinspin-float {
+  position: fixed;
+  right: 15px;
+  bottom: 90px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #ffd700, #ff9500);
+  color: #222;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(255, 180, 0, 0.45);
+  border: 2px solid #fff3b0;
+  animation: coinPulse 1.8s infinite;
+}
+
+@keyframes coinPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.coinspin-float:active {
+  transform: scale(0.94);
+}
+</style>
+
+  
+ 
 
 
   <script>

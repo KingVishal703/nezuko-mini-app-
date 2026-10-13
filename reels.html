@@ -288,10 +288,10 @@ const ACTIVE_AD_NETWORK = "monetag";
 
 const AD_NETWORKS = {
   adsgram: {
-    blockId: "YOUR_ADSGRAM_BLOCK_ID", // <-- Adsgram dashboard se
+    blockId: "int-49106", // <-- Adsgram dashboard se
     controller: null,
     init() {
-      if (window.Adsgram && this.blockId !== "YOUR_ADSGRAM_BLOCK_ID") {
+      if (window.Adsgram && this.blockId !== "int-49106") {
         this.controller = window.Adsgram.init({ blockId: this.blockId });
       }
     },

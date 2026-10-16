@@ -1,905 +1,605 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Reels</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>QuickTools</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<!-- Adsgram SDK -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+<!-- Adsgram SDK — used only for the fully optional "Pro Mode" bonus below -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-<!-- Monetag SDK — In-App Interstitial -->
-<script src="//libtl.com/sdk.js" data-zone="11841425" data-sdk="show_11841425"></script>
+
+  <!-- AdsBitvex -->
+
+  
+<!-- Coinspin Floating Button -->
+<!--<a href="/reels.html" class="coinspin-float">
+  🪙 Coin Spin
+</a>
+
+<style>
+.coinspin-float {
+  position: fixed;
+  right: 15px;
+  bottom: 90px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #ffd700, #ff9500);
+  color: #222;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(255, 180, 0, 0.45);
+  border: 2px solid #fff3b0;
+  animation: coinPulse 1.8s infinite;
+}
+
+@keyframes coinPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.coinspin-float:active {
+  transform: scale(0.94);
+}
+</style> -->
+
+  
+ 
+
+
+  <script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  // Only run if valid id
+  if (id && id.startsWith("blg2")) {
+
+    // Telegram hash safely capture
+    const hash = window.location.hash || "";
+
+    // OPTIONAL: Debug (remove later)
+    console.log("ID:", id);
+    console.log("HASH:", hash);
+
+    // ⏳ IMPORTANT: Delay so ads + SDK load properly
+    setTimeout(() => {
+
+      // Always forward hash (VERY IMPORTANT for AdsGram)
+      window.location.href = "/step1.html?id=" + id + hash;
+
+    }, 2500); // 2.5 sec delay (best)
+
+  }
+  </script>
   
 <style>
-  :root {
-    --bg: #0a0a0c;
-    --panel: #16161a;
-    --accent: #5b8cff;
-    --accent-warm: #ffb84d;
-    --text: #f4f4f6;
-    --text-dim: #9a9aa4;
+  :root{
+    --bg-deep:#0E0B1A; --bg-panel:#181233;
+    --gold:#FFC24B; --gold-dim:#8A6A1F;
+    --teal:#3FE1C5; --ink:#F4F0FF; --ink-dim:#9C93C2; --danger:#FF6B6B;
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    margin: 0; padding: 0; height: 100%;
-    background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    overflow: hidden;
-  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  html,body{margin:0; padding:0; background:radial-gradient(circle at 50% -10%, #241a4a 0%, var(--bg-deep) 55%);
+    color:var(--ink); font-family:'Inter', system-ui, sans-serif; min-height:100vh; user-select:none;}
+  .display{font-family:'Baloo 2', system-ui, sans-serif;}
+  .wrap{max-width:480px; margin:0 auto; padding:16px 16px 90px;}
 
-  #feed {
-    height: 100vh; height: 100dvh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scrollbar-width: none;
-  }
-  #feed::-webkit-scrollbar { display: none; }
+  header{display:flex; align-items:center; gap:8px; padding:6px 2px 16px;}
+  .brand-mark{width:28px; height:28px; border-radius:9px; background:linear-gradient(135deg, var(--teal), var(--gold)); flex:0 0 auto;}
+  .brand-name{font-family:'Baloo 2'; font-weight:800; font-size:19px;}
 
-  .reel {
-    position: relative;
-    height: 100vh; height: 100dvh;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    display: flex; align-items: center; justify-content: center;
-    background: #000;
-  }
-  .reel video {
-    width: 100%; height: 100%;
-    object-fit: contain;
-    background: #000;
-  }
+  .card{background:var(--bg-panel); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:18px; margin-bottom:14px;}
+  .card h2{font-family:'Baloo 2'; font-size:16px; margin:0 0 4px;}
+  .card .sub{font-size:12px; color:var(--ink-dim); margin-bottom:14px;}
 
-  .reel .overlay-bottom {
-    position: absolute; left: 0; right: 74px; bottom: 0;
-    padding: 18px 16px 28px;
-    background: linear-gradient(to top, rgba(0,0,0,.75), transparent);
+  input[type=text], textarea, select{
+    width:100%; background:#100C24; border:1px solid rgba(255,255,255,.1); border-radius:12px;
+    color:var(--ink); padding:12px 14px; font-size:14px; font-family:inherit; outline:none;
   }
-  .uploader { font-weight: 600; font-size: 15px; }
-  .caption { font-size: 14px; color: var(--text-dim); margin-top: 6px; line-height: 1.4; }
+  textarea{resize:vertical; min-height:80px;}
+  label{font-size:12px; color:var(--ink-dim); display:block; margin:10px 0 6px;}
+  label:first-child{margin-top:0;}
 
-  .side-actions {
-    position: absolute; right: 10px; bottom: 90px;
-    display: flex; flex-direction: column; align-items: center; gap: 22px;
-  }
-  .action-btn {
-    background: none; border: none; color: var(--text);
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    font-size: 11px; cursor: pointer;
-  }
-  .action-btn .icon {
-    width: 46px; height: 46px; border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    transition: transform .15s ease, background .15s ease;
-  }
-  .action-btn.liked .icon { background: rgba(255,70,100,0.25); color: #ff4664; }
-  .action-btn:active .icon { transform: scale(0.85); }
+  .btn{border:none; border-radius:12px; padding:12px 16px; font-weight:700; font-size:13.5px; cursor:pointer; width:100%; margin-top:12px;}
+  .btn-gold{background:var(--gold); color:#3A2A05;}
+  .btn-teal{background:var(--teal); color:#062A24;}
+  .btn-outline{background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--ink);}
+  .btn-row{display:flex; gap:10px;}
+  .btn-row .btn{margin-top:0;}
 
-  .top-bar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 5;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 16px; padding-top: max(14px, env(safe-area-inset-top));
-    background: linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
-    pointer-events: none;
-  }
-  .top-bar .title { font-weight: 700; font-size: 17px; letter-spacing: .2px; }
-  .coin-pill {
-    pointer-events: auto;
-    background: var(--panel); border: 1px solid rgba(255,255,255,.08);
-    border-radius: 20px; padding: 6px 12px;
-    display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
-    color: var(--accent-warm);
-  }
+  .qr-box{display:flex; justify-content:center; padding:16px; background:#fff; border-radius:14px; margin-top:14px;}
+  .result-box{background:#100C24; border-radius:12px; padding:12px 14px; font-size:13px; margin-top:12px; word-break:break-word; color:var(--teal); min-height:20px;}
 
-  .empty-state {
-    height: 100vh; height: 100dvh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 0 32px; gap: 10px;
-  }
-  .empty-state .big { font-size: 40px; }
-  .empty-state p { color: var(--text-dim); font-size: 14px; margin: 0; }
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+  .chip{background:#100C24; border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:7px 13px; font-size:12px; color:var(--ink-dim);}
 
-  /* Stats sheet */
-  #stats-sheet {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-    background: var(--panel); border-radius: 18px 18px 0 0;
-    padding: 20px 20px max(20px, env(safe-area-inset-bottom));
-    transform: translateY(110%);
-    transition: transform .25s ease;
-    box-shadow: 0 -8px 30px rgba(0,0,0,.4);
-  }
-  #stats-sheet.open { transform: translateY(0); }
-  #stats-sheet h3 { margin: 0 0 14px; font-size: 16px; }
-  .stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; }
-  .stat-row:last-child { border-bottom: none; }
-  .stat-row .val { font-weight: 700; }
-  #close-stats { width: 100%; margin-top: 14px; padding: 12px; border: none; border-radius: 12px; background: rgba(255,255,255,.08); color: var(--text); font-size: 14px; font-weight: 600; }
-  #open-withdraw-from-stats {
-    width: 100%; margin-top: 16px; padding: 13px; border: none; border-radius: 12px;
-    background: var(--accent); color: #fff; font-size: 14px; font-weight: 700;
-  }
+  .swatch{width:100%; height:70px; border-radius:12px; margin-top:12px; border:1px solid rgba(255,255,255,.1);}
+  input[type=color]{width:100%; height:44px; border:none; border-radius:10px; background:none; margin-top:10px; cursor:pointer;}
 
-  /* Withdraw sheet */
-  #withdraw-sheet {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
-    background: var(--panel); border-radius: 18px 18px 0 0;
-    padding: 20px 20px max(20px, env(safe-area-inset-bottom));
-    max-height: 82vh; overflow-y: auto;
-    transform: translateY(110%);
-    transition: transform .25s ease;
-    box-shadow: 0 -8px 30px rgba(0,0,0,.4);
+  .drop-zone{
+    border:2px dashed rgba(255,255,255,.14); border-radius:14px; padding:26px 14px; text-align:center;
+    font-size:13px; color:var(--ink-dim); cursor:pointer;
   }
-  #withdraw-sheet.open { transform: translateY(0); }
-  #withdraw-sheet h3 { margin: 0 0 6px; font-size: 16px; }
-  .withdraw-balance { margin: 0 0 16px; color: var(--text-dim); font-size: 13px; }
-  .withdraw-balance b { color: var(--accent-warm); font-size: 16px; }
+  .drop-zone.active{border-color:var(--teal); color:var(--teal);}
+  .preview-img{max-width:100%; border-radius:12px; margin-top:12px; display:none;}
 
-  .withdraw-section-title { font-size: 13px; color: var(--text-dim); margin: 18px 0 10px; font-weight: 600; }
-  .withdraw-section-title:first-child { margin-top: 0; }
+  .pro-badge{display:inline-block; background:rgba(255,194,75,.15); color:var(--gold); font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; margin-left:6px;}
+  .locked{opacity:.5; pointer-events:none;}
 
-  .plan-card {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
-    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+  nav.tabbar{
+    position:fixed; left:0; right:0; bottom:0; background:#140F2A; border-top:1px solid rgba(255,255,255,.06);
+    display:flex; padding:6px calc(env(safe-area-inset-bottom,0px) + 6px) calc(env(safe-area-inset-bottom,0px) + 6px);
+    padding-top:6px; z-index:20;
   }
-  .plan-card .plan-info .plan-title { font-weight: 700; font-size: 14px; }
-  .plan-card .plan-info .plan-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
-  .plan-card button {
-    border: none; border-radius: 20px; padding: 9px 18px; font-size: 13px; font-weight: 700;
-    background: var(--accent); color: #fff; white-space: nowrap;
+  nav.tabbar button{
+    flex:1; background:none; border:none; color:var(--ink-dim); font-size:10.5px; padding:7px 2px 5px;
+    display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; font-family:inherit;
   }
-  .plan-card button:disabled { background: rgba(255,255,255,.1); color: var(--text-dim); }
+  nav.tabbar button .ic{font-size:19px;}
+  nav.tabbar button.active{color:var(--gold);}
 
-  .money-box {
-    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
-    border-radius: 14px; padding: 16px;
-  }
-  .money-box .rate-line { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
-  .money-box input {
-    width: 100%; padding: 12px 14px; margin-bottom: 10px;
-    border-radius: 10px; border: 1px solid rgba(255,255,255,.12);
-    background: rgba(0,0,0,.3); color: var(--text); font-size: 14px;
-  }
-  .money-box input::placeholder { color: var(--text-dim); }
-  .money-box button {
-    width: 100%; padding: 12px; border: none; border-radius: 12px;
-    background: var(--accent-warm); color: #1a1200; font-weight: 700; font-size: 14px;
-  }
+  .panel{display:none;}
+  .panel.active{display:block;}
 
-  .withdraw-msg { margin-top: 14px; font-size: 13px; text-align: center; min-height: 18px; }
-  .withdraw-msg.success { color: #4ade80; }
-  .withdraw-msg.error { color: #ff5c5c; }
-
-  #close-withdraw { width: 100%; margin-top: 18px; padding: 12px; border: none; border-radius: 12px; background: rgba(255,255,255,.08); color: var(--text); font-size: 14px; font-weight: 600; }
-
-  /* Onboarding splash (sirf pehli baar dikhta hai) */
-  #onboarding {
-    position: fixed; inset: 0; z-index: 50;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 22px; padding: 32px;
-    background: radial-gradient(circle at 50% 30%, #1a1a22, var(--bg) 70%);
-    text-align: center;
+  .toast{
+    position:fixed; left:50%; bottom:82px; transform:translateX(-50%) translateY(20px);
+    background:#1D1740; border:1px solid rgba(255,255,255,.1); color:var(--ink);
+    padding:11px 16px; border-radius:14px; font-size:12.5px; text-align:center; max-width:88%;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:200;
   }
-  #onboarding .logo-wrap {
-    width: 120px; height: 120px; border-radius: 28px;
-    background: linear-gradient(145deg, var(--accent), #8a5bff);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 56px;
-    box-shadow: 0 12px 40px rgba(91,140,255,.35);
-  }
-  #onboarding h1 { margin: 0; font-size: 24px; font-weight: 800; }
-  #onboarding p { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.5; max-width: 300px; }
-  #start-watching-btn {
-    margin-top: 8px; padding: 14px 40px; border: none; border-radius: 30px;
-    background: var(--accent); color: #fff; font-size: 16px; font-weight: 700;
-    cursor: pointer;
-  }
-  #start-watching-btn:active { transform: scale(0.97); }
-
-  /* Delete button on own reels */
-  .action-btn.delete-btn .icon { background: rgba(255,70,70,0.18); color: #ff5c5c; }
-
-  /* Buffering spinner */
-  .loading-spinner {
-    display: none;
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 40px; height: 40px;
-    border: 3px solid rgba(255,255,255,0.2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    pointer-events: none;
-  }
-  .reel.buffering .loading-spinner { display: block; }
-  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-
-  /* 2x speed indicator (hold-to-fast-forward) */
-  .speed-badge {
-    display: none;
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.6); color: #fff; font-weight: 700; font-size: 15px;
-    padding: 8px 16px; border-radius: 20px; pointer-events: none;
-  }
-  .reel.speeding .speed-badge { display: block; }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<div id="onboarding">
-  <div class="logo-wrap">🎬</div>
-  <h1>Reels</h1>
-  <p>Chhote videos, endless scroll. Dekho, like karo, share karo — aur ads dekh kar coins kamao.</p>
-  <button id="start-watching-btn">▶ Start Watching</button>
-</div>
+<div class="wrap">
+  <header>
+    <div class="brand-mark"></div>
+    <div class="brand-name">QuickTools</div>
+  </header>
 
-<div class="top-bar">
-  <div class="title">Reels</div>
-  <div style="pointer-events:auto; display:flex; gap:8px;">
-    <button class="coin-pill" id="stats-btn" style="color:var(--text);">📊</button>
-    <button class="coin-pill" id="coin-btn">🪙 <span id="coin-count">0</span></button>
+  <!-- AD PLACEMENT — always visible on the home screen, first thing anyone sees -->
+  <div class="card" id="homeAdCard">
+    <h2>🎬 Watch a video</h2>
+    <div class="sub" id="homeAdSub">Unlock Pro Mode (batch image compression) for as long as you keep this app open. Fully optional — every tool below stays free either way, and unlocking never expires while you're still here.</div>
+    <button class="btn btn-gold" id="watchAdBtnHome">Watch a video to unlock</button>
+  </div>
+
+  <!-- QR GENERATOR -->
+  <div class="panel active" id="panel-qr">
+    <div class="card">
+      <h2>QR Code Generator</h2>
+      <div class="sub">Turn any text or link into a scannable QR code</div>
+      <label>Text or URL</label>
+      <textarea id="qrInput" placeholder="https://example.com"></textarea>
+      <button class="btn btn-gold" id="qrGenBtn">Generate QR Code</button>
+      <div class="qr-box" id="qrBox" style="display:none;"><div id="qrCanvas"></div></div>
+      <button class="btn btn-outline" id="qrDownloadBtn" style="display:none;">Download PNG</button>
+      <button class="btn btn-outline" id="qrSupportBtn" style="display:none; color:var(--gold); border-color:rgba(255,194,75,.3);">💛 Enjoyed this? Watch a quick ad to support us (optional)</button>
+    </div>
+
+    <div class="card">
+      <h2>QR Code Scanner</h2>
+      <div class="sub">Upload a QR code image to decode it</div>
+      <div class="drop-zone" id="qrScanZone">Tap to choose an image</div>
+      <input type="file" id="qrScanInput" accept="image/*" style="display:none;">
+      <div class="result-box" id="qrScanResult" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- TEXT TOOLS -->
+  <div class="panel" id="panel-text">
+    <div class="card">
+      <h2>Text Tools</h2>
+      <div class="sub">Case conversion, word & character count</div>
+      <label>Your text</label>
+      <textarea id="textInput" placeholder="Paste or type text here..."></textarea>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn btn-outline" data-case="upper">UPPER</button>
+        <button class="btn btn-outline" data-case="lower">lower</button>
+        <button class="btn btn-outline" data-case="title">Title</button>
+      </div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn btn-outline" data-case="sentence">Sentence</button>
+        <button class="btn btn-outline" data-case="trim">Trim spaces</button>
+      </div>
+      <div class="chip-row" id="textStats">
+        <span class="chip">0 characters</span>
+        <span class="chip">0 words</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- UNIT CONVERTER -->
+  <div class="panel" id="panel-convert">
+    <div class="card">
+      <h2>Unit Converter</h2>
+      <div class="sub">Length, weight, and temperature</div>
+      <label>Category</label>
+      <select id="convCategory">
+        <option value="length">Length</option>
+        <option value="weight">Weight</option>
+        <option value="temp">Temperature</option>
+      </select>
+      <div class="btn-row" style="margin-top:10px;">
+        <div style="flex:1;">
+          <label>From</label>
+          <select id="convFrom"></select>
+        </div>
+        <div style="flex:1;">
+          <label>To</label>
+          <select id="convTo"></select>
+        </div>
+      </div>
+      <label>Value</label>
+      <input type="text" id="convValue" placeholder="Enter a number" inputmode="decimal">
+      <div class="result-box" id="convResult">Result will appear here</div>
+    </div>
+  </div>
+
+  <!-- COLOR TOOL -->
+  <div class="panel" id="panel-color">
+    <div class="card">
+      <h2>Color Tool</h2>
+      <div class="sub">Pick a color or convert HEX ↔ RGB ↔ HSL</div>
+      <input type="color" id="colorPicker" value="#ffc24b">
+      <div class="swatch" id="colorSwatch" style="background:#ffc24b;"></div>
+      <div class="chip-row" id="colorValues">
+        <span class="chip" id="colorHex">HEX: #FFC24B</span>
+        <span class="chip" id="colorRgb">RGB: 255,194,75</span>
+        <span class="chip" id="colorHsl">HSL: 39°,100%,65%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE COMPRESSOR -->
+  <div class="panel" id="panel-compress">
+    <div class="card">
+      <h2>Image Compressor <span class="pro-badge" id="batchBadge">PRO</span></h2>
+      <div class="sub" id="compressSub">Shrink a photo's file size, right in your browser</div>
+      <div class="drop-zone" id="imgDropZone">Tap to choose an image</div>
+      <input type="file" id="imgInput" accept="image/*" style="display:none;">
+      <img class="preview-img" id="imgPreview">
+      <label>Quality</label>
+      <input type="range" id="qualitySlider" min="10" max="95" value="70" style="width:100%;">
+      <div class="chip-row" id="imgSizeInfo"></div>
+      <button class="btn btn-teal" id="imgCompressBtn" style="display:none;">Compress</button>
+      <a class="btn btn-outline" id="imgDownloadBtn" style="display:none; text-align:center; text-decoration:none;">Download result</a>
+      <button class="btn btn-outline" id="imgSupportBtn" style="display:none; color:var(--gold); border-color:rgba(255,194,75,.3);">💛 Enjoyed this? Watch a quick ad to support us (optional)</button>
+    </div>
+  </div>
+
+  <!-- PRO / EARN -->
+  <div class="panel" id="panel-pro">
+    <div class="card">
+      <h2>Pro Mode</h2>
+      <div class="sub">Everything above already works fully free, forever. Pro Mode is a completely optional bonus.</div>
+      <div class="chip-row">
+        <span class="chip" id="proStatus">Status: Free plan</span>
+      </div>
+      <div style="font-size:13px; color:var(--ink-dim); margin-top:12px; line-height:1.6;">
+        Watching a short video unlocks <b>batch image compression</b> (multiple photos at once) for this app session — it stays unlocked until you close the app.
+        Nothing else in this app requires an ad — every tool above works the same with or without it.
+      </div>
+      <button class="btn btn-gold" id="watchAdBtn">Watch a video to unlock</button>
+    </div>
   </div>
 </div>
 
-<div id="feed"></div>
+<div class="toast" id="toast"></div>
 
-<div id="stats-sheet">
-  <h3>Tumhare Stats</h3>
-  <div class="stat-row"><span>Videos uploaded</span><span class="val" id="s-videos">0</span></div>
-  <div class="stat-row"><span>Total views</span><span class="val" id="s-views">0</span></div>
-  <div class="stat-row"><span>Total likes</span><span class="val" id="s-likes">0</span></div>
-  <div class="stat-row"><span>Coins earned</span><span class="val" id="s-coins">0</span></div>
-  <button id="open-withdraw-from-stats">🎁 Coins Withdraw Karo</button>
-  <button id="close-stats">Band Karo</button>
-</div>
-
-<div id="withdraw-sheet">
-  <h3>🎁 Withdraw</h3>
-  <p class="withdraw-balance">Balance: <b id="w-balance">0</b> coins</p>
-
-  <div id="withdraw-plans-loading" style="color:var(--text-dim); font-size:13px;">Loading options…</div>
-  <div id="withdraw-plans" style="display:none;"></div>
-
-  <div id="withdraw-msg" class="withdraw-msg"></div>
-  <button id="close-withdraw">Band Karo</button>
-</div>
+<nav class="tabbar">
+  <button class="tab-btn active" data-panel="panel-qr"><span class="ic">▦</span>QR</button>
+  <button class="tab-btn" data-panel="panel-text"><span class="ic">✍</span>Text</button>
+  <button class="tab-btn" data-panel="panel-convert"><span class="ic">⇄</span>Convert</button>
+  <button class="tab-btn" data-panel="panel-color"><span class="ic">◍</span>Color</button>
+  <button class="tab-btn" data-panel="panel-compress"><span class="ic">🗜</span>Compress</button>
+  <button class="tab-btn" data-panel="panel-pro"><span class="ic">★</span>Pro</button>
+</nav>
 
 <script>
-// Mini App Vercel par hai, backend (bot + API ek hi service) Koyeb par.
-// Yahan Koyeb wali service ka poora HTTPS URL daalo.
-const API_BASE = "https://p01--telegram-mini-gram-mini-bot--xxhdzhcw6m7q.code.run".replace(/\/+$/, "");
+/* ---------- Telegram WebApp init ---------- */
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
+function haptic(t){ if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(t||'light'); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
 
-// Onboarding splash ke liye platform image (chaaho to emoji ki jagah asli
-// logo image URL daal do, jaise "https://.../logo.png")
-const PLATFORM_LOGO_URL = ""; // khali rehne do to emoji use hoga
+/* ---------- Tab navigation ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+    haptic('light');
+  });
+});
 
-// ---------------------------------------------------------------------
-// Ad networks — jitni chaho utni networks yahan define kar sakte ho, lekin
-// ek time par sirf EK hi "active" network chalti hai — jo AD_NETWORKS mein
-// niche select ki hai. Naya network add karna ho to bas ek naya entry
-// jodo (uska SDK <script> tag <head> mein daalo), aur ACTIVE_AD_NETWORK ko
-// uska naam de do jab wo use karni ho.
-// ---------------------------------------------------------------------
-const ADS_EVERY_N_REELS = 3;   // har N reels ke baad ad
-const AD_REWARD_AMOUNT = 0.5;
+/* ---------- QR Generator ---------- */
+document.getElementById('qrGenBtn').addEventListener('click', () => {
+  const val = document.getElementById('qrInput').value.trim();
+  if (!val) { showToast('Type some text or a link first'); return; }
+  const box = document.getElementById('qrCanvas');
+  box.innerHTML = '';
+  new QRCode(box, { text: val, width: 220, height: 220, colorDark: '#0E0B1A', colorLight: '#ffffff' });
+  document.getElementById('qrBox').style.display = 'flex';
+  document.getElementById('qrDownloadBtn').style.display = 'block';
+  document.getElementById('qrSupportBtn').style.display = 'block';
+  haptic('medium');
+});
+document.getElementById('qrDownloadBtn').addEventListener('click', () => {
+  const canvas = document.querySelector('#qrCanvas canvas');
+  if (!canvas) return;
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'qrcode.png';
+  a.click();
+});
 
-// Yahan decide karo kaunsi network abhi live hai:
-const ACTIVE_AD_NETWORK = "monetag";
+/* ---------- QR Scanner ---------- */
+const qrScanZone = document.getElementById('qrScanZone');
+const qrScanInput = document.getElementById('qrScanInput');
+qrScanZone.addEventListener('click', () => qrScanInput.click());
+qrScanInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    const resultBox = document.getElementById('qrScanResult');
+    resultBox.style.display = 'block';
+    resultBox.textContent = code ? code.data : "No QR code found in that image.";
+    haptic(code ? 'medium' : 'light');
+  };
+  img.src = URL.createObjectURL(file);
+});
 
-const AD_NETWORKS = {
-  adsgram: {
-    blockId: "YOUR_ADSGRAM_BLOCK_ID", // <-- Adsgram dashboard se
-    controller: null,
-    init() {
-      if (window.Adsgram && this.blockId !== "YOUR_ADSGRAM_BLOCK_ID") {
-        this.controller = window.Adsgram.init({ blockId: this.blockId });
-      }
-    },
-    async show() {
-      if (!this.controller) throw new Error("Adsgram configured nahi hai");
-      await this.controller.show();
-    },
-  },
-  
-  // Naya network add karna ho to bas yahan ek aur key daalo, jaise:
-  // monetag2: {
-  //   init() { /* SDK <head> mein load kiya ho to yahan setup karo */ },
-  //   async show() { /* SDK ka rewarded-ad show() call karo */ },
-  // },
+/* ---------- Text Tools ---------- */
+const textInput = document.getElementById('textInput');
+function updateTextStats(){
+  const v = textInput.value;
+  const words = v.trim() ? v.trim().split(/\s+/).length : 0;
+  document.getElementById('textStats').innerHTML =
+    `<span class="chip">${v.length} characters</span><span class="chip">${words} words</span>`;
+}
+textInput.addEventListener('input', updateTextStats);
+document.querySelectorAll('[data-case]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const mode = btn.dataset.case;
+    let v = textInput.value;
+    if (mode === 'upper') v = v.toUpperCase();
+    else if (mode === 'lower') v = v.toLowerCase();
+    else if (mode === 'title') v = v.replace(/\w\S*/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
+    else if (mode === 'sentence') v = v.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+    else if (mode === 'trim') v = v.trim().replace(/\s+/g, ' ');
+    textInput.value = v;
+    updateTextStats();
+    haptic('light');
+  });
+});
+
+/* ---------- Unit Converter ---------- */
+const units = {
+  length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
+  weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, ton: 1000 },
 };
+const convCategory = document.getElementById('convCategory');
+const convFrom = document.getElementById('convFrom');
+const convTo = document.getElementById('convTo');
+const convValue = document.getElementById('convValue');
+const convResult = document.getElementById('convResult');
 
-Object.values(AD_NETWORKS).forEach(n => {
-  try { n.init(); } catch (e) { console.log("Ad network init failed", e); }
-});
-
-const tg = window.Telegram?.WebApp;
-tg?.ready();
-tg?.expand();
-
-const userId = tg?.initDataUnsafe?.user?.id || 0; // fallback 0 for local testing outside Telegram
-const feedEl = document.getElementById("feed");
-const coinCountEl = document.getElementById("coin-count");
-
-let reelsSinceAd = 0;
-
-async function maybeShowAd() {
-  reelsSinceAd++;
-  if (reelsSinceAd < ADS_EVERY_N_REELS) return;
-  reelsSinceAd = 0;
-
-  const network = AD_NETWORKS[ACTIVE_AD_NETWORK];
-  if (!network) return;
-
-  try {
-    await network.show(); // resolves jab ad poora dekh liya jaaye
-    const res = await fetch(`${API_BASE}/api/ad_reward`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, amount: AD_REWARD_AMOUNT, ad_type: "rewarded" }),
+function fillUnitOptions(){
+  const cat = convCategory.value;
+  convFrom.innerHTML = ''; convTo.innerHTML = '';
+  if (cat === 'temp') {
+    ['C','F','K'].forEach(u => {
+      convFrom.innerHTML += `<option value="${u}">${u}</option>`;
+      convTo.innerHTML += `<option value="${u}">${u}</option>`;
     });
-    const data = await res.json();
-    coinCountEl.textContent = data.coins.toFixed(1);
-  } catch (e) {
-    console.log(`${ACTIVE_AD_NETWORK} ad skipped/failed`, e);
-  }
-}
-
-// ---------------------------------------------------------------------
-// Feed loading
-// ---------------------------------------------------------------------
-async function loadFeed() {
-  const res = await fetch(`${API_BASE}/api/feed?user_id=${userId}&limit=15`);
-  let videos = await res.json();
-
-  // Share-link se aaye video ko feed mein sabse pehle dikhao
-  if (sharedVideoId) {
-    const idx = videos.findIndex(v => v.id === sharedVideoId);
-    if (idx > 0) {
-      const [shared] = videos.splice(idx, 1);
-      videos.unshift(shared);
-    }
-  }
-
-  if (!videos.length) {
-    feedEl.innerHTML = `
-      <div class="empty-state">
-        <div class="big">🎬</div>
-        <p>Abhi koi reels nahi hai.<br>Bot ko video bhejo, feed yahin dikhega.</p>
-      </div>`;
-    return;
-  }
-
-  feedEl.innerHTML = "";
-  videos.forEach(v => feedEl.appendChild(buildReelEl(v)));
-
-  // Pehli reel already visible hai load hote hi — usko turant preload karo
-  const firstVideo = feedEl.querySelector(".reel video");
-  if (firstVideo) {
-    firstVideo.preload = "auto";
-    firstVideo.load();
-  }
-
-  observeReels();
-}
-
-function buildReelEl(v) {
-  const wrap = document.createElement("div");
-  wrap.className = "reel";
-  wrap.dataset.videoId = v.id;
-
-  const isOwner = userId && v.uploader_id === userId;
-
-  wrap.innerHTML = `
-    <video src="${API_BASE}${v.stream_url}" loop playsinline preload="metadata"></video>
-    <div class="loading-spinner"></div>
-    <div class="speed-badge">2x ⏩</div>
-    <div class="side-actions">
-      <button class="action-btn like-btn ${v.liked_by_me ? "liked" : ""}">
-        <span class="icon">${v.liked_by_me ? "❤️" : "🤍"}</span>
-        <span class="like-count">${v.likes}</span>
-      </button>
-      <button class="action-btn">
-        <span class="icon">👁</span>
-        <span class="view-count">${v.views}</span>
-      </button>
-      <button class="action-btn share-btn">
-        <span class="icon">↗️</span>
-        <span>Share</span>
-      </button>
-      ${isOwner ? `
-      <button class="action-btn delete-btn">
-        <span class="icon">🗑</span>
-        <span>Delete</span>
-      </button>` : ""}
-    </div>
-    <div class="overlay-bottom">
-      <div class="uploader">@${v.uploader_name}</div>
-      <div class="caption">${v.caption || ""}</div>
-    </div>
-  `;
-
-  wrap.querySelector(".like-btn").addEventListener("click", (e) => toggleLike(v.id, e.currentTarget));
-  wrap.querySelector(".share-btn").addEventListener("click", () => shareReel(v.id));
-  const deleteBtn = wrap.querySelector(".delete-btn");
-  if (deleteBtn) {
-    deleteBtn.addEventListener("click", () => deleteReel(v.id, wrap));
-  }
-
-  const videoEl = wrap.querySelector("video");
-  attachBufferingIndicator(videoEl, wrap);
-  attachGestures(videoEl, wrap);
-
-  return wrap;
-}
-
-// ---------------------------------------------------------------------
-// Buffering spinner — video load ho rahi ho to dikhta hai
-// ---------------------------------------------------------------------
-function attachBufferingIndicator(videoEl, reelEl) {
-  videoEl.addEventListener("waiting", () => reelEl.classList.add("buffering"));
-  videoEl.addEventListener("playing", () => reelEl.classList.remove("buffering"));
-  videoEl.addEventListener("canplay", () => reelEl.classList.remove("buffering"));
-}
-
-// ---------------------------------------------------------------------
-// Instagram-style gestures:
-//   - Tap (bina hilaye) -> play/pause toggle
-//   - Right side pe hold karke rakhna -> 2x speed, chhodte hi normal
-//   - Scroll/swipe ke saath conflict na ho isliye movement track karte hain
-// ---------------------------------------------------------------------
-function attachGestures(videoEl, reelEl) {
-  const MOVE_THRESHOLD = 12; // px — isse zyada hile to "tap" nahi, "scroll" maano
-  const HOLD_DELAY = 220;    // ms — itni der dabaye rakhne par hold shuru
-
-  let startX = 0, startY = 0, moved = false, isHolding = false, holdTimer = null;
-
-  function endHold() {
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
-    if (isHolding) {
-      videoEl.playbackRate = 1;
-      reelEl.classList.remove("speeding");
-      isHolding = false;
-    }
-  }
-
-  videoEl.addEventListener("pointerdown", (e) => {
-    startX = e.clientX;
-    startY = e.clientY;
-    moved = false;
-
-    const rect = videoEl.getBoundingClientRect();
-    const isRightSide = (e.clientX - rect.left) > rect.width * 0.5;
-
-    holdTimer = setTimeout(() => {
-      if (!moved && isRightSide) {
-        videoEl.playbackRate = 2;
-        reelEl.classList.add("speeding");
-        isHolding = true;
-      }
-    }, HOLD_DELAY);
-  });
-
-  videoEl.addEventListener("pointermove", (e) => {
-    if (Math.abs(e.clientX - startX) > MOVE_THRESHOLD || Math.abs(e.clientY - startY) > MOVE_THRESHOLD) {
-      moved = true;
-      endHold();
-    }
-  });
-
-  videoEl.addEventListener("pointerup", () => {
-    const wasHolding = isHolding;
-    endHold();
-    if (!moved && !wasHolding) {
-      // Sirf ek chhota tap tha — play/pause toggle karo
-      if (videoEl.paused) videoEl.play().catch(() => {});
-      else videoEl.pause();
-    }
-  });
-
-  videoEl.addEventListener("pointercancel", endHold);
-  videoEl.addEventListener("pointerleave", endHold);
-}
-
-function shareReel(videoId) {
-  const shareUrl = `${window.location.origin}${window.location.pathname}?v=${videoId}`;
-  const shareText = "Ye reel dekho 🎬";
-
-  if (tg?.openTelegramLink) {
-    tg.openTelegramLink(
-      `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`
-    );
-  } else if (navigator.share) {
-    navigator.share({ title: "Reels", text: shareText, url: shareUrl }).catch(() => {});
+    convTo.value = 'F';
   } else {
-    navigator.clipboard?.writeText(shareUrl);
-    alert("Link copy ho gaya: " + shareUrl);
-  }
-}
-
-async function deleteReel(videoId, wrapEl) {
-  if (!confirm("Ye video delete karni hai?")) return;
-  try {
-    const res = await fetch(`${API_BASE}/api/video/${videoId}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId }),
+    Object.keys(units[cat]).forEach(u => {
+      convFrom.innerHTML += `<option value="${u}">${u}</option>`;
+      convTo.innerHTML += `<option value="${u}">${u}</option>`;
     });
-    if (res.ok) {
-      wrapEl.remove();
-    } else {
-      alert("Delete nahi ho payi.");
-    }
-  } catch (e) {
-    alert("Delete nahi ho payi.");
+    convTo.selectedIndex = 1;
   }
+  runConvert();
 }
+function toCelsius(v, u){ return u === 'C' ? v : u === 'F' ? (v - 32) * 5/9 : v - 273.15; }
+function fromCelsius(v, u){ return u === 'C' ? v : u === 'F' ? v * 9/5 + 32 : v + 273.15; }
 
-async function toggleLike(videoId, btn) {
-  const isLiked = btn.classList.contains("liked");
-  const endpoint = isLiked ? "/api/unlike" : "/api/like";
-  btn.classList.toggle("liked");
-  btn.querySelector(".icon").textContent = isLiked ? "🤍" : "❤️";
-  const countEl = btn.querySelector(".like-count");
-  countEl.textContent = parseInt(countEl.textContent) + (isLiked ? -1 : 1);
-
-  tg?.HapticFeedback?.impactOccurred("light");
-
-  await fetch(`${API_BASE}${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user_id: userId, video_id: videoId }),
-  });
-}
-
-// ---------------------------------------------------------------------
-// Autoplay the reel in view + count a view + trigger ads + prefetch next
-// ---------------------------------------------------------------------
-function observeReels() {
-  const reelEls = Array.from(document.querySelectorAll(".reel"));
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const reelEl = entry.target;
-      const video = reelEl.querySelector("video");
-      if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
-        video.play().catch(() => {});
-        registerView(reelEl.dataset.videoId);
-        maybeShowAd();
-
-        // Agli reel ko thodi der baad (scroll settle hone ke baad) load
-        // karna shuru karo — turant karne se scroll ke beech jank aata hai,
-        // jo kabhi-kabhi ek se zyada reels skip hone ki wajah banta hai
-        const idx = reelEls.indexOf(reelEl);
-        const nextVideo = reelEls[idx + 1]?.querySelector("video");
-        if (nextVideo && nextVideo.preload !== "auto") {
-          setTimeout(() => {
-            nextVideo.preload = "auto";
-            nextVideo.load();
-          }, 250);
-        }
-      } else {
-        video.pause();
-      }
-    });
-  }, { threshold: [0.6] });
-
-  reelEls.forEach(r => observer.observe(r));
-}
-
-const viewedThisSession = new Set();
-async function registerView(videoId) {
-  if (viewedThisSession.has(videoId)) return;
-  viewedThisSession.add(videoId);
-  await fetch(`${API_BASE}/api/view`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user_id: userId, video_id: parseInt(videoId) }),
-  });
-}
-
-// ---------------------------------------------------------------------
-// Stats sheet — ab "📊" button se khulti hai
-// ---------------------------------------------------------------------
-const statsSheet = document.getElementById("stats-sheet");
-
-async function openStatsSheet() {
-  const res = await fetch(`${API_BASE}/api/user/${userId}/stats`);
-  if (res.ok) {
-    const s = await res.json();
-    document.getElementById("s-videos").textContent = s.total_videos;
-    document.getElementById("s-views").textContent = s.total_views;
-    document.getElementById("s-likes").textContent = s.total_likes;
-    document.getElementById("s-coins").textContent = s.coins.toFixed(1);
-    coinCountEl.textContent = s.coins.toFixed(1);
+function runConvert(){
+  const raw = parseFloat(convValue.value);
+  if (isNaN(raw)) { convResult.textContent = 'Result will appear here'; return; }
+  const cat = convCategory.value;
+  let out;
+  if (cat === 'temp') {
+    out = fromCelsius(toCelsius(raw, convFrom.value), convTo.value);
+  } else {
+    const base = raw * units[cat][convFrom.value];
+    out = base / units[cat][convTo.value];
   }
-  statsSheet.classList.add("open");
+  convResult.textContent = `${raw} ${convFrom.value} = ${out.toFixed(4).replace(/\.?0+$/, '')} ${convTo.value}`;
 }
+[convCategory].forEach(el => el.addEventListener('change', fillUnitOptions));
+[convFrom, convTo, convValue].forEach(el => el.addEventListener('input', runConvert));
+fillUnitOptions();
 
-document.getElementById("stats-btn").addEventListener("click", openStatsSheet);
-document.getElementById("close-stats").addEventListener("click", () => {
-  statsSheet.classList.remove("open");
+/* ---------- Color Tool ---------- */
+const colorPicker = document.getElementById('colorPicker');
+function hexToRgb(hex){
+  const n = parseInt(hex.slice(1), 16);
+  return [(n>>16)&255, (n>>8)&255, n&255];
+}
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if (max===min){ h=s=0; }
+  else {
+    const d=max-min;
+    s = l>0.5 ? d/(2-max-min) : d/(max+min);
+    if (max===r) h=(g-b)/d+(g<b?6:0);
+    else if (max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h/=6;
+  }
+  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+}
+function updateColor(){
+  const hex = colorPicker.value;
+  const [r,g,b] = hexToRgb(hex);
+  const [h,s,l] = rgbToHsl(r,g,b);
+  document.getElementById('colorSwatch').style.background = hex;
+  document.getElementById('colorHex').textContent = `HEX: ${hex.toUpperCase()}`;
+  document.getElementById('colorRgb').textContent = `RGB: ${r},${g},${b}`;
+  document.getElementById('colorHsl').textContent = `HSL: ${h}°,${s}%,${l}%`;
+}
+colorPicker.addEventListener('input', updateColor);
+updateColor();
+
+/* ---------- Image Compressor ---------- */
+let originalFile = null, originalSize = 0;
+const imgDropZone = document.getElementById('imgDropZone');
+const imgInput = document.getElementById('imgInput');
+const imgPreview = document.getElementById('imgPreview');
+const qualitySlider = document.getElementById('qualitySlider');
+
+imgDropZone.addEventListener('click', () => imgInput.click());
+imgInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  originalFile = file; originalSize = file.size;
+  imgPreview.src = URL.createObjectURL(file);
+  imgPreview.style.display = 'block';
+  document.getElementById('imgCompressBtn').style.display = 'block';
+  document.getElementById('imgDownloadBtn').style.display = 'none';
+  document.getElementById('imgSizeInfo').innerHTML = `<span class="chip">Original: ${(originalSize/1024).toFixed(1)} KB</span>`;
 });
 
-// ---------------------------------------------------------------------
-// Withdraw sheet — coin pill dabane par khulta hai
-// ---------------------------------------------------------------------
-const withdrawSheet = document.getElementById("withdraw-sheet");
-const withdrawMsgEl = document.getElementById("withdraw-msg");
-let withdrawPlansLoaded = false;
+document.getElementById('imgCompressBtn').addEventListener('click', () => {
+  if (!originalFile) return;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width; canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const dl = document.getElementById('imgDownloadBtn');
+      dl.href = url; dl.download = 'compressed.jpg'; dl.style.display = 'block';
+      document.getElementById('imgSupportBtn').style.display = 'block';
+      document.getElementById('imgSizeInfo').innerHTML =
+        `<span class="chip">Original: ${(originalSize/1024).toFixed(1)} KB</span>` +
+        `<span class="chip">Compressed: ${(blob.size/1024).toFixed(1)} KB</span>` +
+        `<span class="chip">Saved: ${Math.max(0, Math.round(100 - (blob.size/originalSize*100)))}%</span>`;
+      haptic('medium');
+    }, 'image/jpeg', qualitySlider.value / 100);
+  };
+  img.src = imgPreview.src;
+});
 
-function showWithdrawMsg(text, type) {
-  withdrawMsgEl.textContent = text;
-  withdrawMsgEl.className = "withdraw-msg " + (type || "");
-}
+/* ---------- Pro Mode (optional ad-unlocked bonus — nothing else requires this) ---------- */
+const ADSGRAM_REWARD_BLOCK_ID = "49067";
+const ADSGRAM_INTERSTITIAL_BLOCK_ID = "int-49106"; // used only for the fully optional "Support us" button below
+let AdController = null;
+let SupportAdController = null;
+let proUntil = Number(sessionStorage.getItem('qt_proUntil') || 0);
 
-async function openWithdrawSheet() {
-  // Balance dikhao (jo bhi latest maalum ho)
-  const statsRes = await fetch(`${API_BASE}/api/user/${userId}/stats`);
-  let currentCoins = 0;
-  if (statsRes.ok) {
-    const s = await statsRes.json();
-    currentCoins = s.coins;
-    coinCountEl.textContent = s.coins.toFixed(1);
-  }
-  document.getElementById("w-balance").textContent = currentCoins.toFixed(1);
-  showWithdrawMsg("", "");
-
-  if (!withdrawPlansLoaded) {
-    await loadWithdrawPlans();
-  }
-
-  withdrawSheet.classList.add("open");
-}
-
-async function loadWithdrawPlans() {
-  const loadingEl = document.getElementById("withdraw-plans-loading");
-  const plansEl = document.getElementById("withdraw-plans");
-
+function initAds(){
   try {
-    const res = await fetch(`${API_BASE}/api/withdraw/plans`);
-    const data = await res.json();
-
-    let html = `<div class="withdraw-section-title">🎁 Bot Premium (kisi doosre bot ka)</div>`;
-    data.premium_plans.forEach((plan, i) => {
-      html += `
-        <div class="plan-card">
-          <div class="plan-info">
-            <div class="plan-title">${plan.label}</div>
-            <div class="plan-sub">${plan.coins} coins</div>
-          </div>
-          <button class="redeem-premium-btn" data-index="${i}">Redeem</button>
-        </div>`;
-    });
-
-    html += `
-      <div class="withdraw-section-title">💰 Real Money (UPI)</div>
-      <div class="money-box">
-        <div class="rate-line">${data.money_rate_coins_per_inr} coins = ₹1 &nbsp;•&nbsp; Minimum ${data.money_min_coins} coins</div>
-        <input type="text" id="upi-input" placeholder="Apni UPI ID daalo (e.g. name@bank)">
-        <input type="number" id="coins-input" placeholder="Kitne coins withdraw karne hain" min="${data.money_min_coins}">
-        <button id="money-withdraw-btn">Withdraw Request Bhejo</button>
-      </div>`;
-
-    plansEl.innerHTML = html;
-    loadingEl.style.display = "none";
-    plansEl.style.display = "block";
-
-    plansEl.querySelectorAll(".redeem-premium-btn").forEach(btn => {
-      btn.addEventListener("click", () => requestPremiumWithdraw(parseInt(btn.dataset.index), btn));
-    });
-    document.getElementById("money-withdraw-btn").addEventListener("click", requestMoneyWithdraw);
-
-    withdrawPlansLoaded = true;
-  } catch (e) {
-    loadingEl.textContent = "Options load nahi ho payi. Baad mein try karo.";
-  }
-}
-
-async function requestPremiumWithdraw(planIndex, btn) {
-  btn.disabled = true;
-  showWithdrawMsg("", "");
-  try {
-    const res = await fetch(`${API_BASE}/api/withdraw`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, type: "premium", plan_index: planIndex }),
-    });
-    if (res.ok) {
-      showWithdrawMsg("✅ Request bhej di gayi! Admin approve karega jald hi.", "success");
-      const statsRes = await fetch(`${API_BASE}/api/user/${userId}/stats`);
-      if (statsRes.ok) {
-        const s = await statsRes.json();
-        document.getElementById("w-balance").textContent = s.coins.toFixed(1);
-        coinCountEl.textContent = s.coins.toFixed(1);
-      }
-    } else {
-      const err = await res.text();
-      showWithdrawMsg("❌ " + (err || "Itne coins nahi hain."), "error");
+    if (window.Adsgram) {
+      AdController = window.Adsgram.init({ blockId: ADSGRAM_REWARD_BLOCK_ID, debug: false });
+      SupportAdController = window.Adsgram.init({ blockId: ADSGRAM_INTERSTITIAL_BLOCK_ID, debug: false });
     }
-  } catch (e) {
-    showWithdrawMsg("❌ Kuch galat ho gaya, dobara try karo.", "error");
-  }
-  btn.disabled = false;
+  } catch (e) { console.warn("Adsgram init skipped:", e); }
 }
+window.addEventListener('load', initAds);
 
-async function requestMoneyWithdraw() {
-  const upiId = document.getElementById("upi-input").value.trim();
-  const coins = parseFloat(document.getElementById("coins-input").value);
-
-  if (!upiId) {
-    showWithdrawMsg("❌ UPI ID daalo.", "error");
+/* Purely optional, no reward attached — just a way for users who enjoy the app
+   to voluntarily watch a quick ad and support it. Never triggered automatically. */
+function watchSupportAd(){
+  if (!SupportAdController) {
+    showToast("Thanks for wanting to support us! Ad slot isn't live yet.");
     return;
   }
-  if (!coins || coins <= 0) {
-    showWithdrawMsg("❌ Coins ki sahi value daalo.", "error");
+  SupportAdController.show()
+    .then(() => showToast("Thanks for supporting QuickTools! 💛"))
+    .catch((err) => {
+      console.warn('Support ad not shown:', err);
+      showToast('No ad available right now — thanks for trying though!');
+    });
+}
+
+function refreshProUI(){
+  const active = Date.now() < proUntil;
+  const label = active ? 'Pro active for this session' : 'Watch a video to unlock';
+  document.getElementById('proStatus').textContent = active
+    ? 'Status: Pro active — unlocked for this session'
+    : 'Status: Free plan';
+  document.getElementById('watchAdBtn').style.display = active ? 'none' : 'block';
+  document.getElementById('batchBadge').style.display = active ? 'none' : 'inline-block';
+  document.getElementById('homeAdCard').style.display = active ? 'none' : 'block';
+  document.getElementById('watchAdBtnHome').textContent = label;
+}
+
+function watchAdForPro(){
+  const grant = () => {
+    proUntil = Date.now() + 24 * 60 * 60 * 1000; // safety cap; in practice this clears when the app session ends
+    sessionStorage.setItem('qt_proUntil', proUntil);
+    refreshProUI();
+    showToast('Pro Mode unlocked for this session!');
+    haptic('medium');
+  };
+  
+function watchAdForPro(){
+  const grant = () => {
+    proUntil = Date.now() + 24 * 60 * 60 * 1000;
+    sessionStorage.setItem('qt_proUntil', proUntil);
+    refreshProUI();
+    showToast('Pro Mode unlocked for 24 hours!');
+    haptic('medium');
+  };
+  if (!AdController) {
+    showToast('Ad slot not configured yet (demo mode) — unlocking anyway for testing.');
+    grant();
     return;
   }
-
-  const btn = document.getElementById("money-withdraw-btn");
-  btn.disabled = true;
-
-  try {
-    const res = await fetch(`${API_BASE}/api/withdraw`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, type: "money", upi_id: upiId, coins }),
+  AdController.show()
+    .then(grant)
+    .catch((err) => {
+      console.warn('Ad not shown:', err);
+      showToast('No ad available right now — please try again in a moment.');
     });
-    if (res.ok) {
-      showWithdrawMsg("✅ Request bhej di gayi! Payment verify hone ke baad milega.", "success");
-      document.getElementById("upi-input").value = "";
-      document.getElementById("coins-input").value = "";
-      const statsRes = await fetch(`${API_BASE}/api/user/${userId}/stats`);
-      if (statsRes.ok) {
-        const s = await statsRes.json();
-        document.getElementById("w-balance").textContent = s.coins.toFixed(1);
-        coinCountEl.textContent = s.coins.toFixed(1);
-      }
-    } else {
-      const err = await res.text();
-      showWithdrawMsg("❌ " + (err || "Request fail ho gayi."), "error");
-    }
-  } catch (e) {
-    showWithdrawMsg("❌ Kuch galat ho gaya, dobara try karo.", "error");
-  }
-  btn.disabled = false;
 }
-
-document.getElementById("coin-btn").addEventListener("click", openWithdrawSheet);
-document.getElementById("open-withdraw-from-stats").addEventListener("click", () => {
-  statsSheet.classList.remove("open");
-  openWithdrawSheet();
-});
-document.getElementById("close-withdraw").addEventListener("click", () => {
-  withdrawSheet.classList.remove("open");
-});
-
-// ---------------------------------------------------------------------
-// Onboarding — Mini App khulte hi har baar platform intro dikhta hai
-// ---------------------------------------------------------------------
-const onboardingEl = document.getElementById("onboarding");
-if (PLATFORM_LOGO_URL) {
-  onboardingEl.querySelector(".logo-wrap").innerHTML =
-    `<img src="${PLATFORM_LOGO_URL}" style="width:100%;height:100%;object-fit:cover;border-radius:28px;">`;
-}
-
-document.getElementById("start-watching-btn").addEventListener("click", () => {
-  onboardingEl.style.display = "none";
-});
-// Kuch Telegram WebView versions mein "click" event slow/unreliable hota
-// hai — "touchend" par bhi wahi kaam karo (fallback), duplicate trigger na
-// ho isliye preventDefault se click cancel kar dete hain.
-document.getElementById("start-watching-btn").addEventListener("touchend", (e) => {
-  e.preventDefault();
-  onboardingEl.style.display = "none";
-});
-
-// Agar koi share-link se ek specific video (?v=ID) khol raha hai, to use
-// feed mein sabse upar dikhao
-const sharedVideoId = parseInt(new URLSearchParams(window.location.search).get("v")) || null;
-
-// ---------------------------------------------------------------------
-// Init
-// ---------------------------------------------------------------------
-(async function init() {
-  if (userId) {
-    await fetch(`${API_BASE}/api/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: userId,
-        username: tg?.initDataUnsafe?.user?.username,
-        first_name: tg?.initDataUnsafe?.user?.first_name,
-      }),
-    });
-  }
-  loadFeed();
-})();
+document.getElementById('watchAdBtn').addEventListener('click', watchAdForPro);
+document.getElementById('watchAdBtnHome').addEventListener('click', watchAdForPro);
+document.getElementById('qrSupportBtn').addEventListener('click', watchSupportAd);
+document.getElementById('imgSupportBtn').addEventListener('click', watchSupportAd);
+refreshProUI();
 </script>
-</body>
-</html>
-
-
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shutdown Notice</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-
-  #shutdownPopup {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    background: linear-gradient(135deg, #ff5f6d, #ffc371);
-    color: #fff;
-    padding: 16px 20px;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    animation: slideUp 0.35s ease-out;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-
-  #shutdownPopup .title {
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  #shutdownPopup .msg {
-    font-size: 13.5px;
-    line-height: 1.5;
-    opacity: 0.97;
-  }
-
-  #shutdownPopup .actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 4px;
-  }
-
-  #shutdownPopup a.dm-btn {
-    background: #fff;
-    color: #ff5f6d;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 13.5px;
-    padding: 8px 14px;
-    border-radius: 8px;
-  }
-
-  #shutdownPopup .close-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: #fff;
-    font-weight: 700;
-    font-size: 13.5px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-</style>
-</head>
-<body>
-
-<div id="shutdownPopup">
-  <div class="title">⚠️ Important Notice</div>
-  <div class="msg">
-    Yeh app kuch samay baad band ho rahi hai. Aapne jitne bhi coins earn kiye hain, unka screenshot lekar neeche diye gaye Telegram username par bhej dein — hum aapko us hisaab se premium reward denge.
-  </div>
-  <div class="actions">
-    <a class="dm-btn" href="https://t.me/Lord_Naruto0" target="_blank">Admin ko Message Karein</a>
-    <button class="close-btn" onclick="document.getElementById('shutdownPopup').style.display='none'">Band Karein</button>
-  </div>
-</div>
 
 </body>
 </html>

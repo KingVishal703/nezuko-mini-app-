@@ -288,10 +288,10 @@ const ACTIVE_AD_NETWORK = "adsgram";
 
 const AD_NETWORKS = {
   adsgram: {
-    blockId: "int-49106", // <-- Adsgram dashboard se
+    blockId: "49067", // <-- Adsgram dashboard se
     controller: null,
     init() {
-      if (window.Adsgram && this.blockId !== "int-49106") {
+      if (window.Adsgram && this.blockId !== "49067") {
         this.controller = window.Adsgram.init({ blockId: this.blockId });
       }
     },

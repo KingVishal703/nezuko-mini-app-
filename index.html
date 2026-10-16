@@ -36,6 +36,23 @@
   }
 </script>
 
+  <script>
+(function () {
+  var q = new URLSearchParams(window.location.search);
+  var hash = window.location.hash || "";
+  // Telegram "startapp" value hash ya query me aati hai
+  var sp = q.get("tgWebAppStartParam") ||
+           new URLSearchParams(hash.replace(/^#/, "")).get("tgWebAppStartParam") || "";
+
+  if (q.get("go") === "reels" || sp === "reels") {
+    setTimeout(function () {
+      // search + hash dono forward (Telegram data / Adsgram ke liye zaroori)
+      window.location.href = "/reels.html" + window.location.search + hash;
+    }, 2500);
+  }
+})();
+  </script>
+
 <style>
   :root{
     --bg-deep:#0E0B1A; --bg-panel:#181233;

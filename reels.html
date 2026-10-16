@@ -267,7 +267,7 @@
 <script>
 // Mini App Vercel par hai, backend (bot + API ek hi service) Koyeb par.
 // Yahan Koyeb wali service ka poora HTTPS URL daalo.
-const API_BASE = "https://p01--telegram-mini-gram-mini-bot--kfcjp7xp6sl5.code.run";
+const API_BASE = "https://p01--telegram-mini-gram-mini-bot--xxhdzhcw6m7q.code.run".replace(/\/+$/, "");
 
 // Onboarding splash ke liye platform image (chaaho to emoji ki jagah asli
 // logo image URL daal do, jaise "https://.../logo.png")
@@ -288,10 +288,10 @@ const ACTIVE_AD_NETWORK = "monetag";
 
 const AD_NETWORKS = {
   adsgram: {
-    blockId: "int-49106", // <-- Adsgram dashboard se
+    blockId: "YOUR_ADSGRAM_BLOCK_ID", // <-- Adsgram dashboard se
     controller: null,
     init() {
-      if (window.Adsgram && this.blockId !== "int-49106") {
+      if (window.Adsgram && this.blockId !== "YOUR_ADSGRAM_BLOCK_ID") {
         this.controller = window.Adsgram.init({ blockId: this.blockId });
       }
     },

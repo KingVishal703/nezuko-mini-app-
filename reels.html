@@ -291,7 +291,7 @@ const AD_NETWORKS = {
     blockId: "49067", // <-- Adsgram dashboard se
     controller: null,
     init() {
-      if (window.Adsgram && this.blockId !== "49067") {
+      if (window.Adsgram && this.blockId !== "YOUR_ADSGRAM_BLOCK_ID") {
         this.controller = window.Adsgram.init({ blockId: this.blockId });
       }
     },

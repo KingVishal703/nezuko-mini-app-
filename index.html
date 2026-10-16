@@ -10,54 +10,12 @@
 <!-- Adsgram SDK — used only for the fully optional "Pro Mode" bonus below -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
-  <!-- AdsBitvex -->
+<!-- Fonts (pehle CSS ke @import mein tha jo galat jagah par hone se kaam nahi karta tha) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  
-<!-- Coinspin Floating Button -->
-<!--<a href="/reels.html" class="coinspin-float">
-  🪙 Coin Spin
-</a>
-
-<style>
-.coinspin-float {
-  position: fixed;
-  right: 15px;
-  bottom: 90px;
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 18px;
-  border-radius: 30px;
-  background: linear-gradient(135deg, #ffd700, #ff9500);
-  color: #222;
-  font-size: 15px;
-  font-weight: bold;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(255, 180, 0, 0.45);
-  border: 2px solid #fff3b0;
-  animation: coinPulse 1.8s infinite;
-}
-
-@keyframes coinPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.06);
-  }
-}
-
-.coinspin-float:active {
-  transform: scale(0.94);
-}
-</style> -->
-
-  
- 
-
-
-  <script>
+<script>
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
 
@@ -67,21 +25,17 @@
     // Telegram hash safely capture
     const hash = window.location.hash || "";
 
-    // OPTIONAL: Debug (remove later)
-    console.log("ID:", id);
-    console.log("HASH:", hash);
-
-    // ⏳ IMPORTANT: Delay so ads + SDK load properly
+    // ⏳ Delay so ads + SDK load properly
     setTimeout(() => {
 
       // Always forward hash (VERY IMPORTANT for AdsGram)
       window.location.href = "/step1.html?id=" + id + hash;
 
-    }, 2500); // 2.5 sec delay (best)
+    }, 2500); // 2.5 sec delay
 
   }
-  </script>
-  
+</script>
+
 <style>
   :root{
     --bg-deep:#0E0B1A; --bg-panel:#181233;
@@ -89,9 +43,10 @@
     --teal:#3FE1C5; --ink:#F4F0FF; --ink-dim:#9C93C2; --danger:#FF6B6B;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
   html,body{margin:0; padding:0; background:radial-gradient(circle at 50% -10%, #241a4a 0%, var(--bg-deep) 55%);
-    color:var(--ink); font-family:'Inter', system-ui, sans-serif; min-height:100vh; user-select:none;}
+    color:var(--ink); font-family:'Inter', system-ui, sans-serif; min-height:100vh; user-select:none; -webkit-user-select:none;}
+  /* Inputs aur result text select/copy ho sakein */
+  input, textarea, select, .result-box, .chip{user-select:text; -webkit-user-select:text;}
   .display{font-family:'Baloo 2', system-ui, sans-serif;}
   .wrap{max-width:480px; margin:0 auto; padding:16px 16px 90px;}
 
@@ -370,6 +325,7 @@ qrScanInput.addEventListener('change', (e) => {
     resultBox.style.display = 'block';
     resultBox.textContent = code ? code.data : "No QR code found in that image.";
     haptic(code ? 'medium' : 'light');
+    URL.revokeObjectURL(img.src);
   };
   img.src = URL.createObjectURL(file);
 });
@@ -431,7 +387,8 @@ function toCelsius(v, u){ return u === 'C' ? v : u === 'F' ? (v - 32) * 5/9 : v 
 function fromCelsius(v, u){ return u === 'C' ? v : u === 'F' ? v * 9/5 + 32 : v + 273.15; }
 
 function runConvert(){
-  const raw = parseFloat(convValue.value);
+  // "1,5" (comma) ko bhi number maano
+  const raw = parseFloat(convValue.value.replace(',', '.'));
   if (isNaN(raw)) { convResult.textContent = 'Result will appear here'; return; }
   const cat = convCategory.value;
   let out;
@@ -505,8 +462,13 @@ document.getElementById('imgCompressBtn').addEventListener('click', () => {
   img.onload = () => {
     const canvas = document.createElement('canvas');
     canvas.width = img.width; canvas.height = img.height;
-    canvas.getContext('2d').drawImage(img, 0, 0);
+    const ctx = canvas.getContext('2d');
+    // Transparent PNG JPEG banne par kala na ho jaye, isliye pehle white background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
     canvas.toBlob((blob) => {
+      if (!blob) { showToast('Compress nahi ho paya, dusri image try karo'); return; }
       const url = URL.createObjectURL(blob);
       const dl = document.getElementById('imgDownloadBtn');
       dl.href = url; dl.download = 'compressed.jpg'; dl.style.display = 'block';
@@ -555,31 +517,20 @@ function watchSupportAd(){
 
 function refreshProUI(){
   const active = Date.now() < proUntil;
-  const label = active ? 'Pro active for this session' : 'Watch a video to unlock';
   document.getElementById('proStatus').textContent = active
     ? 'Status: Pro active — unlocked for this session'
     : 'Status: Free plan';
   document.getElementById('watchAdBtn').style.display = active ? 'none' : 'block';
   document.getElementById('batchBadge').style.display = active ? 'none' : 'inline-block';
   document.getElementById('homeAdCard').style.display = active ? 'none' : 'block';
-  document.getElementById('watchAdBtnHome').textContent = label;
 }
 
 function watchAdForPro(){
   const grant = () => {
-    proUntil = Date.now() + 24 * 60 * 60 * 1000; // safety cap; in practice this clears when the app session ends
+    proUntil = Date.now() + 24 * 60 * 60 * 1000; // safety cap; sessionStorage app band hone par clear ho jaata hai
     sessionStorage.setItem('qt_proUntil', proUntil);
     refreshProUI();
     showToast('Pro Mode unlocked for this session!');
-    haptic('medium');
-  };
-  
-function watchAdForPro(){
-  const grant = () => {
-    proUntil = Date.now() + 24 * 60 * 60 * 1000;
-    sessionStorage.setItem('qt_proUntil', proUntil);
-    refreshProUI();
-    showToast('Pro Mode unlocked for 24 hours!');
     haptic('medium');
   };
   if (!AdController) {

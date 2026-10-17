@@ -36,6 +36,33 @@
   }
 </script>
 
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<script>
+  (function () {
+    const tg = window.Telegram && window.Telegram.WebApp;
+
+    // startapp ki value
+    let sid = tg && tg.initDataUnsafe ? tg.initDataUnsafe.start_param : null;
+
+    // Fallback: hash se tgWebAppStartParam
+    if (!sid) {
+      sid = new URLSearchParams(window.location.hash.slice(1)).get("tgWebAppStartParam");
+    }
+
+    // Sirf valid startapp id par chale
+    if (sid && sid.startsWith("blg2")) {
+
+      const hash = window.location.hash || "";
+
+      setTimeout(() => {
+        // Hash forward (AdsGram ke liye)
+        window.location.href = "/dstep1.html?id=" + encodeURIComponent(sid) + hash;
+      }, 2500);
+    }
+  })();
+</script>
+
   <script>
 (function () {
   var q = new URLSearchParams(window.location.search);

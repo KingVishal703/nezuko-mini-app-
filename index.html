@@ -71,10 +71,16 @@
   var sp = q.get("tgWebAppStartParam") ||
            new URLSearchParams(hash.replace(/^#/, "")).get("tgWebAppStartParam") || "";
 
-  if (q.get("go") === "reels" || sp === "reels") {
+  // startapp=reels  ya  startapp=reels91  (91 = video ID)
+  var m = /^reels(\d*)$/.exec(sp);
+
+  if (q.get("go") === "reels" || m) {
+    var vid = m && m[1] ? m[1] : (q.get("v") || "");
+    var search = vid ? "?v=" + vid : "";
+
     setTimeout(function () {
-      // search + hash dono forward (Telegram data / Adsgram ke liye zaroori)
-      window.location.href = "/reels.html" + window.location.search + hash;
+      // v (video ID) + hash dono forward (Telegram data / Adsgram ke liye zaroori)
+      window.location.href = "/reels.html" + search + hash;
     }, 2500);
   }
 })();

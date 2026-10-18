@@ -63,7 +63,7 @@
   })();
 </script>
 
-  <script>
+<script>
 (function () {
   var q = new URLSearchParams(window.location.search);
   var hash = window.location.hash || "";
@@ -71,8 +71,8 @@
   var sp = q.get("tgWebAppStartParam") ||
            new URLSearchParams(hash.replace(/^#/, "")).get("tgWebAppStartParam") || "";
 
-  // startapp=reels  ya  startapp=reels91  (91 = video ID)
-  var m = /^reels(\d*)$/.exec(sp);
+  // startapp=reels | reels91 | vid89  (number = video ID)
+  var m = /^(?:reels|vid)(\d*)$/.exec(sp);
 
   if (q.get("go") === "reels" || m) {
     var vid = m && m[1] ? m[1] : (q.get("v") || "");
@@ -84,7 +84,8 @@
     }, 2500);
   }
 })();
-  </script>
+</script>
+
 
 <style>
   :root{

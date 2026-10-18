@@ -865,15 +865,25 @@ if (PLATFORM_LOGO_URL) {
     `<img src="${PLATFORM_LOGO_URL}" style="width:100%;height:100%;object-fit:cover;border-radius:28px;">`;
 }
 
-document.getElementById("start-watching-btn").addEventListener("click", () => {
-  onboardingEl.style.display = "none";
-});
-// Kuch Telegram WebView versions mein "click" event slow/unreliable hota
-// hai — "touchend" par bhi wahi kaam karo (fallback), duplicate trigger na
-// ho isliye preventDefault se click cancel kar dete hain.
-document.getElementById("start-watching-btn").addEventListener("touchend", (e) => {
+let startClicked = false;
+async function startWatching() {
+  if (startClicked) return;          // double click/touch par ad do baar na chale
+  startClicked = true;
+  pauseAllReels();                   // background reel band
+  try {
+    await AD_NETWORKS[ACTIVE_AD_NETWORK].show();   // Adsgram int-49106 ad
+  } catch (e) {
+    console.log("Start ad skipped/failed", e);
+  }
+  onboardingEl.style.display = "none";   // ad ke baad intro band
+  resumeCurrentReel();               // reel chalu
+}
+
+const startBtn = document.getElementById("start-watching-btn");
+startBtn.addEventListener("click", startWatching);
+startBtn.addEventListener("touchend", (e) => {
   e.preventDefault();
-  onboardingEl.style.display = "none";
+  startWatching();
 });
 
 // Agar koi share-link se ek specific video (?v=ID) khol raha hai, to use

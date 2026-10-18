@@ -985,7 +985,7 @@ setInterval(() => {
   if (Date.now() - hintReelSince < 3000) return;                    // reel ko 3 sec dekhne do
 
   const reels = Array.from(feedEl.querySelectorAll(".reel"));
-  if (reels.indexOf(reelEl) === reels.length - 1) return;           // aakhri reel par nahi
+  if (reels.indexOf(reelEl) !== 0) return;                          // sirf pehli reel par hint
 
   hintShownFor.add(id);                                             // ab is reel par dobara nahi
   swipeHintEl.classList.add("show");

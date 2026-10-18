@@ -255,26 +255,45 @@
     transition: transform .9s cubic-bezier(.5,0,.75,.4), opacity .9s ease;
   }
 
-    /* Swipe-up hint (Instagram jaisa) */
+   /* Swipe-up hint */
   #swipe-hint {
-    position: fixed; left: 0; right: 0; bottom: 130px; z-index: 40;
+    position: fixed; left: 0; right: 0; bottom: 14%; z-index: 40;
     display: flex; justify-content: center; pointer-events: none;
-    opacity: 0;
+    opacity: 0; transition: opacity .3s ease;
   }
   #swipe-hint.show { opacity: 1; }
-  #swipe-hint .hint-box {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--line); border-radius: 22px; padding: 12px 18px;
-    font-size: 13px; font-weight: 700; color: #fff;
+  .hint-wrap { position: relative; width: 140px; height: 210px; display: flex; justify-content: center; }
+  .hint-chevrons { position: absolute; top: 0; display: flex; flex-direction: column; gap: 4px; }
+  .hint-chevrons i {
+    width: 20px; height: 20px; border-left: 4px solid #fff; border-top: 4px solid #fff;
+    border-radius: 4px; transform: rotate(45deg); opacity: 0;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.6));
   }
-  #swipe-hint .hint-arrow { font-size: 26px; line-height: 1; }
-  #swipe-hint.show .hint-box { animation: swipeUp 1.3s ease-in-out 2; }
-  @keyframes swipeUp {
-    0%   { transform: translateY(26px); opacity: 0; }
-    25%  { opacity: 1; }
-    70%  { transform: translateY(-34px); opacity: 1; }
-    100% { transform: translateY(-50px); opacity: 0; }
+  #swipe-hint.show .hint-chevrons i { animation: chevUp 1.3s ease-in-out infinite; }
+  .hint-chevrons i:nth-child(3) { animation-delay: 0s; }
+  .hint-chevrons i:nth-child(2) { animation-delay: .2s; }
+  .hint-chevrons i:nth-child(1) { animation-delay: .4s; }
+  @keyframes chevUp { 0%, 70%, 100% { opacity: 0; } 30% { opacity: 1; } }
+
+  .hint-finger {
+    position: absolute; bottom: 40px; width: 54px; height: 54px; border-radius: 50%;
+    background: rgba(255,255,255,.88);
+    box-shadow: 0 0 0 10px rgba(255,255,255,.22), 0 8px 22px rgba(0,0,0,.5);
+    opacity: 0;
+  }
+  #swipe-hint.show .hint-finger { animation: fingerSwipe 1.3s cubic-bezier(.4,0,.2,1) infinite; }
+  @keyframes fingerSwipe {
+    0%   { transform: translateY(0) scale(1.15); opacity: 0; }
+    15%  { transform: translateY(0) scale(.9);  opacity: 1; }
+    70%  { transform: translateY(-100px) scale(.9); opacity: 1; }
+    100% { transform: translateY(-125px) scale(.75); opacity: 0; }
+  }
+
+  .hint-text {
+    position: absolute; bottom: 0; white-space: nowrap;
+    background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 20px; padding: 7px 16px;
+    font-size: 13px; font-weight: 700; color: #fff;
   }
   
 </style>
@@ -300,9 +319,10 @@
 <div id="reward-layer"></div>
 
   <div id="swipe-hint">
-  <div class="hint-box">
-    <div class="hint-arrow">👆</div>
-    <div>Swipe up karo, aur reels dekho</div>
+  <div class="hint-wrap">
+    <div class="hint-chevrons"><i></i><i></i><i></i></div>
+    <div class="hint-finger"></div>
+    <div class="hint-text">Swipe up, next reel dekho</div>
   </div>
   </div>
 
@@ -929,38 +949,48 @@ function getSharedVideoId() {
 const sharedVideoId = getSharedVideoId();
 
 
-  // ---------------------------------------------------------------------
-// Swipe hint — user ruka rahe to beech-beech mein "swipe up" animation
+// ---------------------------------------------------------------------
+// Swipe hint — har reel par sirf EK baar (reel ke 3 sec baad)
 // ---------------------------------------------------------------------
 const swipeHintEl = document.getElementById("swipe-hint");
-let lastScrollTime = Date.now();
-let hintTimeout = null;
+const hintShownFor = new Set();
+let hintReelId = null, hintReelSince = 0, hintTimeout = null;
 
-feedEl.addEventListener("scroll", () => {
-  lastScrollTime = Date.now();
-  swipeHintEl.classList.remove("show");   // scroll karte hi hint band
-}, { passive: true });
-
-function showSwipeHint() {
-  swipeHintEl.classList.add("show");
+function hideSwipeHint() {
+  swipeHintEl.classList.remove("show");
   clearTimeout(hintTimeout);
-  hintTimeout = setTimeout(() => swipeHintEl.classList.remove("show"), 2800);
 }
 
+feedEl.addEventListener("scroll", hideSwipeHint, { passive: true });
+
 setInterval(() => {
-  if (onboardingEl.style.display !== "none") return;                  // intro chal rahi hai
+  if (!currentReelVideo) return;
+  const reelEl = currentReelVideo.closest(".reel");
+  if (!reelEl) return;
+  const id = reelEl.dataset.videoId;
+
+  // Nayi reel aayi -> timer reset
+  if (id !== hintReelId) {
+    hintReelId = id;
+    hintReelSince = Date.now();
+    hideSwipeHint();
+    return;
+  }
+
+  if (hintShownFor.has(id)) return;                                 // is reel par pehle dikha chuke
+  if (onboardingEl.style.display !== "none") return;                // intro chal rahi hai
   if (statsSheet.classList.contains("open") ||
-      withdrawSheet.classList.contains("open")) return;               // sheet khuli hai
-  if (!currentReelVideo || currentReelVideo.paused) return;           // video band / ad chal raha hai
-  if (Date.now() - lastScrollTime < 7000) return;                     // abhi abhi scroll kiya tha
+      withdrawSheet.classList.contains("open")) return;             // sheet khuli hai
+  if (currentReelVideo.paused) return;                              // video band / ad chal raha hai
+  if (Date.now() - hintReelSince < 3000) return;                    // reel ko 3 sec dekhne do
 
   const reels = Array.from(feedEl.querySelectorAll(".reel"));
-  const current = currentReelVideo.closest(".reel");
-  if (reels.indexOf(current) === reels.length - 1) return;            // aakhri reel par hint nahi
+  if (reels.indexOf(reelEl) === reels.length - 1) return;           // aakhri reel par nahi
 
-  showSwipeHint();
-  lastScrollTime = Date.now();   // agla hint kam se kam 7 sec baad
-}, 3000);
+  hintShownFor.add(id);                                             // ab is reel par dobara nahi
+  swipeHintEl.classList.add("show");
+  hintTimeout = setTimeout(hideSwipeHint, 3000);
+}, 500);
   
 // ---------------------------------------------------------------------
 // Init

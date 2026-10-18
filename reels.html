@@ -583,8 +583,9 @@ function attachGestures(videoEl, reelEl) {
 }
 
 function shareReel(videoId) {
-  const shareUrl = `${window.location.origin}${window.location.pathname}?v=${videoId}`;
+  const shareUrl = `https://t.me/Vip_Adult_only_bot/vip_app?startapp=reels${videoId}`;
   const shareText = "Ye reel dekho 🎬";
+  // baaki function waisa hi rehne do
 
   if (tg?.openTelegramLink) {
     tg.openTelegramLink(
@@ -877,8 +878,16 @@ document.getElementById("start-watching-btn").addEventListener("touchend", (e) =
 
 // Agar koi share-link se ek specific video (?v=ID) khol raha hai, to use
 // feed mein sabse upar dikhao
-const sharedVideoId = parseInt(new URLSearchParams(window.location.search).get("v")) || null;
-
+function getSharedVideoId() {
+  const q = parseInt(new URLSearchParams(window.location.search).get("v"));
+  if (q) return q;
+  const sp = tg?.initDataUnsafe?.start_param
+    || new URLSearchParams(window.location.search).get("tgWebAppStartParam") || "";
+  const m = /^reels(\d+)$/.exec(sp);
+  return m ? parseInt(m[1]) : null;
+}
+const sharedVideoId = getSharedVideoId();
+  
 // ---------------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------------

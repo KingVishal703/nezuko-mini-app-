@@ -254,6 +254,29 @@
     position: absolute; font-size: 26px; will-change: transform, opacity;
     transition: transform .9s cubic-bezier(.5,0,.75,.4), opacity .9s ease;
   }
+
+    /* Swipe-up hint (Instagram jaisa) */
+  #swipe-hint {
+    position: fixed; left: 0; right: 0; bottom: 130px; z-index: 40;
+    display: flex; justify-content: center; pointer-events: none;
+    opacity: 0;
+  }
+  #swipe-hint.show { opacity: 1; }
+  #swipe-hint .hint-box {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 22px; padding: 12px 18px;
+    font-size: 13px; font-weight: 700; color: #fff;
+  }
+  #swipe-hint .hint-arrow { font-size: 26px; line-height: 1; }
+  #swipe-hint.show .hint-box { animation: swipeUp 1.3s ease-in-out 2; }
+  @keyframes swipeUp {
+    0%   { transform: translateY(26px); opacity: 0; }
+    25%  { opacity: 1; }
+    70%  { transform: translateY(-34px); opacity: 1; }
+    100% { transform: translateY(-50px); opacity: 0; }
+  }
+  
 </style>
 </head>
 <body>
@@ -275,6 +298,13 @@
 
 <div id="feed"></div>
 <div id="reward-layer"></div>
+
+  <div id="swipe-hint">
+  <div class="hint-box">
+    <div class="hint-arrow">👆</div>
+    <div>Swipe up karo, aur reels dekho</div>
+  </div>
+  </div>
 
 <div id="stats-sheet">
   <h3>Tumhare Stats</h3>
@@ -897,6 +927,40 @@ function getSharedVideoId() {
   return m ? parseInt(m[1]) : null;
 }
 const sharedVideoId = getSharedVideoId();
+
+
+  // ---------------------------------------------------------------------
+// Swipe hint — user ruka rahe to beech-beech mein "swipe up" animation
+// ---------------------------------------------------------------------
+const swipeHintEl = document.getElementById("swipe-hint");
+let lastScrollTime = Date.now();
+let hintTimeout = null;
+
+feedEl.addEventListener("scroll", () => {
+  lastScrollTime = Date.now();
+  swipeHintEl.classList.remove("show");   // scroll karte hi hint band
+}, { passive: true });
+
+function showSwipeHint() {
+  swipeHintEl.classList.add("show");
+  clearTimeout(hintTimeout);
+  hintTimeout = setTimeout(() => swipeHintEl.classList.remove("show"), 2800);
+}
+
+setInterval(() => {
+  if (onboardingEl.style.display !== "none") return;                  // intro chal rahi hai
+  if (statsSheet.classList.contains("open") ||
+      withdrawSheet.classList.contains("open")) return;               // sheet khuli hai
+  if (!currentReelVideo || currentReelVideo.paused) return;           // video band / ad chal raha hai
+  if (Date.now() - lastScrollTime < 7000) return;                     // abhi abhi scroll kiya tha
+
+  const reels = Array.from(feedEl.querySelectorAll(".reel"));
+  const current = currentReelVideo.closest(".reel");
+  if (reels.indexOf(current) === reels.length - 1) return;            // aakhri reel par hint nahi
+
+  showSwipeHint();
+  lastScrollTime = Date.now();   // agla hint kam se kam 7 sec baad
+}, 3000);
   
 // ---------------------------------------------------------------------
 // Init

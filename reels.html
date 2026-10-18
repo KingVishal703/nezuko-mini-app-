@@ -295,6 +295,28 @@
     border: 1px solid var(--line); border-radius: 20px; padding: 7px 16px;
     font-size: 13px; font-weight: 700; color: #fff;
   }
+
+    /* Bonus button (timer ring) */
+  .bonus-btn .icon {
+    position: relative; --p: 0;
+    background: conic-gradient(var(--accent-warm) calc(var(--p) * 1%), rgba(255,255,255,.18) 0);
+    border: none;
+  }
+  .bonus-btn .icon::after {
+    content: ""; position: absolute; inset: 3px; border-radius: 50%; background: #1c1c27;
+  }
+  .bonus-btn .icon .bonus-emoji { position: relative; z-index: 1; }
+  .bonus-btn .bonus-label { font-variant-numeric: tabular-nums; }
+  .bonus-btn.ready .icon {
+    background: linear-gradient(135deg, #ffd166, var(--accent-warm));
+    animation: bonusPulse 1.2s ease-in-out infinite;
+  }
+  .bonus-btn.ready .icon::after { background: transparent; }
+  .bonus-btn.ready .bonus-label { color: var(--accent-warm); }
+  @keyframes bonusPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,194,77,.6); }
+    50% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(255,194,77,0); }
+  }
   
 </style>
 </head>
@@ -526,6 +548,10 @@ function buildReelEl(v) {
     <div class="loading-spinner"></div>
     <div class="speed-badge">2x ⏩</div>
     <div class="side-actions">
+      <button class="action-btn bonus-btn" disabled>
+        <span class="icon"><span class="bonus-emoji">🎁</span></span>
+        <span class="bonus-label">1:00</span>
+      </button>
       <button class="action-btn like-btn ${v.liked_by_me ? "liked" : ""}">
         <span class="icon">${v.liked_by_me ? "❤️" : "🤍"}</span>
         <span class="like-count">${v.likes}</span>
@@ -551,6 +577,7 @@ function buildReelEl(v) {
   `;
 
   wrap.querySelector(".like-btn").addEventListener("click", (e) => toggleLike(v.id, e.currentTarget));
+  wrap.querySelector(".bonus-btn").addEventListener("click", claimBonus);
   wrap.querySelector(".share-btn").addEventListener("click", () => shareReel(v.id));
   const deleteBtn = wrap.querySelector(".delete-btn");
   if (deleteBtn) {
@@ -991,6 +1018,76 @@ setInterval(() => {
   swipeHintEl.classList.add("show");
   hintTimeout = setTimeout(hideSwipeHint, 3000);
 }, 500);
+
+  // ---------------------------------------------------------------------
+// Bonus button — timer ke baad rewarded ad, ad ke baad coins
+// ---------------------------------------------------------------------
+const BONUS_COOLDOWN_SEC = 60;                       // timer (seconds) — apne hisab se badlo
+const BONUS_REWARD_COINS = 3;                        // bonus coins — apne hisab se badlo
+const BONUS_BLOCK_ID = "YOUR_REWARDED_BLOCK_ID";     // <-- Adsgram ke Rewarded block ki ID
+
+let bonusReadyAt = Date.now() + BONUS_COOLDOWN_SEC * 1000;
+let bonusBusy = false;
+let bonusController = null;
+
+function updateBonusUI() {
+  const left = Math.max(0, bonusReadyAt - Date.now());
+  const ready = left === 0 && !bonusBusy;
+  const pct = Math.min(100, (1 - left / (BONUS_COOLDOWN_SEC * 1000)) * 100);
+  const sec = Math.ceil(left / 1000);
+  const timeText = Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
+
+  document.querySelectorAll(".bonus-btn").forEach(btn => {
+    btn.classList.toggle("ready", ready);
+    btn.disabled = !ready;
+    btn.querySelector(".icon").style.setProperty("--p", pct);
+    btn.querySelector(".bonus-label").textContent = bonusBusy ? "..." : (ready ? "Bonus" : timeText);
+  });
+}
+setInterval(updateBonusUI, 250);
+
+async function claimBonus() {
+  if (bonusBusy || Date.now() < bonusReadyAt) return;
+
+  if (!window.Adsgram || BONUS_BLOCK_ID === "YOUR_REWARDED_BLOCK_ID") {
+    const msg = "Bonus ad abhi set nahi hai.";
+    if (tg?.showAlert) tg.showAlert(msg); else alert(msg);
+    return;
+  }
+
+  bonusBusy = true;
+  updateBonusUI();
+  pauseAllReels();
+
+  let watched = false;
+  try {
+    bonusController = bonusController || window.Adsgram.init({ blockId: BONUS_BLOCK_ID });
+    await bonusController.show();     // poora dekhne par resolve, skip par error
+    watched = true;
+  } catch (e) {
+    console.log("Bonus ad skipped/failed", e);
+  }
+
+  if (watched) {
+    try {
+      const res = await fetch(`${API_BASE}/api/ad_reward`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, amount: BONUS_REWARD_COINS, ad_type: "bonus" }),
+      });
+      const data = await res.json();
+      coinCountEl.textContent = data.coins.toFixed(1);
+      playRewardAnimation(BONUS_REWARD_COINS);
+    } catch (e) {
+      console.log("Bonus reward failed", e);
+    }
+    bonusReadyAt = Date.now() + BONUS_COOLDOWN_SEC * 1000;   // timer dobara shuru
+  }
+
+  bonusBusy = false;
+  updateBonusUI();
+  resumeCurrentReel();
+}
   
 // ---------------------------------------------------------------------
 // Init

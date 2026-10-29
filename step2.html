@@ -504,6 +504,35 @@
   </style>
 </head>
 
+	
+<!-- AdsGalaxy SDK -->
+<script src="https://app.adsgalaxy.online/sdk.js?id=147"></script>
+
+<script>
+  window.addEventListener("load", function () {
+    if (typeof window.showAdsGalaxy === "function") {
+      window.showAdsGalaxy()
+        .then(function (result) {
+          console.log("AdsGalaxy result:", result);
+
+          if (result && result.request_id) {
+            console.log("Request ID:", result.request_id);
+          }
+        })
+        .catch(function (error) {
+          console.error(
+            "AdsGalaxy Error:",
+            error.code,
+            error.message
+          );
+        });
+    } else {
+      console.error("AdsGalaxy SDK load nahi hui.");
+    }
+  });
+</script>
+
+
 <body>
 
   <div class="footer-box">

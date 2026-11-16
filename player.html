@@ -129,6 +129,7 @@
     } else {
       return showError("Is device par video support nahi hai.", false);
     }
+    v.addEventListener("loadedmetadata", () => { v.play().catch(() => {}); }, {once:true});   // open hote hi play
     ["waiting","loadstart","seeking"].forEach(e => v.addEventListener(e, () => loading(true)));
     ["playing","canplay","seeked"].forEach(e => v.addEventListener(e, () => loading(false)));
     v.addEventListener("error", () => { if (!hls) showError("Video chal nahi paayi.", true); });

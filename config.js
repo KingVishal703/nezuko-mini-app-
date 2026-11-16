@@ -6,12 +6,12 @@ window.APP_CONFIG = {
 
 window.ADSGRAM_CONFIG = {
   reward: {
-    enabled: true,
+    enabled: false,
     blockId: "REWARD_BLOCK_ID"
   },
 
   interstitial: {
     enabled: true,
-    blockId: "INTERSTITIAL_BLOCK_ID"
+    blockId: "int-49106"
   }
 };

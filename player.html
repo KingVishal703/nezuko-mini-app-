@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#080b12">
+<title>Stream Player</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script src="config.js"></script>
+
+<style>
+:root{
+  --bg:#080b12;--card:#111827;--card2:#151e2d;
+  --text:#f8fafc;--muted:#94a3b8;--accent:#6d8cff;
+  --accent2:#a855f7;--border:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{
+  margin:0;color:var(--text);
+  background:radial-gradient(ellipse at 50% -15%,rgba(85,104,255,.18),transparent 55%),var(--bg);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh
+}
+button,select{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wrap{width:100%;max-width:1050px;margin:auto;padding:14px 13px 35px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.5px}
+.logo{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#617cff,#a855f7);
+  box-shadow:0 5px 20px rgba(109,140,255,.25);font-size:19px
+}
+.brand small{color:#9ba9c4;font-size:10px;display:block;letter-spacing:1.7px;font-weight:600;margin-top:-2px}
+.header-status{
+  display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:30px;
+  background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.18);
+  color:#4ade80;font-size:11px;font-weight:700
+}
+.dot{height:7px;width:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 9px #4ade80}
+.ad-slot{
+  position:relative;width:100%;min-height:65px;margin:14px 0;
+  border:1px dashed rgba(148,163,184,.2);border-radius:13px;
+  background:rgba(255,255,255,.018);display:flex;align-items:center;
+  justify-content:center;overflow:hidden;text-align:center
+}
+.ad-label{position:absolute;top:5px;left:8px;color:#64748b;font-size:9px;letter-spacing:1px;pointer-events:none}
+.ad-placeholder{color:#64748b;font-size:11px;padding:15px}
+.ad-slot:has(iframe),.ad-slot:has(img),.ad-slot:has([data-ad]){min-height:90px}
+.video-heading{margin:20px 2px 13px}
+.eyebrow{color:#8da4ff;font-size:10px;letter-spacing:2px;font-weight:800;text-transform:uppercase;margin-bottom:7px}
+h1{font-size:20px;line-height:1.35;font-weight:750;margin:0;word-break:break-word}
+.player-shell{
+  padding:6px;background:linear-gradient(135deg,rgba(109,140,255,.35),rgba(168,85,247,.22),rgba(255,255,255,.04));
+  border-radius:19px;box-shadow:0 12px 45px rgba(0,0,0,.35);transition:.25s
+}
+.box{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9;width:100%}
+video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+.overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;background:rgba(0,0,0,.45);pointer-events:none;z-index:2
+}
+.spin{width:43px;height:43px;border:4px solid rgba(255,255,255,.18);border-top-color:#fff;border-radius:50%;animation:rotate 1s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.loading-text{font-size:11px;color:#cbd5e1;letter-spacing:1px}
+.hide{display:none!important}
+.player-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px 5px 5px}
+.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:7px}
+.tool-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;min-height:37px;
+  padding:8px 11px;color:#dbe4f5;background:#172033;
+  border:1px solid rgba(255,255,255,.07);border-radius:10px;font-size:11px;font-weight:650;transition:.2s
+}
+.tool-btn:active{transform:scale(.95)}
+.tool-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.quality-select{max-width:112px;min-height:37px;background:#172033;color:#e2e8f0;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 9px;font-size:11px;outline:none}
+.speed-select{max-width:90px}
+.info-card{margin-top:17px;padding:16px;border:1px solid var(--border);border-radius:15px;background:linear-gradient(135deg,#121b2a,#101521)}
+.info-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.info-title{font-size:13px;font-weight:750}
+.info-badge{font-size:10px;padding:5px 9px;color:#a5b4fc;border-radius:20px;background:rgba(109,140,255,.12);border:1px solid rgba(109,140,255,.18)}
+.info-desc{color:var(--muted);font-size:11px;line-height:1.6;margin:10px 0 0}
+.feature-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}
+.feature{text-align:center;padding:11px 5px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.05);border-radius:11px}
+.feature-icon{font-size:17px;margin-bottom:5px}
+.feature-name{color:#dbe4f5;font-size:10px;font-weight:650}
+.feature-sub{color:#718096;font-size:9px;margin-top:3px}
+.errbox{background:#141c2a;border:1px solid rgba(248,113,113,.2);border-radius:15px;padding:27px 18px;text-align:center;margin-top:20px}
+.err-icon{font-size:34px;margin-bottom:12px}
+.errbox p{color:#cbd5e1;font-size:13px;line-height:1.6;margin:0 0 17px}
+.primary-btn{border:0;border-radius:11px;padding:12px 21px;color:#fff;font-size:13px;font-weight:750;background:linear-gradient(135deg,#627fff,#9558e8);box-shadow:0 5px 18px rgba(109,140,255,.2)}
+.footer{text-align:center;color:#64748b;font-size:10px;padding:20px 5px 0}
+.footer strong{color:#9ba9c4}
+body.theater .wrap{max-width:100%;padding:8px}
+body.theater .player-shell{border-radius:12px}
+body.theater .box{border-radius:8px;aspect-ratio:16/9}
+body.theater .video-heading,body.theater .info-card{max-width:1050px;margin-left:auto;margin-right:auto}
+@media(max-width:480px){
+  .wrap{padding:12px 10px 28px}h1{font-size:17px}.brand{font-size:17px}
+  .player-toolbar{gap:7px}.tool-btn{padding:8px 9px;font-size:10px}
+  .feature-row{gap:6px}.info-card{padding:13px}
+}
+@media(min-width:700px){.video-heading{margin-top:25px}.player-shell{padding:8px}.tool-btn{font-size:12px}}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <header class="header">
+    <div class="brand">
+      <div class="logo">▶</div>
+      <div>STREAM<span style="color:#91a5ff">DOCK</span><small>VIDEO EXPERIENCE</small></div>
+    </div>
+    <div class="header-status"><span class="dot"></span> PLAYER READY</div>
+  </header>
+
+  <!-- AD SLOT 1: TOP BANNER -->
+  <div class="ad-slot" id="ad-top">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-placeholder">Top Banner Ad Space</div>
+    <!-- TOP AD CODE YAHAN LAGAYEIN -->
+  </div>
+
+  <div class="video-heading">
+    <div class="eyebrow">NOW PLAYING</div>
+    <h1 id="title">Loading video...</h1>
+  </div>
+
+  <div class="player-shell" id="playerShell">
+    <div class="box" id="box">
+      <video id="v" controls playsinline webkit-playsinline preload="auto" controlslist="nodownload" disablepictureinpicture="false"></video>
+      <div class="overlay" id="loader">
+        <div class="spin"></div>
+        <div class="loading-text">LOADING VIDEO...</div>
+      </div>
+    </div>
+
+    <div class="player-toolbar">
+      <div class="toolbar-left">
+        <select id="q" class="quality-select" aria-label="Video quality">
+          <option value="-1">Auto Quality</option>
+        </select>
+        <select id="speed" class="quality-select speed-select" aria-label="Playback speed">
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1x Speed</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="1.75">1.75x</option>
+          <option value="2">2x</option>
+        </select>
+      </div>
+
+      <div class="toolbar-right">
+        <button class="tool-btn" id="pipBtn" type="button" title="Picture in Picture">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><rect x="12" y="12" width="7" height="5" rx="1"/></svg>
+          PiP
+        </button>
+        <button class="tool-btn" id="theaterBtn" type="button" title="Theater mode">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M3 15h18"/></svg>
+          Theater
+        </button>
+        <button class="tool-btn" id="fullBtn" type="button" title="Fullscreen">
+          <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3M21 16v3a2 2 0 0 1-2 2h-3"/></svg>
+          Full
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AD SLOT 2: BELOW PLAYER -->
+  <div class="ad-slot" id="ad-player">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-placeholder">Player Bottom Ad Space</div>
+    <!-- BELOW PLAYER AD CODE YAHAN LAGAYEIN -->
+  </div>
+
+  <div class="info-card">
+    <div class="info-top">
+      <div class="info-title">Your Video Experience</div>
+      <div class="info-badge">HD SUPPORTED</div>
+    </div>
+    <p class="info-desc">Enjoy smooth video playback with adaptive streaming. Select your preferred quality and playback speed.</p>
+    <div class="feature-row">
+      <div class="feature"><div class="feature-icon">🎬</div><div class="feature-name">HD Playback</div><div class="feature-sub">Clear video</div></div>
+      <div class="feature"><div class="feature-icon">⚡</div><div class="feature-name">Fast Streaming</div><div class="feature-sub">HLS support</div></div>
+      <div class="feature"><div class="feature-icon">📱</div><div class="feature-name">Mobile Ready</div><div class="feature-sub">Responsive</div></div>
+    </div>
+  </div>
+
+  <!-- AD SLOT 3: BOTTOM AD -->
+  <div class="ad-slot" id="ad-bottom">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-placeholder">Bottom Advertisement Space</div>
+    <!-- BOTTOM AD CODE YAHAN LAGAYEIN -->
+  </div>
+
+  <div class="errbox hide" id="err">
+    <div class="err-icon">⚠️</div>
+    <p id="errtxt">Something went wrong.</p>
+    <button class="primary-btn" id="errbtn">Try Again</button>
+  </div>
+
+  <footer class="footer">Powered by <strong>StreamDock</strong><br>Premium Video Experience</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if(tg){tg.ready();tg.expand();}
+
+  const API=(window.APP_CONFIG&&window.APP_CONFIG.API_BASE||"").replace(/\/$/,"");
+  const initData=tg?tg.initData:"";
+  const CODE_RE=/^video[A-Za-z0-9]{3,40}$/;
+  const $=id=>document.getElementById(id);
+  const code=new URLSearchParams(location.search).get("code")||"";
+  const v=$("v");
+  let hls=null;
+
+  function backToTimer(){
+    location.href="timer.html?code="+encodeURIComponent(code)+location.hash;
+  }
+
+  function loading(on){
+    $("loader").classList.toggle("hide",!on);
+  }
+
+  function showError(msg,canRetry){
+    $("box").classList.add("hide");
+    $("playerShell").classList.add("hide");
+    $("err").classList.remove("hide");
+    $("errtxt").textContent=msg;
+    $("errbtn").classList.toggle("hide",!canRetry);
+    $("errbtn").onclick=backToTimer;
+    if(hls){hls.destroy();hls=null;}
+  }
+
+  async function api(path,opts){
+    opts=opts||{};
+    const headers={"Content-Type":"application/json","X-Telegram-Init-Data":initData};
+    if(opts.grant)headers["X-Grant"]=opts.grant;
+
+    const r=await fetch(API+path,{
+      method:opts.method||"GET",
+      headers,
+      body:opts.body?JSON.stringify(opts.body):undefined
+    });
+
+    let data={};
+    try{data=await r.json();}catch(e){}
+
+    if(!r.ok){
+      const e=new Error(data.message||"Request fail ("+r.status+")");
+      e.code=data.error;e.status=r.status;throw e;
+    }
+    return data;
+  }
+
+  async function init(){
+    if(!CODE_RE.test(code))return showError("Video link sahi nahi hai.",false);
+    if(!initData)return showError("Ye page sirf Telegram Mini App me chalta hai.",false);
+
+    const grant=sessionStorage.getItem("grant:"+code);
+    if(!grant)return backToTimer();
+
+    let info;
+    try{
+      info=await api("/api/stream/"+encodeURIComponent(code),{grant});
+    }catch(e){
+      if(e.status===404||e.status===410)return showError("Ye video hata di gayi hai.",false);
+      if(e.status===401||e.status===403){
+        sessionStorage.removeItem("grant:"+code);
+        return showError("Session khatam ho gaya. Dobara timer se kholo.",true);
+      }
+      return showError(e.message||"Video load nahi hui.",true);
+    }
+
+    $("title").textContent=info.title||"Video";
+    document.title=(info.title||"Video")+" | StreamDock";
+    setupPlayer(info);
+    trackView(grant);
+  }
+
+  function setupPlayer(info){
+    if(info.poster)v.poster=info.poster;
+    const url=info.hls_url;
+
+    if(window.Hls&&Hls.isSupported()&&url){
+      hls=new Hls({
+        enableWorker:true,startLevel:-1,capLevelToPlayerSize:true,
+        maxBufferLength:30,maxMaxBufferLength:60,
+        manifestLoadingMaxRetry:3,fragLoadingMaxRetry:4
+      });
+
+      hls.loadSource(url);
+      hls.attachMedia(v);
+
+      hls.on(Hls.Events.MANIFEST_PARSED,(_,d)=>{
+        const sel=$("q"),seen=new Set(),heights=[];
+        d.levels.forEach((l,i)=>{
+          if(l.height&&!seen.has(l.height)){seen.add(l.height);heights.push([l.height,i]);}
+        });
+        heights.sort((a,b)=>b[0]-a[0]).forEach(([height,index])=>{
+          const o=document.createElement("option");
+          o.value=index;o.textContent=height+"p";sel.appendChild(o);
+        });
+        sel.onchange=()=>{if(hls)hls.currentLevel=parseInt(sel.value,10);};
+      });
+
+      let netRetry=0;
+      hls.on(Hls.Events.ERROR,(_,d)=>{
+        if(!d.fatal)return;
+        if(d.type===Hls.ErrorTypes.NETWORK_ERROR&&netRetry<3){
+          netRetry++;
+          setTimeout(()=>{if(hls)hls.startLoad();},1000*netRetry);
+        }else if(d.type===Hls.ErrorTypes.MEDIA_ERROR){
+          hls.recoverMediaError();
+        }else{
+          const gone=d.response&&(d.response.code===404||d.response.code===410);
+          showError(gone?"Ye video hata di gayi hai.":"Video chal nahi paayi. Internet check karke dobara try karo.",!gone);
+        }
+      });
+    }else if(v.canPlayType("application/vnd.apple.mpegurl")&&url){
+      v.src=url;
+      $("q").classList.add("hide");
+    }else if(info.mp4_url){
+      v.src=info.mp4_url;
+      $("q").classList.add("hide");
+    }else{
+      return showError("Is device par video support nahi hai.",false);
+    }
+
+    v.addEventListener("loadedmetadata",()=>{v.play().catch(()=>{});},{once:true});
+    ["waiting","loadstart","seeking"].forEach(e=>v.addEventListener(e,()=>loading(true)));
+    ["playing","canplay","seeked"].forEach(e=>v.addEventListener(e,()=>loading(false)));
+    v.addEventListener("error",()=>{if(!hls)showError("Video chal nahi paayi.",true);});
+  }
+
+  // PLAYBACK SPEED
+  $("speed").addEventListener("change",e=>{
+    v.playbackRate=parseFloat(e.target.value);
+  });
+
+  // THEATER MODE
+  $("theaterBtn").addEventListener("click",()=>{
+    document.body.classList.toggle("theater");
+    $("theaterBtn").innerHTML=document.body.classList.contains("theater")
+      ?"✕ Exit Theater":"▣ Theater";
+  });
+
+  // FULLSCREEN
+  $("fullBtn").addEventListener("click",async()=>{
+    try{
+      if(document.fullscreenElement){
+        await document.exitFullscreen();
+      }else if($("box").requestFullscreen){
+        await $("box").requestFullscreen();
+      }else if(v.webkitEnterFullscreen){
+        v.webkitEnterFullscreen();
+      }
+    }catch(e){
+      console.log("Fullscreen unavailable",e);
+    }
+  });
+
+  // PICTURE IN PICTURE
+  $("pipBtn").addEventListener("click",async()=>{
+    try{
+      if(document.pictureInPictureElement){
+        await document.exitPictureInPicture();
+      }else if(document.pictureInPictureEnabled&&v.requestPictureInPicture){
+        await v.requestPictureInPicture();
+      }else{
+        alert("Picture in Picture is not supported on this device.");
+      }
+    }catch(e){
+      console.log("PiP unavailable",e);
+    }
+  });
+
+  // VIEW TRACKING: 5 seconds real playback, only once
+  function trackView(grant){
+    let acc=0,startedAt=null,sent=false,fails=0;
+
+    const stop=()=>{
+      if(startedAt!==null){
+        acc+=(performance.now()-startedAt)/1000;
+        startedAt=null;
+      }
+    };
+
+    v.addEventListener("playing",()=>{
+      if(startedAt===null)startedAt=performance.now();
+    });
+
+    ["pause","waiting","ended","seeking"].forEach(e=>v.addEventListener(e,stop));
+
+    const iv=setInterval(async()=>{
+      if(sent){clearInterval(iv);return;}
+
+      const total=acc+(startedAt!==null?(performance.now()-startedAt)/1000:0);
+      if(total<5)return;
+
+      sent=true;
+      try{
+        await api("/api/view",{
+          method:"POST",
+          grant,
+          body:{code,watched_seconds:Math.floor(total)}
+        });
+        clearInterval(iv);
+      }catch(e){
+        if(e.status===401||e.status===403||++fails>=3){
+          clearInterval(iv);
+        }else{
+          sent=false;
+        }
+      }
+    },1000);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

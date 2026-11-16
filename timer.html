@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#080b12">
+<title>StreamDock • Continue</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="config.js"></script>
+
+<style>
+:root{
+  --bg:#080b12;
+  --panel:#111827;
+  --panel2:#151e2d;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --line:rgba(255,255,255,.085);
+  --blue:#718cff;
+  --purple:#a855f7;
+  --green:#4ade80;
+  --red:#fb7185;
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{
+  margin:0;min-height:100vh;padding:18px 14px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(91,112,255,.20),transparent 48%),
+    radial-gradient(ellipse at 100% 100%,rgba(168,85,247,.10),transparent 40%),
+    var(--bg);
+}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.page{width:100%;max-width:460px;margin:auto}
+.brand{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:0 auto 20px;
+}
+.logo{
+  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#617cff,#a855f7);
+  box-shadow:0 7px 24px rgba(109,140,255,.28);
+  font-size:18px;
+}
+.brand-name{font-size:18px;font-weight:850;letter-spacing:-.5px}
+.brand-sub{font-size:9px;color:#8998b4;letter-spacing:2px;font-weight:700;margin-top:1px}
+.card{
+  position:relative;overflow:hidden;
+  padding:25px 21px 22px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:23px;
+  background:linear-gradient(155deg,rgba(22,31,49,.98),rgba(13,19,31,.98));
+  box-shadow:0 22px 70px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.card:before{
+  content:"";position:absolute;width:230px;height:230px;right:-115px;top:-150px;
+  background:rgba(111,132,255,.16);filter:blur(45px);pointer-events:none;
+}
+.content{position:relative;z-index:1;text-align:center}
+.status{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 10px;border-radius:30px;
+  color:#aabaff;background:rgba(109,140,255,.10);
+  border:1px solid rgba(109,140,255,.18);
+  font-size:9px;font-weight:800;letter-spacing:1.5px;
+}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#91a5ff;box-shadow:0 0 9px #91a5ff}
+h1{
+  font-size:20px;line-height:1.35;margin:15px 0 7px;
+  font-weight:800;letter-spacing:-.35px;overflow-wrap:anywhere;
+}
+.sub{color:var(--muted);font-size:12px;line-height:1.6;margin:0 auto 22px;max-width:310px}
+.timer-wrap{position:relative;width:158px;height:158px;margin:0 auto 17px}
+.timer-glow{
+  position:absolute;inset:13px;border-radius:50%;
+  background:rgba(105,127,255,.10);filter:blur(18px);
+}
+.ring-svg{position:relative;width:158px;height:158px;transform:rotate(-90deg);overflow:visible}
+.track{stroke:rgba(148,163,184,.15)}
+.prog{
+  stroke:url(#timerGradient);stroke-dasharray:326.73;stroke-dashoffset:326.73;
+  transition:stroke-dashoffset .25s linear;
+  filter:drop-shadow(0 0 7px rgba(116,137,255,.55));
+}
+.ring-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.num{font-size:43px;font-weight:850;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.timer-caption{margin-top:7px;color:#91a0ba;font-size:9px;letter-spacing:2px;font-weight:800}
+.progress-copy{color:#71809b;font-size:10px;margin-bottom:19px}
+.actions{display:grid;gap:10px;margin-top:3px}
+.btn{
+  width:100%;min-height:49px;border:0;border-radius:13px;
+  padding:13px 16px;display:flex;align-items:center;justify-content:center;gap:9px;
+  font-size:13px;font-weight:800;letter-spacing:.1px;transition:transform .15s,opacity .15s;
+}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.36;cursor:not-allowed;filter:saturate(.65)}
+.btn-primary{
+  color:white;background:linear-gradient(105deg,#627fff,#875cf0 58%,#a45ce8);
+  box-shadow:0 8px 22px rgba(104,113,255,.22),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.btn-secondary{
+  color:#e2e8f0;background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.11);
+}
+.btn-icon{font-size:16px}
+.msg{min-height:20px;margin-top:15px;font-size:11px;line-height:1.5;color:#9aa9c1}
+.msg.err{color:var(--red)}
+.msg.ok{color:var(--green)}
+.security{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  color:#71809a;font-size:9px;margin-top:17px;
+}
+.security svg{width:12px;height:12px;stroke:#71809a;fill:none;stroke-width:1.8}
+.footer{text-align:center;color:#61708a;font-size:9px;margin-top:17px;letter-spacing:.3px}
+.footer strong{color:#9ba9c4}
+.ad-slot{
+  position:relative;min-height:62px;margin:13px 0 0;
+  border:1px dashed rgba(148,163,184,.19);border-radius:13px;
+  background:rgba(255,255,255,.018);display:flex;align-items:center;
+  justify-content:center;text-align:center;overflow:hidden;
+}
+.ad-label{position:absolute;top:5px;left:8px;color:#64748b;font-size:8px;letter-spacing:1px}
+.ad-placeholder{padding:14px;color:#64748b;font-size:10px}
+.ad-slot:has(iframe),.ad-slot:has(img),.ad-slot:has([data-ad]){min-height:90px}
+.hide{display:none!important}
+@media(max-width:380px){
+  body{padding:13px 10px}
+  .card{padding:22px 16px 19px}
+  h1{font-size:18px}
+  .timer-wrap,.ring-svg{width:145px;height:145px}
+  .num{font-size:39px}
+}
+@media(min-height:800px){.page{transform:translateY(-8px)}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="brand">
+    <div class="logo">▶</div>
+    <div>
+      <div class="brand-name">STREAM<span style="color:#91a5ff">DOCK</span></div>
+      <div class="brand-sub">VIDEO EXPERIENCE</div>
+    </div>
+  </div>
+
+  <!-- Optional banner placement. Keep empty unless you add a separate banner ad. -->
+  <div class="ad-slot" id="ad-top">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-placeholder">Banner Ad Space</div>
+    <!-- TOP BANNER AD CODE YAHAN LAGAYEIN -->
+  </div>
+
+  <section class="card">
+    <div class="content">
+      <div class="status"><span class="status-dot"></span> SECURE VIDEO ACCESS</div>
+      <h1 id="title">Loading video…</h1>
+      <p class="sub" id="sub">Please wait while we prepare your video</p>
+
+      <div class="timer-wrap">
+        <div class="timer-glow"></div>
+        <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#68a5ff"/>
+              <stop offset="55%" stop-color="#8275ff"/>
+              <stop offset="100%" stop-color="#c078ff"/>
+            </linearGradient>
+          </defs>
+          <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="7"/>
+          <circle class="prog" id="prog" cx="60" cy="60" r="52" fill="none" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+        <div class="ring-center">
+          <div class="num" id="num">…</div>
+          <div class="timer-caption" id="timerCaption">PLEASE WAIT</div>
+        </div>
+      </div>
+
+      <div class="progress-copy" id="progressCopy">Preparing secure access</div>
+
+      <div id="actions" class="actions hide">
+        <button class="btn btn-primary" id="btnPlay" disabled>
+          <span class="btn-icon">▶</span>
+          <span>Mini App में देखें</span>
+        </button>
+        <button class="btn btn-secondary" id="btnBot" disabled>
+          <span class="btn-icon">✉</span>
+          <span>Bot में वीडियो पाएं</span>
+        </button>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+
+      <div class="security">
+        <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        Secure session • Verified access
+      </div>
+    </div>
+  </section>
+
+  <!-- Optional bottom banner placement. The reward/ad verification flow below is unchanged. -->
+  <div class="ad-slot" id="ad-bottom">
+    <span class="ad-label">ADVERTISEMENT</span>
+    <div class="ad-placeholder">Bottom Banner Ad Space</div>
+    <!-- BOTTOM BANNER AD CODE YAHAN LAGAYEIN -->
+  </div>
+
+  <footer class="footer">Powered by <strong>StreamDock</strong> · Premium Video Experience</footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  const API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE || "").replace(/\/$/, "");
+  const initData = tg ? tg.initData : "";
+  const CODE_RE = /^video[A-Za-z0-9]{3,40}$/;
+  const $ = id => document.getElementById(id);
+  const code = new URLSearchParams(location.search).get("code") || "";
+
+  const C = 2 * Math.PI * 52;
+  $("prog").style.strokeDasharray = C;
+  $("prog").style.strokeDashoffset = C;
+
+  function setMsg(t, cls){
+    const m=$("msg");
+    m.textContent=t||"";
+    m.className="msg "+(cls||"");
+  }
+
+  async function api(path, opts){
+    opts = opts || {};
+    const headers = {"Content-Type":"application/json","X-Telegram-Init-Data":initData};
+    const r = await fetch(API + path, {
+      method: opts.method||"GET",
+      headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    let data = {};
+    try { data = await r.json(); } catch(e){}
+    if (!r.ok) {
+      const e = new Error(data.message || "Request fail ("+r.status+")");
+      e.code = data.error;
+      e.status = r.status;
+      throw e;
+    }
+    return data;
+  }
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // ---------- Ad adapters ----------
+  const loaded = {};
+  function loadScript(src, attrs){
+    const key = src + JSON.stringify(attrs||{});
+    if (loaded[key]) return loaded[key];
+    loaded[key] = new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      Object.entries(attrs||{}).forEach(([k,v]) => s.setAttribute(k, v));
+      s.onload = res;
+      s.onerror = () => rej(new Error("Ad SDK load nahi hua"));
+      document.head.appendChild(s);
+    });
+    return loaded[key];
+  }
+
+  const ADAPTERS = {
+    async adsgram(ad){
+      await loadScript("https://sad.adsgram.ai/js/sad.min.js");
+      if (!window.Adsgram) return {ok:false, reason:"sdk_missing"};
+      const ctl = window.Adsgram.init({blockId: String(ad.block_id)});
+      try {
+        const r = await ctl.show();
+        return {ok: !!(r && r.done), reason: r && r.description};
+      } catch (r) {
+        return {ok:false, reason: (r && r.description) || "adsgram_error"};
+      }
+    },
+    async monetag(ad){
+      const fn = "show_" + ad.zone;
+      await loadScript(ad.sdk_url || "https://libtl.com/sdk.js", {"data-zone": ad.zone, "data-sdk": fn});
+      if (typeof window[fn] !== "function") return {ok:false, reason:"sdk_missing"};
+      try {
+        await window[fn]({ymid: ad.ymid});
+        return {ok:true};
+      } catch(e) {
+        return {ok:false, reason:"monetag_error"};
+      }
+    }
+  };
+
+  // ---------- state ----------
+  let gateId = null, timerDone = false, busy = false;
+
+  async function init(){
+    if (!CODE_RE.test(code)) {
+      $("title").textContent = "Link sahi nahi hai";
+      $("sub").textContent = "";
+      $("num").textContent = "✕";
+      $("timerCaption").textContent = "INVALID";
+      $("progressCopy").textContent = "Please check your video link";
+      return;
+    }
+    if (!initData) {
+      $("title").textContent = "Telegram me kholo";
+      $("sub").textContent = "Ye page sirf Telegram Mini App me chalta hai.";
+      $("num").textContent = "✕";
+      $("timerCaption").textContent = "TELEGRAM";
+      $("progressCopy").textContent = "Open this page inside Telegram";
+      return;
+    }
+    try {
+      const info = await api("/api/video/" + encodeURIComponent(code));
+      $("title").textContent = info.title || "Your video is ready";
+      $("sub").textContent = "Video access unlock hone se pehle countdown poora hone dein";
+      const g = await api("/api/gate/start", {method:"POST", body:{code}});
+      gateId = g.gate_id;
+      startTimer(g.timer_seconds || info.timer_seconds || 10);
+    } catch(e) {
+      $("title").textContent = e.status === 404 || e.status === 410 ? "Video available nahi hai" : "Kuch gadbad ho gayi";
+      $("sub").textContent = e.message;
+      $("num").textContent = "!";
+      $("timerCaption").textContent = "ERROR";
+      $("progressCopy").textContent = "Access could not be prepared";
+      setMsg(e.message || "Please try again later", "err");
+    }
+  }
+
+  // Timer only advances while page is visible
+  function startTimer(total){
+    let left = total, last = performance.now();
+    $("actions").classList.remove("hide");
+    $("num").textContent = Math.max(0, Math.ceil(left));
+    $("timerCaption").textContent = "SECONDS";
+    $("progressCopy").textContent = "Keep this page open to complete the countdown";
+
+    const iv = setInterval(() => {
+      const now = performance.now();
+      if (!document.hidden) left -= (now - last) / 1000;
+      last = now;
+
+      const shown = Math.max(0, Math.ceil(left));
+      $("num").textContent = shown;
+      $("prog").style.strokeDashoffset =
+        C * (1 - Math.min(1, (total - Math.max(left,0)) / total));
+
+      if (left <= 0) {
+        clearInterval(iv);
+        timerDone = true;
+        $("num").textContent = "✓";
+        $("timerCaption").textContent = "UNLOCKED";
+        $("progressCopy").textContent = "Access ready — choose how to continue";
+        $("btnPlay").disabled = false;
+        $("btnBot").disabled = false;
+        $("sub").textContent = "Aapka video access ready hai";
+        setMsg("Choose an option to continue", "ok");
+      }
+    }, 250);
+  }
+
+  async function complete(ad, res){
+    for (let i = 0; i < 8; i++) {
+      const r = await api("/api/ad/complete", {
+        method:"POST",
+        body:{
+          gate_id: gateId,
+          ad_id: ad.ad_id,
+          result: res.ok ? "done" : "failed",
+          reason: res.reason || ""
+        }
+      });
+      if (r.status !== "pending") return r;
+      await sleep(1000);
+    }
+    return {status:"failed", message:"Verification me der lag rahi hai"};
+  }
+
+  async function go(action){
+    if (busy || !timerDone) return;
+    busy = true;
+    $("btnPlay").disabled = $("btnBot").disabled = true;
+    setMsg("Please wait…");
+
+    try {
+      let data = await api("/api/ad/request", {
+        method:"POST",
+        body:{gate_id:gateId, action}
+      });
+
+      let tries = 0;
+      while (data.ad) {
+        setMsg("Ad load ho raha hai…");
+        const adapter = ADAPTERS[data.ad.network];
+        const res = adapter
+          ? await adapter(data.ad)
+          : {ok:false, reason:"unsupported_network"};
+
+        const r = await complete(data.ad, res);
+        if (r.status === "verified") {
+          data = r;
+          break;
+        }
+        if (r.next_ad && ++tries < 4) {
+          data = {ad:r.next_ad};
+          continue;
+        }
+        throw new Error(r.message || "Ad verify nahi hua. Dobara try karo.");
+      }
+      finish(action, data);
+    } catch(e) {
+      setMsg(e.message || "Kuch gadbad hui", "err");
+      busy = false;
+      $("btnPlay").disabled = $("btnBot").disabled = false;
+    }
+  }
+
+  function finish(action, data){
+    if (action === "play") {
+      if (!data.grant) throw new Error("Permission nahi mili");
+      sessionStorage.setItem("grant:" + code, data.grant);
+      location.href = "player.html?code=" + encodeURIComponent(code) + location.hash;
+    } else {
+      if (!data.bot_link) throw new Error("Bot link nahi mila");
+      setMsg("Bot me video bhej di gayi hai ✅", "ok");
+      if (tg && tg.openTelegramLink) tg.openTelegramLink(data.bot_link);
+      else location.href = data.bot_link;
+      busy = false;
+      $("btnPlay").disabled = $("btnBot").disabled = false;
+    }
+  }
+
+  $("btnPlay").onclick = () => go("play");
+  $("btnBot").onclick = () => go("bot");
+  init();
+})();
+</script>
+</body>
+</html>

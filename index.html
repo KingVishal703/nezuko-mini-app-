@@ -87,6 +87,28 @@
 </script>
 
 
+
+  <script>
+(function () {
+  try {
+    var tg = window.Telegram && window.Telegram.WebApp;
+    var hashParams = new URLSearchParams(location.hash.slice(1));
+    var param =
+      (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ||
+      hashParams.get("tgWebAppStartParam") ||
+      new URLSearchParams(location.search).get("startapp") ||
+      "";
+
+    // sirf valid "video" code: videoABC123, videoXYZ789, video123456
+    if (/^video[A-Za-z0-9]{3,40}$/.test(param)) {
+      // Telegram hash (auth context) ko saath le jao
+      location.replace("/timer.html?code=" + encodeURIComponent(param) + location.hash);
+    }
+  } catch (e) {}
+})();
+  </script>
+
+
 <style>
   :root{
     --bg-deep:#0E0B1A; --bg-panel:#181233;

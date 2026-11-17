@@ -103,6 +103,17 @@ body.theater .video-heading,body.theater .info-card{max-width:1050px;margin-left
   .feature-row{gap:6px}.info-card{padding:13px}
 }
 @media(min-width:700px){.video-heading{margin-top:25px}.player-shell{padding:8px}.tool-btn{font-size:12px}}
+
+.recommendations{margin:18px 0 8px;padding:16px;border:1px solid rgba(130,150,210,.18);border-radius:18px;background:rgba(18,25,46,.88)}
+.rec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px;gap:10px}
+.rec-head h2{font-size:17px;margin:0;color:#f4f6ff}.rec-head span{font-size:10px;color:#93a2c5;letter-spacing:1px}
+.rec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.rec-item{min-width:0;cursor:pointer;border-radius:12px;overflow:hidden;background:#10182c;border:1px solid rgba(140,160,220,.13)}
+.rec-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#24365f,#513b76);color:#dce5ff;font-size:25px}
+.rec-title{padding:8px 9px 3px;font-size:12px;font-weight:800;line-height:1.35;color:#edf1ff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rec-views{padding:0 9px 9px;font-size:10px;color:#91a0bf}
+.rec-empty{color:#91a0bf;font-size:12px;padding:8px 0}
+@media(min-width:650px){.rec-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
 
@@ -169,6 +180,11 @@ body.theater .video-heading,body.theater .info-card{max-width:1050px;margin-left
       </div>
     </div>
   </div>
+
+  <section class="recommendations" id="recommendations">
+    <div class="rec-head"><h2>More videos from this creator</h2><span>POPULAR</span></div>
+    <div class="rec-grid" id="recGrid"><div class="rec-empty">Loading videos…</div></div>
+  </section>
 
   <!-- AD SLOT 2: BELOW PLAYER -->
   <div class="ad-slot" id="ad-player">
@@ -281,7 +297,9 @@ body.theater .video-heading,body.theater .info-card{max-width:1050px;margin-left
 
     $("title").textContent=info.title||"Video";
     document.title=(info.title||"Video")+" | StreamDock";
+    if(info.premium){document.querySelectorAll(".ad-slot").forEach(el=>el.classList.add("hide"));}
     setupPlayer(info);
+    loadRecommendations();
     trackView(grant);
   }
 
@@ -381,6 +399,25 @@ body.theater .video-heading,body.theater .info-card{max-width:1050px;margin-left
       console.log("PiP unavailable",e);
     }
   });
+
+  async function loadRecommendations(){
+    const grid=$("recGrid");
+    try{
+      const data=await api("/api/recommendations/"+encodeURIComponent(code));
+      grid.innerHTML="";
+      if(!data.items||!data.items.length){grid.innerHTML='<div class="rec-empty">Is creator ki abhi aur videos nahi hain.</div>';return;}
+      data.items.forEach(item=>{
+        const card=document.createElement("div"); card.className="rec-item";
+        const thumb=document.createElement(item.poster?"img":"div"); thumb.className="rec-thumb";
+        if(item.poster){thumb.src=item.poster.startsWith("http")?item.poster:(API+item.poster);thumb.alt=item.title||"Video thumbnail";}else{thumb.textContent="▶";}
+        const title=document.createElement("div");title.className="rec-title";title.textContent=item.title||"Untitled";
+        const views=document.createElement("div");views.className="rec-views";views.textContent=(item.views||0).toLocaleString()+" views";
+        card.append(thumb,title,views);
+        card.addEventListener("click",()=>{location.href="timer.html?code="+encodeURIComponent(item.code)+location.hash;});
+        grid.appendChild(card);
+      });
+    }catch(e){grid.innerHTML='<div class="rec-empty">Recommendations load nahi ho paaye.</div>';}
+  }
 
   // VIEW TRACKING: 5 seconds real playback, only once
   function trackView(grant){

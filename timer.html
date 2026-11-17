@@ -204,6 +204,18 @@ h1{
     </div>
   </section>
 
+  <section class="card" id="premiumCard" style="margin-top:16px;text-align:left;border:1px solid rgba(255,204,92,.35);background:linear-gradient(135deg,rgba(60,42,93,.96),rgba(20,25,48,.98))">
+    <div class="content">
+      <div style="font-size:12px;font-weight:900;letter-spacing:2px;color:#ffd36b">✦ STREAMDOCK PREMIUM</div>
+      <h2 id="premiumPlan" style="margin:10px 0 6px;font-size:23px">7 Days Premium Access</h2>
+      <p style="color:#b8c3dc;font-size:13px;line-height:1.6;margin:0 0 12px">No ads · No countdown timer · Direct video access · Smooth experience</p>
+      <div id="premiumPrice" style="font-size:21px;font-weight:900;color:#ffe29a;margin:8px 0">Price will be announced</div>
+      <div id="paymentDetails" style="font-size:12px;color:#c4cce0;line-height:1.7"></div>
+      <button id="buyPremium" class="btn btn-primary" style="margin-top:14px;width:100%;background:linear-gradient(100deg,#e8ad42,#f7d889);color:#241a09">✦ Buy Premium</button>
+      <div style="font-size:11px;color:#9ba9c6;margin-top:9px">Payment screenshot Delivery Bot par bhejein. Admin verify karke manually activate karega.</div>
+    </div>
+  </section>
+
   <!-- Optional bottom banner placement. The reward/ad verification flow below is unchanged. -->
   <div class="ad-slot" id="ad-bottom">
     <span class="ad-label">ADVERTISEMENT</span>
@@ -322,6 +334,13 @@ h1{
     try {
       const info = await api("/api/video/" + encodeURIComponent(code));
       $("title").textContent = info.title || "Your video is ready";
+      configurePremium(info);
+      if (info.premium) {
+        const p = await api("/api/premium/access/" + encodeURIComponent(code));
+        sessionStorage.setItem("grant:" + code, p.grant);
+        location.href = "player.html?code=" + encodeURIComponent(code) + location.hash;
+        return;
+      }
       $("sub").textContent = "Video access unlock hone se pehle countdown poora hone dein";
       const g = await api("/api/gate/start", {method:"POST", body:{code}});
       gateId = g.gate_id;
@@ -437,6 +456,25 @@ h1{
       busy = false;
       $("btnPlay").disabled = $("btnBot").disabled = false;
     }
+  }
+
+  function configurePremium(info){
+    const days = Number(info.premium_days || 7);
+    $("premiumPlan").textContent = days + " Days Premium Access";
+    $("premiumPrice").textContent = info.premium_price ? info.premium_price : "Price will be announced";
+    const details=$("paymentDetails");
+    details.textContent = info.upi_id ? ("UPI ID: " + info.upi_id) : "UPI ID aur QR code jald add kiya jayega.";
+    if(info.qr_url && /^https?:\/\//i.test(info.qr_url)){
+      const qr=document.createElement("img"); qr.src=info.qr_url; qr.alt="UPI QR";
+      qr.style.cssText="display:block;max-width:180px;margin:8px auto;border-radius:12px";
+      details.appendChild(document.createElement("br")); details.appendChild(qr);
+    }
+    $("buyPremium").onclick = () => {
+      const bot = info.payment_bot;
+      if(!bot){ setMsg("Payment bot configure nahi hai.","err"); return; }
+      const link = "https://t.me/" + bot + "?start=premium_pay";
+      if(tg && tg.openTelegramLink) tg.openTelegramLink(link); else location.href=link;
+    };
   }
 
   $("btnPlay").onclick = () => go("play");
